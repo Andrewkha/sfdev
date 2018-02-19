@@ -33,6 +33,7 @@ return [
                 'httpOnly' => true,
                 'domain' => $params['cookieDomain'],
             ],
+            'loginUrl' => ['auth/login']
         ],
         'session' => [
             // this is the name of the session cookie used for login on the backend
@@ -62,6 +63,7 @@ return [
         },
 
     ],
+    /*
     'as access' => [
         'class' => yii\filters\AccessControl::className(),
         'except' => ['auth/login', 'site/error'],
@@ -72,5 +74,6 @@ return [
             ],
         ],
     ],
+    */
     'params' => $params,
 ];

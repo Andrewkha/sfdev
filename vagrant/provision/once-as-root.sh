@@ -34,7 +34,7 @@ apt-get update
 apt-get upgrade -y
 
 info "Install additional software"
-apt-get install -y php7.1-curl php7.1-cli php7.1-intl php7.1-mysqlnd php7.1-gd php7.1-fpm php7.1-mbstring php7.1-xml mysql-server-5.7 php.xdebug apache2 unzip mc
+apt-get install -y php7.1-curl php7.1-cli php7.1-intl libapache2-mod-php7.1 php7.1-mysqlnd php7.1-gd php7.1-fpm php7.1-mbstring php7.1-xml mysql-server-5.7 php.xdebug apache2 unzip mc
 
 info "Configure MySQL"
 sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/mysql.conf.d/mysqld.cnf
@@ -69,6 +69,9 @@ if [ APACHEGRP ]; then
 fi
 chown -R vagrant:www-data /var/lock/apache2
 
+a2enmod rewrite
+
+
 #info "Configure NGINX"
 #sed -i 's/user www-data/user vagrant/g' /etc/nginx/nginx.conf
 #echo "Done!"
@@ -76,6 +79,9 @@ chown -R vagrant:www-data /var/lock/apache2
 #info "Enabling site configuration" applies configuration to nginx config (Apache should be similar)
 #ln -s /app/vagrant/nginx/app.conf /etc/nginx/sites-enabled/app.conf
 #echo "Done!"
+mv /etc/apache2/sites-enabled/000-default.conf /etc/apache2/sites-enabled/000-default._conf
+
+ln -s /app/vagrant/apache/apache.conf /etc/apache2/sites-enabled/000-default.conf
 
 info "Initailize databases for MySQL"
 mysql -uroot <<< "CREATE DATABASE sf"
