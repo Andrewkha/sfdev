@@ -22,7 +22,7 @@ class CountryRepository
     public function get($id): Country
     {
         if (!$country = Country::findOne($id)) {
-            throw new NotFoundHttpException('Such country doesn\'t exist' );
+            throw new NotFoundHttpException('Страна не найдена' );
         }
 
         return $country;
@@ -32,7 +32,7 @@ class CountryRepository
     {
         /* @var $country Country */
         if (!$country = Country::find()->andWhere(['slug' => $slug])->one()) {
-            throw new NotFoundHttpException('Such country doesn\'t exist' );
+            throw new NotFoundHttpException('Страна не найдена' );
         }
 
         return $country;
@@ -41,7 +41,7 @@ class CountryRepository
     public function save(Country $country): void
     {
         if (!$country->save()) {
-            throw new \RuntimeException('Country save error');
+            throw new \RuntimeException('Ошибка сохранения');
         }
     }
 

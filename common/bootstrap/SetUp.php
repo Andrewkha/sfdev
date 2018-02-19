@@ -16,6 +16,7 @@ class SetUp implements BootstrapInterface
 {
     public function bootstrap($app)
     {
-        // TODO: Implement bootstrap() method.
+        $container = \Yii::$container;
+
     }
 }
