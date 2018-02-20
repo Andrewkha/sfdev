@@ -1,7 +1,7 @@
 <?php
 return [
     'adminEmail' => 'admin@sf.dev',
-    'user.passwordResetTokenExpire' => 3600,
+    'user.passwordTokenExpire' => 3600,
     'user.rememberMeDuration' => 3600 * 24 * 30,
     'cookieDomain' => '.sf.dev',
     'frontendHostInfo' => 'http://sf.dev',

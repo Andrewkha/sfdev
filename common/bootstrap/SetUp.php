@@ -9,7 +9,9 @@
 namespace common\bootstrap;
 
 
+use core\services\auth\TokensManager;
 use yii\base\BootstrapInterface;
+
 
 class SetUp implements BootstrapInterface
 
@@ -18,5 +20,9 @@ class SetUp implements BootstrapInterface
     {
         $container = \Yii::$container;
 
+        $container->setSingleton(TokensManager::class, [], [
+            \Yii::$app->security,
+            $app->params['user.passwordTokenExpire']
+        ]);
     }
 }
