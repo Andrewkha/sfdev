@@ -9,6 +9,7 @@ $params = array_merge(
 return [
     'id' => 'app-backend',
     'basePath' => dirname(__DIR__),
+    'name' => 'Sportforecast admin panel',
     'aliases' => [
         '@staticRoot' => $params['staticPath'],
         '@static' => $params['staticHostInfo'],
@@ -26,7 +27,7 @@ return [
             'cookieValidationKey' => $params['cookieValidationKey'],
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'core\entities\user\User',
             'enableAutoLogin' => true,
             'identityCookie' => [
                 'name' => '_identity',
