@@ -11,7 +11,7 @@ namespace common\bootstrap;
 
 use core\services\auth\TokensManager;
 use yii\base\BootstrapInterface;
-
+use yii\rbac\ManagerInterface;
 
 class SetUp implements BootstrapInterface
 
@@ -24,5 +24,9 @@ class SetUp implements BootstrapInterface
             \Yii::$app->security,
             $app->params['user.passwordTokenExpire']
         ]);
+
+        $container->setSingleton(ManagerInterface::class, function () use ($app) {
+            return $app->authManager;
+        });
     }
 }
