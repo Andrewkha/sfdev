@@ -78,6 +78,7 @@ class DataTransferController extends Controller
 
         $reader->close();
 
+        Country::deleteAll();
         foreach ($country as $one) {
             /**
              * @var $one Country
@@ -138,13 +139,14 @@ class DataTransferController extends Controller
 
         $reader->close();
 
+        User::deleteAll();
         $roleManager = new RoleManager($this->manager);
 
         foreach ($users as $one) {
             /** @var $one User */
             $one->detachBehaviors();
             $one->save();
-            if ($one->username == 'Administrator') {
+            if ($one->username == 'administrator') {
                 $roleManager->assign($one->id, Rbac::ROLE_ADMIN);
             } else {
                 $roleManager->assign($one->id, Rbac::ROLE_USER);

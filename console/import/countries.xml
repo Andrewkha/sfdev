@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Countries><country name="Англия"/><country name="Аргентина"/><country name="Бразилия"/><country name="Германия"/><country name="Испания"/><country name="Италия"/><country name="Китай"/><country name="Международный"/><country name="Португалия"/><country name="Россия"/><country name="Сборные"/></Countries>
+<Countries><country id="3" name="Англия"/><country id="12" name="Аргентина"/><country id="13" name="Бразилия"/><country id="5" name="Германия"/><country id="8" name="Испания"/><country id="16" name="Италия"/><country id="15" name="Китай"/><country id="17" name="Международный"/><country id="4" name="Португалия"/><country id="6" name="Россия"/><country id="18" name="Сборные"/></Countries>
