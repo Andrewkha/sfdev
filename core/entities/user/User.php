@@ -26,6 +26,7 @@ use yii\web\UploadedFile;
  * @property string $email_confirm_token
  * @property string $auth_key
  * @property integer $status
+ * @property boolean $notification
  * @property integer $created_at
  * @property integer $updated_at
  * @property UserData $userData
