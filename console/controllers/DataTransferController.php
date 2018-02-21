@@ -10,8 +10,12 @@ namespace console\controllers;
 
 
 use core\access\Rbac;
-use core\entities\DataTransfer\Country;
+use core\entities\sf\Country;
+use Zelenin\yii\behaviors\Slug;
+use core\entities\user\User;
+use core\entities\user\UserData;
 use core\repositories\sf\CountryRepository;
+use core\services\RoleManager;
 use yii\console\Controller;
 
 class DataTransferController extends Controller
@@ -29,6 +33,7 @@ class DataTransferController extends Controller
     public function actionImport()
     {
 
+        /** Import Countries */
         $this->stdout('Importing countries data' . PHP_EOL);
             try {
                 $this->countriesData();
@@ -37,9 +42,19 @@ class DataTransferController extends Controller
             }
         $this->stdout('Done!' . PHP_EOL);
 
+        /** Initialize RBAC */
         $this->stdout('Initializing RBAC config' . PHP_EOL);
         $this->rbacInit();
         $this->stdout('Done' . PHP_EOL);
+
+        /** Import users */
+        $this->stdout('Importing users data' . PHP_EOL);
+        try {
+            $this->usersData();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
 
     }
 
@@ -64,7 +79,76 @@ class DataTransferController extends Controller
         $reader->close();
 
         foreach ($country as $one) {
+            /**
+             * @var $one Country
+             */
+            $one->attachBehavior(
+                'slug', [
+                    'class' => Slug::class,
+                    'slugAttribute' => 'slug',
+                    'attribute' => 'name',
+                    // optional params
+                    'ensureUnique' => true,
+                    'replacement' => '-',
+                    'lowercase' => true,
+                    'immutable' => false,
+                    // If intl extension is enabled, see http://userguide.icu-project.org/transforms/general.
+                    'transliterateOptions' => 'Russian-Latin/BGN; Any-Latin; Latin-ASCII; NFD; [:Nonspacing Mark:] Remove; NFC;'
+                ]
+            );
             $this->countries->save($one);
+        }
+    }
+
+    private function usersData()
+    {
+        $reader = new \XMLReader();
+
+        if (!$reader->open('console/import/users.xml')) {
+            throw new \RuntimeException('Can not open the source file');
+        }
+
+        $users = [];
+
+        while ($reader->read()) {
+            if($reader->nodeType == \XMLReader::ELEMENT) {
+                if ($reader->localName == 'user') {
+                    $newUser = new User();
+                    $newUser->userData = new UserData(
+                        $newUser->username = $reader->getAttribute('username'),
+                        $newUser->email = $reader->getAttribute('email'),
+                        $newUser->first_name = $reader->getAttribute('first_name'),
+                        $newUser->last_name = $reader->getAttribute('last_name')
+                    );
+
+                    $newUser->password_hash = $reader->getAttribute('password');
+
+                    $newUser->auth_key = $reader->getAttribute('auth_key');
+                    $newUser->status = $reader->getAttribute('active');
+                    $newUser->notification = $reader->getAttribute('notifications');
+                    $newUser->avatar = $reader->getAttribute('avatar');
+                    $newUser->created_at = $reader->getAttribute('created_on');
+                    $newUser->updated_at = $reader->getAttribute('updated_on');
+                    $newUser->last_login = $reader->getAttribute('last_login');
+
+                    $users[] = $newUser;
+                }
+            }
+        }
+
+        $reader->close();
+
+        $roleManager = new RoleManager($this->manager);
+
+        foreach ($users as $one) {
+            /** @var $one User */
+            $one->detachBehaviors();
+            $one->save();
+            if ($one->username == 'Administrator') {
+                $roleManager->assign($one->id, Rbac::ROLE_ADMIN);
+            } else {
+                $roleManager->assign($one->id, Rbac::ROLE_USER);
+            }
         }
     }
 

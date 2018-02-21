@@ -29,10 +29,13 @@ use yii\web\UploadedFile;
  * @property boolean $notification
  * @property integer $created_at
  * @property integer $updated_at
+ * @property integer $last_login
  * @property UserData $userData
  */
 class User extends ActiveRecord implements IdentityInterface, AggregateRoot
 {
+    public $userData;
+
     const STATUS_ACTIVE = 1;
     const STATUS_BLOCKED = 0;
     const STATUS_WAIT = 10;
