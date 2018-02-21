@@ -28,6 +28,7 @@ use yii\web\UploadedFile;
  * @property integer $status
  * @property boolean $notification
  * @property integer $created_at
+ * @property integer $last_login
  * @property integer $updated_at
  * @property UserData $userData
  */
@@ -48,6 +49,7 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
         $user->avatar = $avatar;
         $user->auth_key = $tokensManager->generateRandomString();
         $user->email_confirm_token = $tokensManager->generateRandomString();
+        $user->notification = true;
         $user->recordEvent(new UserCreatedByAdmin($user));
 
         return $user;
@@ -59,13 +61,14 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
         $this->avatar = $avatar;
     }
 
-    public static function requestSignUp(UserData $userData, string $password, TokensManager $tokensManager, UploadedFile $avatar): self
+    public static function requestSignUp(UserData $userData, string $password, bool $notification, TokensManager $tokensManager, UploadedFile $avatar): self
     {
         $user = new static();
         $user->userData = $userData;
         $user->password_hash = $tokensManager->generatePassword($password);
         $user->status = self::STATUS_WAIT;
         $user->avatar = $avatar;
+        $user->notification = $notification;
         $user->auth_key = $tokensManager->generateRandomString();
         $user->email_confirm_token = $tokensManager->generateRandomString();
         $user->recordEvent(new UserSignupRequested($user));
