@@ -71,7 +71,10 @@ class DataTransferController extends Controller
         while ($reader->read()) {
             if($reader->nodeType == \XMLReader::ELEMENT) {
                 if ($reader->localName == 'country') {
-                    $country[] = Country::create($reader->getAttribute('name'), '');
+                    $newCountry = new Country();
+                    $newCountry->id = $reader->getAttribute('id');
+                    $newCountry->name = $reader->getAttribute('name');
+                    $country[] = $newCountry;
                 }
             }
         }
@@ -115,6 +118,7 @@ class DataTransferController extends Controller
             if($reader->nodeType == \XMLReader::ELEMENT) {
                 if ($reader->localName == 'user') {
                     $newUser = new User();
+                    $newUser->id = $reader->getAttribute('id');
                     $newUser->userData = new UserData(
                         $newUser->username = $reader->getAttribute('username'),
                         $newUser->email = $reader->getAttribute('email'),
