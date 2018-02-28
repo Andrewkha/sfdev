@@ -61,7 +61,7 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
         $this->avatar = $avatar;
     }
 
-    public static function requestSignUp(UserData $userData, string $password, bool $notification, TokensManager $tokensManager, UploadedFile $avatar): self
+    public static function requestSignUp(UserData $userData, string $password, bool $notification, UploadedFile $avatar, TokensManager $tokensManager): self
     {
         $user = new static();
         $user->userData = $userData;

@@ -57,7 +57,7 @@ class DeferredEventDispatcher implements EventDispatcher
     public function release(): void
     {
         foreach ($this->queue as $i => $event) {
-            $this->dispatch($event);
+            $this->next->dispatch($event);
             unset($this->queue[$i]);
         }
         $this->defer = false;
