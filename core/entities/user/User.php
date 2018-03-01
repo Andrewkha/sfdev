@@ -11,6 +11,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 use yii\web\UploadedFile;
+use yiidreamteam\upload\ImageUploadBehavior;
 
 /**
  * User model
@@ -38,6 +39,8 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
     const STATUS_BLOCKED = 0;
     const STATUS_WAIT = 10;
 
+    public $userData;
+
     use EventTrait;
 
     public static function create(UserData $userData, TokensManager $tokensManager, UploadedFile $avatar): self
@@ -49,7 +52,7 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
         $user->avatar = $avatar;
         $user->auth_key = $tokensManager->generateRandomString();
         $user->email_confirm_token = $tokensManager->generateRandomString();
-        $user->notification = true;
+        $user->subscribeToNews();
         $user->recordEvent(new UserCreatedByAdmin($user));
 
         return $user;
@@ -91,6 +94,27 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
         return $this->status == self::STATUS_WAIT;
     }
 
+    public function isSubscribedNews(): bool
+    {
+        return $this->notification;
+    }
+
+    public function subscribeToNews(): void
+    {
+        if ($this->notification) {
+            throw new \DomainException('Подписка уже активна');
+        }
+        $this->notification = true;
+    }
+
+    public function unsubscribeToNews(): void
+    {
+        if (!$this->notification) {
+            throw new \DomainException('Подписка уже деактивирована');
+        }
+        $this->notification = false;
+    }
+
     /**
      * @inheritdoc
      */
@@ -106,6 +130,17 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
     {
         return [
             TimestampBehavior::className(),
+            [
+                'class' => ImageUploadBehavior::class,
+                'attribute' => 'avatar',
+                'filePath' => '@staticRoot/origin/users/avatars/[[id]].[[extension]]',
+                'fileUrl' => '@static/origin/users/avatars/[[id]].[[extension]]',
+                'thumbPath' => '@staticRoot/cache/users/avatars/[[id]]/[[profile]].[[extension]]',
+                'thumbUrl' => '@static/cache/users/avatars/[[id]]/[[profile]].[[extension]]',
+                'thumbs' => [
+
+                ]
+            ]
         ];
     }
 

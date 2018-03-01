@@ -22,7 +22,7 @@ class TransactionManager
 
     public function wrap(callable $function): void
     {
-        $transaction = \Yii::$app->db->transaction($function);
+        $transaction = \Yii::$app->db->beginTransaction();
 
         try {
             $this->dispatcher->defer();

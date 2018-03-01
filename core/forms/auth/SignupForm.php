@@ -29,6 +29,8 @@ use core\entities\user\User;
 
 class SignupForm extends Model
 {
+    const DEFAULT_AVATAR = '@staticRoot/origin/users/avatars/default.jpg';
+
     public $username;
     public $password;
     public $repeatPassword;
@@ -69,7 +71,7 @@ class SignupForm extends Model
 
             ['notification', 'boolean'],
 
-            [['reCaptcha'], ReCaptchaValidator::class],
+           // [['reCaptcha'], ReCaptchaValidator::class],
         ];
     }
 
@@ -86,5 +88,15 @@ class SignupForm extends Model
             'notification' => 'Подписка на новости сайта',
             'verifyCode' => 'Введите символы с картинки'
         ];
+    }
+
+    public function beforeValidate()
+    {
+        if (parent::beforeValidate()) {
+            $this->avatar = UploadedFile::getInstance($this, 'avatar');
+            return true;
+        }
+
+        return false;
     }
 }

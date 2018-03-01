@@ -32,7 +32,8 @@ class UserSignupRequestedListener
                 ['user' => $event->user]
             )
             ->setTo($event->user->email)
-            ->setSubject(\Yii::$app->name . ': Подтверждение реистрации');
+            ->setSubject(\Yii::$app->name . ': Подтверждение регистрации')
+            ->send();
 
         if (!$sent) {
             $message = 'Signup confirmation email sending error for ' . $event->user->username;
