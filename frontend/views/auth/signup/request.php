@@ -9,7 +9,9 @@
 /* @var $this \yii\web\View */
 /* @var $model \core\forms\auth\SignupForm */
 
+use himiklab\yii2\recaptcha\ReCaptcha;
 use kartik\widgets\FileInput;
+use kartik\widgets\SwitchInput;
 use yii\helpers\Html;
 use kartik\widgets\ActiveForm;
 
@@ -36,6 +38,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]
             ]); ?>
                 <?= $form->field($model, 'username', [
+                        'feedbackIcon' => [
+                             'success' => 'ok',
+                            'error' => 'exclamation-sign'
+                        ],
                         'options' => [
                             'class' => 'form-group has-feedback',
                         ],
@@ -60,6 +66,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                 <?= $form->field($model, 'password', [
+                    'feedbackIcon' => [
+                        'success' => 'ok',
+                        'error' => 'exclamation-sign'
+                    ],
                         'options' => [
                             'class' => 'form-group has-feedback',
                         ],
@@ -68,6 +78,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     ])->label(false); ?>
 
                 <?= $form->field($model, 'repeatPassword', [
+                        'feedbackIcon' => [
+                            'success' => 'ok',
+                            'error' => 'exclamation-sign'
+                        ],
                         'options' => [
                             'class' => 'form-group has-feedback',
                         ],
@@ -76,6 +90,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     ])->label(false); ?>
 
                 <?= $form->field($model, 'firstName', [
+                        'feedbackIcon' => [
+                            'success' => 'ok',
+                            'error' => 'exclamation-sign'
+                        ],
                         'options' => [
                             'class' => 'form-group has-feedback',
                         ],
@@ -84,6 +102,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     ])->label(false); ?>
 
                 <?= $form->field($model, 'lastName', [
+                        'feedbackIcon' => [
+                            'success' => 'ok',
+                            'error' => 'exclamation-sign'
+                        ],
                         'options' => [
                             'class' => 'form-group has-feedback',
                         ],
@@ -103,6 +125,22 @@ $this->params['breadcrumbs'][] = $this->title;
                             'msgPlaceholder' => $model->getAttributeLabel('avatar')
                         ]
                     ])->label(false); ?>
+
+                <?= $form->field($model, 'notification', [
+                    ])->widget(SwitchInput::class, [
+                        'pluginOptions' => [
+                            'onText' => 'Вкл',
+                            'offText' => 'Выкл',
+                        ]
+                    ]); ?>
+
+                <?= $form->field($model, 'reCaptcha')->widget(ReCaptcha::class)->label(false); ?>
+
+                <div class="form-group">
+                    <p>
+                        <?= Html::submitButton('Зарегистрироваться', ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>
+                    </p>
+                </div>
 
             <?php ActiveForm::end();?>
         </div>

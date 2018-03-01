@@ -8,6 +8,7 @@
 
 namespace core\forms\auth;
 
+use himiklab\yii2\recaptcha\ReCaptchaValidator;
 use yii\base\Model;
 use yii\web\UploadedFile;
 use core\entities\user\User;
@@ -37,6 +38,8 @@ class SignupForm extends Model
     public $avatar;
     public $notification = true;
 
+    public $reCaptcha;
+
     public function rules()
     {
         return [
@@ -47,7 +50,7 @@ class SignupForm extends Model
 
             ['email', 'trim'],
             ['email', 'required'],
-            ['email', 'email'],
+            ['email', 'email', 'message' => 'Введите корректный email'],
             ['email', 'string', 'max' => 255],
             ['email', 'unique', 'targetClass' => User::class, 'message' => 'Пользователь с таким email уже существует'],
 
@@ -65,6 +68,8 @@ class SignupForm extends Model
             [['avatar'], 'image', 'maxSize' => 1024*1024, 'tooBig' => 'Максимальный размер файла 1Мб'],
 
             ['notification', 'boolean'],
+
+            [['reCaptcha'], ReCaptchaValidator::class],
         ];
     }
 
@@ -78,7 +83,8 @@ class SignupForm extends Model
             'avatar' => 'Аватар',
             'firstName' => 'Имя',
             'lastName' => 'Фамилия',
-            'notifications' => 'Подписка на новости сайта',
+            'notification' => 'Подписка на новости сайта',
+            'verifyCode' => 'Введите символы с картинки'
         ];
     }
 }
