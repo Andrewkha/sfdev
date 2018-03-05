@@ -21,7 +21,8 @@
         "kartik-v/yii2-widgets": "*",
         "himiklab/yii2-recaptcha-widget": "*",
         "la-haute-societe/yii2-save-relations-behavior": "*",
-        "yii-dream-team/yii2-upload-behavior": "*"
+        "yii-dream-team/yii2-upload-behavior": "*",
+        "zelenin/yii2-slug-behavior": "~1.5.1"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

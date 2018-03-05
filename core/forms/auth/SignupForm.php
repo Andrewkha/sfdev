@@ -29,8 +29,6 @@ use core\entities\user\User;
 
 class SignupForm extends Model
 {
-    const DEFAULT_AVATAR = '@staticRoot/origin/users/avatars/default.jpg';
-
     public $username;
     public $password;
     public $repeatPassword;

@@ -8,7 +8,6 @@
 
 namespace core\services\auth;
 
-
 use core\access\Rbac;
 use core\entities\user\User;
 use core\entities\user\UserData;
@@ -51,5 +50,16 @@ class SignupService
             $this->users->save($user);
             $this->roles->assign($user->id, Rbac::ROLE_USER);
         });
+    }
+
+    public function confirm($token)
+    {
+        if (empty($token)) {
+            throw new \DomainException('Token не может быть пустым');
+        }
+        $user = $this->users->getByEmailConfirmToken($token);
+        $user->confirmSignup();
+        $user->login(false);
+        $this->users->save($user);
     }
 }

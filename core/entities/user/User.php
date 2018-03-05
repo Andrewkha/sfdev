@@ -3,6 +3,7 @@ namespace core\entities\user;
 
 use core\entities\AggregateRoot;
 use core\entities\EventTrait;
+use core\entities\user\events\UserSignupConfirmed;
 use core\entities\user\events\UserSignupRequested;
 use core\entities\user\events\UserCreatedByAdmin;
 use core\services\auth\TokensManager;
@@ -35,6 +36,9 @@ use yiidreamteam\upload\ImageUploadBehavior;
  */
 class User extends ActiveRecord implements IdentityInterface, AggregateRoot
 {
+
+    const DEFAULT_AVATAR = '@staticRoot/origin/users/avatars/default.jpg';
+
     const STATUS_ACTIVE = 1;
     const STATUS_BLOCKED = 0;
     const STATUS_WAIT = 10;
@@ -79,6 +83,33 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
         return $user;
     }
 
+    public function confirmSignup(): void
+    {
+        $this->activate();
+        $this->removeEmailConfirmToken();
+        $this->recordEvent(new UserSignupConfirmed($this));
+    }
+
+    public function login(bool $rememberMe): bool
+    {
+        if (\Yii::$app->user->login($this, $rememberMe ? \Yii::$app->params['user.rememberMeDuration'] : 0)) {
+            $this->last_login = time();
+            return true;
+        }
+        return false;
+    }
+
+    public function activate(): void
+    {
+        if ($this->isBlocked()) {
+            throw new \DomainException('Пользорватель заблокирован, обратитесь к администрации');
+        }
+        if ($this->isActive()) {
+            throw new \DomainException('Пользорватель уже активен');
+        }
+        $this->status = self::STATUS_ACTIVE;
+    }
+
     public function isActive(): bool
     {
         return $this->status == self::STATUS_ACTIVE;
@@ -113,6 +144,11 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
             throw new \DomainException('Подписка уже деактивирована');
         }
         $this->notification = false;
+    }
+
+    public function removeEmailConfirmToken()
+    {
+        $this->email_confirm_token = NULL;
     }
 
     /**

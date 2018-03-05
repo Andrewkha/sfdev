@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d64a5a8015e44306ef12529775d113e5",
+    "content-hash": "0b6601cd60c78d452ae773a2c9e61b91",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -1991,6 +1991,97 @@
                 "yii2"
             ],
             "time": "2017-08-04T10:48:17+00:00"
+        },
+        {
+            "name": "zelenin/string",
+            "version": "0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zelenin/string.git",
+                "reference": "d57f21f32d2b2eb52e96e892500afaeb0b3fac19"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zelenin/string/zipball/d57f21f32d2b2eb52e96e892500afaeb0b3fac19",
+                "reference": "d57f21f32d2b2eb52e96e892500afaeb0b3fac19",
+                "shasum": ""
+            },
+            "require": {
+                "ext-intl": "*",
+                "php": ">=5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Zelenin\\Ddd\\String\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Aleksandr Zelenin",
+                    "email": "aleksandr@zelenin.me",
+                    "homepage": "http://zelenin.me",
+                    "role": "Developer"
+                }
+            ],
+            "description": "String transformers collection",
+            "homepage": "https://github.com/zelenin/string",
+            "keywords": [
+                "ddd",
+                "slug",
+                "string",
+                "translit"
+            ],
+            "time": "2015-12-23T00:06:30+00:00"
+        },
+        {
+            "name": "zelenin/yii2-slug-behavior",
+            "version": "1.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zelenin/yii2-slug-behavior.git",
+                "reference": "e40f370c55825a2ea65ef0e47c6f7c46b7703485"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zelenin/yii2-slug-behavior/zipball/e40f370c55825a2ea65ef0e47c6f7c46b7703485",
+                "reference": "e40f370c55825a2ea65ef0e47c6f7c46b7703485",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "~2.0.7",
+                "zelenin/string": "~0.0.0"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "Zelenin\\yii\\behaviors\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Aleksandr Zelenin",
+                    "email": "aleksandr@zelenin.me",
+                    "homepage": "http://zelenin.me",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Yii2 slug behavior",
+            "homepage": "https://github.com/zelenin/yii2-slug-behavior",
+            "keywords": [
+                "Behavior",
+                "slug",
+                "yii2"
+            ],
+            "time": "2016-02-14T21:37:51+00:00"
         }
     ],
     "packages-dev": [

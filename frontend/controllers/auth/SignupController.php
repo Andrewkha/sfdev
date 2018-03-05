@@ -60,4 +60,17 @@ class SignupController extends Controller
             'model' => $form,
         ]);
     }
+
+    public function actionConfirm($token)
+    {
+        try {
+            $this->service->confirm($token);
+            Yii::$app->session->setFlash('success', 'Ваш email подтвержден, добро пожаловать!');
+        } catch (\DomainException $e) {
+            Yii::$app->errorHandler->logException($e);
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+
+        return $this->goHome();
+    }
 }

@@ -12,7 +12,11 @@ namespace common\bootstrap;
 use core\dispatchers\DeferredEventDispatcher;
 use core\dispatchers\EventDispatcher;
 use core\dispatchers\SimpleEventDispatcher;
+use core\entities\user\events\UserSignupConfirmed;
 use core\entities\user\events\UserSignupRequested;
+use core\entities\user\events\UserCreatedByAdmin;
+use core\listeners\UserCreatedByAdminListener;
+use core\listeners\UserSignupConfirmedListener;
 use core\listeners\UserSignupRequestedListener;
 use core\services\auth\TokensManager;
 use yii\base\BootstrapInterface;
@@ -50,6 +54,8 @@ class SetUp implements BootstrapInterface
         $container->setSingleton(DeferredEventDispatcher::class, function (Container $container) {
             return new DeferredEventDispatcher(new SimpleEventDispatcher($container, [
                 UserSignupRequested::class => [UserSignupRequestedListener::class],
+                UserSignupConfirmed::class => [UserSignupConfirmedListener::class],
+                UserCreatedByAdmin::class => [UserCreatedByAdminListener::class]
             ]));
         });
     }
