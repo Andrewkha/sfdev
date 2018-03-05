@@ -131,7 +131,7 @@ class DataTransferController extends Controller
                     $newUser->auth_key = $reader->getAttribute('auth_key');
                     $newUser->status = $reader->getAttribute('active');
                     $newUser->notification = $reader->getAttribute('notifications');
-                    $newUser->avatar = $reader->getAttribute('avatar');
+                    $newUser->avatar = ($reader->getAttribute('avatar') == 'default.jpg') ? '' : $reader->getAttribute('avatar');
                     $newUser->created_at = $reader->getAttribute('created_on');
                     $newUser->updated_at = $reader->getAttribute('updated_on');
                     $newUser->last_login = $reader->getAttribute('last_login');
