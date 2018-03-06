@@ -58,4 +58,9 @@ class UserRepository
 
         return $user;
     }
+
+    public function findByUsernameOrEmail($string): ?User
+    {
+        return User::find()->where(['or', ['username' => $string], ['email' => $string]])->one();
+    }
 }

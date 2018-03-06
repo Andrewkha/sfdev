@@ -37,6 +37,11 @@ class TokensManager
         return $timestamp + $this->timeout >= time();
     }
 
+    public function validatePassword($password, $hash): bool
+    {
+        return $this->security->validatePassword($password, $hash);
+    }
+
     public function generatePassword($password = null): string
     {
         $password = ($password) ? $password : $this->generateRandomString();
