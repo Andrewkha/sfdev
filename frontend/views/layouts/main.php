@@ -9,6 +9,7 @@ use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
+use core\entities\user\User;
 
 AppAsset::register($this);
 ?>
@@ -52,9 +53,11 @@ AppAsset::register($this);
             )
             . Html::endForm()
             . '</li>';
+        $menuItems[] = ['label' => Html::img(Yii::$app->user->identity->getThumbFileUrl('avatar', 'menuPic', User::DEFAULT_AVATAR_PATH . '_menuPic.jpg')), 'url' => ['/profile']];
     }
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
+        'encodeLabels' => false,
         'items' => $menuItems,
     ]);
     NavBar::end();

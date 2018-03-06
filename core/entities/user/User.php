@@ -33,11 +33,13 @@ use yiidreamteam\upload\ImageUploadBehavior;
  * @property integer $last_login
  * @property integer $updated_at
  * @property UserData $userData
+ *
+ * @mixin ImageUploadBehavior
  */
 class User extends ActiveRecord implements IdentityInterface, AggregateRoot
 {
 
-    const DEFAULT_AVATAR = '@staticRoot/origin/users/avatars/default.jpg';
+    const DEFAULT_AVATAR_PATH = '@static/origin/users/avatars/default';
 
     const STATUS_ACTIVE = 1;
     const STATUS_BLOCKED = 0;
@@ -169,12 +171,13 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
             [
                 'class' => ImageUploadBehavior::class,
                 'attribute' => 'avatar',
+                'createThumbsOnRequest' => true,
                 'filePath' => '@staticRoot/origin/users/avatars/[[id]].[[extension]]',
                 'fileUrl' => '@static/origin/users/avatars/[[id]].[[extension]]',
-                'thumbPath' => '@staticRoot/cache/users/avatars/[[id]]/[[profile]].[[extension]]',
-                'thumbUrl' => '@static/cache/users/avatars/[[id]]/[[profile]].[[extension]]',
+                'thumbPath' => '@staticRoot/cache/users/avatars/[[id]].[[extension]]',
+                'thumbUrl' => '@static/cache/users/avatars/[[id]].[[extension]]',
                 'thumbs' => [
-
+                    'menuPic' => ['width' => 40, 'height' => 40],
                 ]
             ]
         ];
