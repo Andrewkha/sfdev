@@ -133,11 +133,12 @@ class DataTransferController extends Controller
                     $newUser->auth_key = $reader->getAttribute('auth_key');
                     $newUser->status = $reader->getAttribute('active');
                     $newUser->notification = $reader->getAttribute('notifications');
-                    $newUser->avatar = $reader->getAttribute('avatar');
-                    //$newUser->avatar = ($reader->getAttribute('avatar') == 'default.jpg') ? '' : $newUser->id . stristr($reader->getAttribute('avatar'), '.');
+                    //$newUser->avatar = $reader->getAttribute('avatar');
+                    $newUser->avatar = ($reader->getAttribute('avatar') == 'default.jpg') ? '' : $newUser->id . stristr($reader->getAttribute('avatar'), '.');
 
-                    if (file_exists($path . $reader->getAttribute('avatar'))) {
-                        if (rename($path . $reader->getAttribute('avatar'), $newUser->id . stristr($reader->getAttribute('avatar'), '.'))) {
+                    if (file_exists($path . $reader->getAttribute('avatar')) && $reader->getAttribute('avatar') != 'default.jpg') {
+                        $this->stdout('exists');
+                        if (rename($path . $reader->getAttribute('avatar'), $path . $newUser->id . stristr($reader->getAttribute('avatar'), '.'))) {
                             $this->stdout('Renamed' . PHP_EOL);
                         }
                     }
