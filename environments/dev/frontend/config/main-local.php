@@ -18,4 +18,11 @@ if (!YII_ENV_TEST) {
     ];
 }
 
+$config['components']['reCaptcha'] = [
+    'name' => 'reCaptcha',
+    'class' => 'himiklab\yii2\recaptcha\ReCaptcha',
+    'siteKey' => '6LfyxkkUAAAAAEFkDslIk8VmPYWI2ZCItwCJz5P2',
+    'secret' => '6LfyxkkUAAAAAG3ftWcYnIAX3_NcdnfS44v94ocJ'
+];
+
 return $config;

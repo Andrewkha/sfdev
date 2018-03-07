@@ -3,6 +3,7 @@ namespace core\entities\user;
 
 use core\entities\AggregateRoot;
 use core\entities\EventTrait;
+use core\entities\user\events\UserSignupConfirmed;
 use core\entities\user\events\UserSignupRequested;
 use core\entities\user\events\UserCreatedByAdmin;
 use core\services\auth\TokensManager;
@@ -11,6 +12,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 use yii\web\UploadedFile;
+use yiidreamteam\upload\ImageUploadBehavior;
 
 /**
  * User model
@@ -28,17 +30,22 @@ use yii\web\UploadedFile;
  * @property integer $status
  * @property boolean $notification
  * @property integer $created_at
- * @property integer $updated_at
  * @property integer $last_login
+ * @property integer $updated_at
  * @property UserData $userData
+ *
+ * @mixin ImageUploadBehavior
  */
 class User extends ActiveRecord implements IdentityInterface, AggregateRoot
 {
-    public $userData;
+
+    const DEFAULT_AVATAR_PATH = '@static/origin/users/avatars/default';
 
     const STATUS_ACTIVE = 1;
     const STATUS_BLOCKED = 0;
     const STATUS_WAIT = 10;
+
+    public $userData;
 
     use EventTrait;
 
@@ -51,6 +58,7 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
         $user->avatar = $avatar;
         $user->auth_key = $tokensManager->generateRandomString();
         $user->email_confirm_token = $tokensManager->generateRandomString();
+        $user->subscribeToNews();
         $user->recordEvent(new UserCreatedByAdmin($user));
 
         return $user;
@@ -62,18 +70,46 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
         $this->avatar = $avatar;
     }
 
-    public static function requestSignUp(UserData $userData, string $password, TokensManager $tokensManager, UploadedFile $avatar): self
+    public static function requestSignUp(UserData $userData, string $password, bool $notification, $avatar, TokensManager $tokensManager): self
     {
         $user = new static();
         $user->userData = $userData;
         $user->password_hash = $tokensManager->generatePassword($password);
         $user->status = self::STATUS_WAIT;
         $user->avatar = $avatar;
+        $user->notification = $notification;
         $user->auth_key = $tokensManager->generateRandomString();
         $user->email_confirm_token = $tokensManager->generateRandomString();
         $user->recordEvent(new UserSignupRequested($user));
 
         return $user;
+    }
+
+    public function confirmSignup(): void
+    {
+        $this->activate();
+        $this->removeEmailConfirmToken();
+        $this->recordEvent(new UserSignupConfirmed($this));
+    }
+
+    public function login(bool $rememberMe): bool
+    {
+        if (\Yii::$app->user->login($this, $rememberMe ? \Yii::$app->params['user.rememberMeDuration'] : 0)) {
+            $this->last_login = time();
+            return true;
+        }
+        return false;
+    }
+
+    public function activate(): void
+    {
+        if ($this->isBlocked()) {
+            throw new \DomainException('Пользорватель заблокирован, обратитесь к администрации');
+        }
+        if ($this->isActive()) {
+            throw new \DomainException('Пользорватель уже активен');
+        }
+        $this->status = self::STATUS_ACTIVE;
     }
 
     public function isActive(): bool
@@ -91,6 +127,32 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
         return $this->status == self::STATUS_WAIT;
     }
 
+    public function isSubscribedNews(): bool
+    {
+        return $this->notification;
+    }
+
+    public function subscribeToNews(): void
+    {
+        if ($this->notification) {
+            throw new \DomainException('Подписка уже активна');
+        }
+        $this->notification = true;
+    }
+
+    public function unsubscribeToNews(): void
+    {
+        if (!$this->notification) {
+            throw new \DomainException('Подписка уже деактивирована');
+        }
+        $this->notification = false;
+    }
+
+    public function removeEmailConfirmToken()
+    {
+        $this->email_confirm_token = NULL;
+    }
+
     /**
      * @inheritdoc
      */
@@ -106,6 +168,18 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
     {
         return [
             TimestampBehavior::className(),
+            [
+                'class' => ImageUploadBehavior::class,
+                'attribute' => 'avatar',
+                'createThumbsOnRequest' => true,
+                'filePath' => '@staticRoot/origin/users/avatars/[[id]].[[extension]]',
+                'fileUrl' => '@static/origin/users/avatars/[[id]].[[extension]]',
+                'thumbPath' => '@staticRoot/cache/users/avatars/[[id]].[[extension]]',
+                'thumbUrl' => '@static/cache/users/avatars/[[id]].[[extension]]',
+                'thumbs' => [
+                    'menuPic' => ['width' => 40, 'height' => 40],
+                ]
+            ]
         ];
     }
 
