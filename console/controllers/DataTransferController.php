@@ -11,6 +11,7 @@ namespace console\controllers;
 
 use core\access\Rbac;
 use core\entities\sf\Country;
+use yii\helpers\StringHelper;
 use Zelenin\yii\behaviors\Slug;
 use core\entities\user\User;
 use core\entities\user\UserData;
@@ -113,6 +114,7 @@ class DataTransferController extends Controller
         }
 
         $users = [];
+        $path = 'static/origin/users/avatars/';
 
         while ($reader->read()) {
             if($reader->nodeType == \XMLReader::ELEMENT) {
@@ -131,7 +133,14 @@ class DataTransferController extends Controller
                     $newUser->auth_key = $reader->getAttribute('auth_key');
                     $newUser->status = $reader->getAttribute('active');
                     $newUser->notification = $reader->getAttribute('notifications');
-                    $newUser->avatar = ($reader->getAttribute('avatar') == 'default.jpg') ? '' : $reader->getAttribute('avatar');
+                    $newUser->avatar = $reader->getAttribute('avatar');
+                    //$newUser->avatar = ($reader->getAttribute('avatar') == 'default.jpg') ? '' : $newUser->id . stristr($reader->getAttribute('avatar'), '.');
+
+                    if (file_exists($path . $reader->getAttribute('avatar'))) {
+                        if (rename($path . $reader->getAttribute('avatar'), $newUser->id . stristr($reader->getAttribute('avatar'), '.'))) {
+                            $this->stdout('Renamed' . PHP_EOL);
+                        }
+                    }
                     $newUser->created_at = $reader->getAttribute('created_on');
                     $newUser->updated_at = $reader->getAttribute('updated_on');
                     $newUser->last_login = $reader->getAttribute('last_login');
