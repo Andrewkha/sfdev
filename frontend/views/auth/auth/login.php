@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1 class = 'text-center'><?= Html::encode($this->title) ?></h1>
 
-    <p>Введите логин и пароль/<?= Html::a('Восстановление забытого пароля', ['reset/request']);?></p>
+    <p>Введите логин и пароль/<?= Html::a('Восстановление забытого пароля', ['auth/reset/request']);?></p>
 
     <div class = "row">
         <div class="col-xs-8 col-sm-6 col-md-4 col-lg-3">

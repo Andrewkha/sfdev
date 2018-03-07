@@ -3,6 +3,7 @@ namespace core\entities\user;
 
 use core\entities\AggregateRoot;
 use core\entities\EventTrait;
+use core\entities\user\events\PasswordResetRequestSubmitted;
 use core\entities\user\events\UserSignupConfirmed;
 use core\entities\user\events\UserSignupRequested;
 use core\entities\user\events\UserCreatedByAdmin;
@@ -101,6 +102,21 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
         return false;
     }
 
+    public function requestPasswordReset(TokensManager $tokens)
+    {
+        if (!empty($this->password_reset_token) && $tokens->validateToken($this->password_reset_token)) {
+            throw new \DomainException('Запрос на восстановление пароля уже был отправлен, проверьте почту');
+        }
+        $this->password_reset_token = $tokens->generateToken();
+        $this->recordEvent(new PasswordResetRequestSubmitted($this));
+    }
+
+    public function resetPassword($password, TokensManager $tokens)
+    {
+        $this->password_hash = $tokens->generatePassword($password);
+        $this->removePasswordResetToken();
+    }
+
     public function activate(): void
     {
         if ($this->isBlocked()) {
@@ -151,6 +167,11 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
     public function removeEmailConfirmToken()
     {
         $this->email_confirm_token = NULL;
+    }
+
+    public function removePasswordResetToken()
+    {
+        $this->password_reset_token = NULL;
     }
 
     /**

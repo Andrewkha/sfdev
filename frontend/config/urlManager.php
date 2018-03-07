@@ -13,6 +13,8 @@ return [
     'rules' => [
         '' => 'site/index',
 
+        'pass-reset' => 'auth/reset/request',
+
         'contact' => 'contact/index',
         'signup' => 'auth/signup/request',
         'signup/<_a:[\w-]+>' => 'auth/signup/<_a>',
