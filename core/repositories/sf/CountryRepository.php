@@ -38,6 +38,10 @@ class CountryRepository
         return $country;
     }
 
+    /**
+     * @param Country $country
+     * @throws \RuntimeException
+     */
     public function save(Country $country): void
     {
         if (!$country->save()) {
@@ -47,6 +51,7 @@ class CountryRepository
 
     /**
      * @param Country $country
+     * @throws \RuntimeException
      * @throws \Exception
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
@@ -54,7 +59,7 @@ class CountryRepository
     public function remove(Country $country): void
     {
         if (!$country->delete()) {
-            throw new \RuntimeException();
+            throw new \RuntimeException('Ошибка удаления');
         }
     }
 }
