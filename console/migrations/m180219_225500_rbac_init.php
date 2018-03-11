@@ -1,5 +1,6 @@
 <?php
 
+use core\access\Rbac;
 use yii\db\Migration;
 use yii\base\InvalidConfigException;
 use yii\rbac\DbManager;
@@ -126,6 +127,18 @@ class m180219_225500_rbac_init extends Migration
                     END
             END;");
         }
+
+        $authManager->removeAll();
+
+        $user = $authManager->createRole(Rbac::ROLE_USER);
+        $user->description = 'Regular site user';
+        $authManager->add($user);
+
+        $admin = $authManager->createRole(Rbac::ROLE_ADMIN);
+        $admin->description = 'Site administrator';
+        $authManager->add($admin);
+
+        $authManager->addChild($admin, $user);
     }
 
     /**
