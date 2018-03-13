@@ -1,9 +1,9 @@
 <?php
 return [
     'cookieValidationKey' => '',
-    'cookieDomain' => '.sf.dev',
-    'frontendHostInfo' => 'http://sf.dev',
-    'backendHostInfo' => 'http://admin.sf.dev',
-    'staticHostInfo' => 'http://static.sf.dev',
+    'cookieDomain' => '.sfqnap.dev',
+    'frontendHostInfo' => 'http://sfqnap.dev',
+    'backendHostInfo' => 'http://admin.sfqnap.dev',
+    'staticHostInfo' => 'http://static.sfqnap.dev',
     'staticPath' => dirname(__DIR__, 2) . '/static',
 ];

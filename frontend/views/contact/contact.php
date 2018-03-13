@@ -62,19 +62,19 @@ if (!\Yii::$app->user->isGuest) {
                             'placeholder' => $model->getAttributeLabel('email')
                         ])->label(false); ?>
 
-                    <?= $form->field($model, 'subject', [
-                            'template' => '{label} <div class="row"><div class="col-lg-6">{input}{error}{hint}</div></div>',
-                            'options' => [
-                                'class' => 'form-group has-feedback',
-                            ],
-                        ])->textInput([
-                            'placeholder' => $model->getAttributeLabel('subject')
-                        ])->label(false); ?>
-
                 <?php else : ?>
                     <?= Html::activeHiddenInput($model, 'username', ['value' => $user->username]); ?>
                     <?= Html::activeHiddenInput($model, 'email', ['value' => $user->email]); ?>
                 <?php endif; ?>
+
+                <?= $form->field($model, 'subject', [
+                    'template' => '{label} <div class="row"><div class="col-lg-6">{input}{error}{hint}</div></div>',
+                    'options' => [
+                        'class' => 'form-group has-feedback',
+                    ],
+                ])->textInput([
+                    'placeholder' => $model->getAttributeLabel('subject')
+                ])->label(false); ?>
 
                 <?= $form->field($model, 'body')->widget(CKEditor::className(), [
                     'editorOptions' => [
