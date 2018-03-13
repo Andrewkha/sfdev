@@ -64,17 +64,17 @@ return [
         },
 
     ],
-    /*
+
     'as access' => [
         'class' => yii\filters\AccessControl::className(),
         'except' => ['auth/login', 'site/error'],
         'rules' => [
             [
                 'allow' => true,
-                'roles' => ['@'],
+                'roles' => ['admin'],
             ],
         ],
     ],
-    */
+
     'params' => $params,
 ];
