@@ -20,7 +20,7 @@ $this->title = 'Войти в систему';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="col-xs-12 col-xs-offset-0 col-sm-offset-1 col-sm-10 auth-login">
+<div class="auth-login">
 
     <h1 class = 'text-center'><?= Html::encode($this->title) ?></h1>
 

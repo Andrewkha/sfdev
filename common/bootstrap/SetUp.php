@@ -8,7 +8,7 @@
 
 namespace common\bootstrap;
 
-
+use core\services\ContactService;
 use core\dispatchers\DeferredEventDispatcher;
 use core\dispatchers\EventDispatcher;
 use core\dispatchers\SimpleEventDispatcher;
@@ -23,6 +23,7 @@ use core\listeners\UserSignupRequestedListener;
 use core\services\auth\TokensManager;
 use yii\base\BootstrapInterface;
 use yii\di\Container;
+use yii\di\Instance;
 use yii\log\Logger;
 use yii\mail\MailerInterface;
 use yii\rbac\ManagerInterface;
@@ -50,6 +51,12 @@ class SetUp implements BootstrapInterface
         $container->setSingleton(MailerInterface::class, function ()  use ($app) {
             return $app->mailer;
         });
+
+        $container->setSingleton(ContactService::class, [], [
+            Instance::of(MailerInterface::class),
+            $app->params['adminEmail'],
+            $app->name
+        ]);
 
         $container->setSingleton(EventDispatcher::class, DeferredEventDispatcher::class);
 
