@@ -195,8 +195,8 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
                 'createThumbsOnRequest' => true,
                 'filePath' => '@staticRoot/origin/users/avatars/[[id]].[[extension]]',
                 'fileUrl' => '@static/origin/users/avatars/[[id]].[[extension]]',
-                'thumbPath' => '@staticRoot/cache/users/avatars/[[id]].[[extension]]',
-                'thumbUrl' => '@static/cache/users/avatars/[[id]].[[extension]]',
+                'thumbPath' => '@staticRoot/cache/users/avatars/[[profile]]_[[id]].[[extension]]',
+                'thumbUrl' => '@static/cache/users/avatars/[[profile]]_[[id]].[[extension]]',
                 'thumbs' => [
                     'menuPic' => ['width' => 40, 'height' => 40],
                 ]
