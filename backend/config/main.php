@@ -15,6 +15,7 @@ return [
         '@static' => $params['staticHostInfo'],
     ],
     'controllerNamespace' => 'backend\controllers',
+    'layout' => 'admin',
     'bootstrap' => [
         'log',
         'common\bootstrap\SetUp',

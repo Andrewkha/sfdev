@@ -10,6 +10,7 @@ use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use common\widgets\Alert;
 use core\entities\user\User;
+use kartik\icons\Icon;
 
 AppAsset::register($this);
 ?>
@@ -25,6 +26,7 @@ AppAsset::register($this);
     <?php $this->head() ?>
 </head>
 <body>
+<body style ="padding-top: 80px;">
 <?php $this->beginBody() ?>
 
 <div class="wrap">
@@ -94,12 +96,21 @@ AppAsset::register($this);
     NavBar::end();
     ?>
 
-    <div class="container">
-        <?= Breadcrumbs::widget([
-            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-        ]) ?>
-        <?= Alert::widget() ?>
-        <?= $content ?>
+    <div class="container-fluid">
+        <div class="row">
+            <?= Breadcrumbs::widget([
+                'options' => [
+                    'class' => 'col-xs-12 col-xs-offset-0 col-sm-offset-1 col-sm-10 breadcrumb'
+                ],
+                'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+            ]) ?>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-xs-offset-0 col-sm-offset-1 col-sm-10">
+                <?= Alert::widget() ?>
+                <?= $content ?>
+            </div>
+        </div>
     </div>
 </div>
 

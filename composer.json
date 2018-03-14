@@ -23,7 +23,8 @@
         "la-haute-societe/yii2-save-relations-behavior": "*",
         "yii-dream-team/yii2-upload-behavior": "*",
         "zelenin/yii2-slug-behavior": "~1.5.1",
-        "mihaildev/yii2-ckeditor": "*"
+        "mihaildev/yii2-ckeditor": "*",
+        "kartik-v/yii2-icons": "@dev"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
