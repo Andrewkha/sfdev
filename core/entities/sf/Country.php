@@ -40,4 +40,13 @@ class Country extends ActiveRecord
     {
         return '{{%countries}}';
     }
+
+    public function attributeLabels(): array
+    {
+        return [
+            'id' => 'ID',
+            'name' => 'Название',
+            'slug' => 'Slug'
+        ];
+    }
 }

@@ -37,4 +37,12 @@ class CountryForm extends Model
             [['name', 'slug'], 'unique', 'targetClass' => Country::class, 'filter' => $this->country ? ['<>', 'id', $this->country->id] : null],
         ];
     }
+
+    public function attributeLabels()
+    {
+        return [
+            'name' => 'Название',
+            'slug' => 'slug',
+        ];
+    }
 }

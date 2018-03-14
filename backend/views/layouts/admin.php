@@ -19,7 +19,7 @@ Icon::map($this);
 <?php $this->beginContent('@backend/views/layouts/main.php') ?>
 
 <div class="row">
-    <aside id="column-left" class="col-sm-2 hidden-xs" style="margin-top: 70px">
+    <aside id="column-left" class="col-sm-2 hidden-xs">
         <?= SideNav::widget([
             'type' => SideNav::TYPE_DEFAULT,
             'heading' => '<i class="glyphicon glyphicon-cog"></i> Администрирование',

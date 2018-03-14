@@ -33,13 +33,16 @@ class CountryManageService
     /**
      * @param $slug
      * @param CountryForm $form
+     * @return Country
      * @throws \yii\web\NotFoundHttpException
      */
-    public function edit($slug, CountryForm $form): void
+    public function edit($slug, CountryForm $form): Country
     {
         $country = $this->getBySlug($slug);
         $country->edit($form->name, $form->slug);
         $this->countries->save($country);
+
+        return $country;
     }
 
     /**
