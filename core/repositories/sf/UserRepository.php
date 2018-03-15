@@ -53,10 +53,15 @@ class UserRepository
     {
         /** @var User $user */
         if (!$user = User::find()->where(['email_confirm_token' => $token])->one()) {
-            throw new NotFoundHttpException('Произошла ошибка' );
+            throw new NotFoundHttpException('Произошла ошибка. Обратитесь к администрации' );
         }
 
         return $user;
+    }
+
+    public function getByPasswordResetToken($token): ?User
+    {
+        return User::findOne(['password_reset_token' => $token]);
     }
 
     public function findByUsernameOrEmail($string): ?User

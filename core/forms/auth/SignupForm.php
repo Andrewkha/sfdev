@@ -69,7 +69,7 @@ class SignupForm extends Model
 
             ['notification', 'boolean'],
 
-           // [['reCaptcha'], ReCaptchaValidator::class],
+            [['reCaptcha'], ReCaptchaValidator::class],
         ];
     }
 
@@ -84,7 +84,7 @@ class SignupForm extends Model
             'firstName' => 'Имя',
             'lastName' => 'Фамилия',
             'notification' => 'Подписка на новости сайта',
-            'verifyCode' => 'Введите символы с картинки'
+            'verifyCode' => ''
         ];
     }
 

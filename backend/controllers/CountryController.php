@@ -84,7 +84,7 @@ class CountryController extends Controller
 
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $this->countries->edit($country->slug, $form);
+                $country = $this->countries->edit($country->slug, $form);
                 Yii::$app->session->setFlash('success', 'Запись успешно изменена');
                 return $this->redirect(['view', 'slug' => $country->slug]);
             } catch (\DomainException $e) {

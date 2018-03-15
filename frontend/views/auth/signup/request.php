@@ -134,8 +134,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         ]
                     ]); ?>
 
-                <?= ''
-                //$form->field($model, 'reCaptcha')->widget(ReCaptcha::class)->label(false);
+                <?=
+                    $form->field($model, 'reCaptcha')->widget(ReCaptcha::class)->label(false);
                 ?>
 
                 <div class="form-group">

@@ -39,20 +39,45 @@ AppAsset::register($this);
     $menuItems = [
         ['label' => 'Home', 'url' => ['/site/index']],
         ['label' => 'About', 'url' => ['/site/about']],
-        ['label' => 'Contact', 'url' => ['/site/contact']],
+        ['label' => 'Контакты', 'url' => ['/contact/index']],
     ];
+
+    $urlManager = Yii::$app->get('backendUrlManager');
+
+    if (Yii::$app->user->can('admin')) {
+        $menuItems[] = [
+            'label' => 'Администрирование',
+            'items' => [
+                ['label' => 'Страны', 'url' => $urlManager->createAbsoluteUrl(['/country/index'])],
+                '<li class="divider"></li>',
+                ['label' => 'Команды', 'url' => $urlManager->createAbsoluteUrl(['/team/index'])],
+                '<li class="divider"></li>',
+                ['label' => 'Турниры', 'url' => $urlManager->createAbsoluteUrl(['/tournament/index'])],
+                '<li class="divider"></li>',
+                ['label' => 'Новости', 'url' => $urlManager->createAbsoluteUrl(['/news/index'])],
+                '<li class="divider"></li>',
+                ['label' => 'Пользователи', 'url' => $urlManager->createAbsoluteUrl(['/user/index'])],
+                '<li class="divider"></li>',
+                ['label' => 'Журнал', 'url' => $urlManager->createAbsoluteUrl(['/log/index'])],
+            ]
+        ];
+    }
+
     if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => 'Регистрация', 'url' => ['/auth/signup/request']];
         $menuItems[] = ['label' => 'Вход', 'url' => ['/auth/auth/login']];
+        $menuItems[] = ['label' => 'Регистрация', 'url' => ['/auth/signup/request']];
     } else {
-        $menuItems[] = '<li>'
-            . Html::beginForm(['/site/logout'], 'post')
-            . Html::submitButton(
-                'Выход (' . Yii::$app->user->identity->username . ')',
-                ['class' => 'btn btn-link logout']
-            )
-            . Html::endForm()
-            . '</li>';
+        $menuItems[] = [
+            'label' => Yii::$app->user->identity->username,
+            'items' => [
+                ['label' => 'Мои турниры', 'url' => ['/tournaments/index']],
+                '<li class="divider"></li>',
+                ['label' => 'Профиль', 'url' => ['/profile/index']],
+                '<li class="divider"></li>',
+                ['label' => 'Выход', 'url' => ['/auth/auth/logout'], 'linkOptions' => ['data-method' => 'post']]
+            ],
+        ];
+
         $menuItems[] = ['label' => Html::img(Yii::$app->user->identity->getThumbFileUrl('avatar', 'menuPic', User::DEFAULT_AVATAR_PATH . '_menuPic.jpg')), 'url' => ['/profile']];
     }
     echo Nav::widget([
@@ -72,9 +97,9 @@ AppAsset::register($this);
                 'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
             ]) ?>
         </div>
-        <?= Alert::widget() ?>
         <div class="row">
             <div class="col-xs-12 col-xs-offset-0 col-sm-offset-1 col-sm-10">
+                <?= Alert::widget() ?>
                 <?= $content ?>
             </div>
         </div>

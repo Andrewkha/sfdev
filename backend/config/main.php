@@ -15,12 +15,17 @@ return [
         '@static' => $params['staticHostInfo'],
     ],
     'controllerNamespace' => 'backend\controllers',
+    'layout' => 'admin',
     'bootstrap' => [
         'log',
         'common\bootstrap\SetUp',
         'backend\bootstrap\SetUp',
     ],
-    'modules' => [],
+    'modules' => [
+        'gridview' => [
+            'class' => '\kartik\grid\Module',
+        ]
+    ],
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',
@@ -34,7 +39,7 @@ return [
                 'httpOnly' => true,
                 'domain' => $params['cookieDomain'],
             ],
-            'loginUrl' => ['auth/login']
+            'loginUrl' => ['auth/auth/login']
         ],
         'session' => [
             // this is the name of the session cookie used for login on the backend
@@ -64,17 +69,26 @@ return [
         },
 
     ],
-    /*
+
     'as access' => [
         'class' => yii\filters\AccessControl::className(),
-        'except' => ['auth/login', 'site/error'],
+        'except' => ['auth/auth/login', 'site/error'],
         'rules' => [
             [
                 'allow' => true,
-                'roles' => ['@'],
+                'roles' => ['admin'],
             ],
         ],
+        'denyCallback' => function($rule, $action) {
+            if (\Yii::$app->user->isGuest) {
+                \Yii::$app->user->loginRequired();
+                return null;
+            }
+
+            $urlManager = \Yii::$app->get('frontendUrlManager');
+            return \Yii::$app->getResponse()->redirect($urlManager->createAbsoluteUrl(['/site/index']));
+        }
     ],
-    */
+
     'params' => $params,
 ];

@@ -2,24 +2,22 @@
 /**
  * Created by PhpStorm.
  * User: achernys
- * Date: 3/6/2018
- * Time: 12:57 PM
+ * Date: 3/14/2018
+ * Time: 11:46 AM
  */
 
-namespace frontend\controllers\auth;
-
+namespace backend\controllers\auth;
 
 use core\forms\auth\LoginForm;
 use core\services\auth\AuthService;
-use yii\filters\AccessControl;
+use Yii;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
-use Yii;
 
 class AuthController extends Controller
 {
 
-    private $authService;
+    public $authService;
 
     public function __construct(string $id, $module, AuthService $authService, array $config = [])
     {
@@ -30,22 +28,6 @@ class AuthController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout', 'login'],
-                'rules' => [
-                    [
-                        'actions' => ['login'],
-                        'allow' => true,
-                        'roles' => ['?'],
-                    ],
-                    [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -80,6 +62,7 @@ class AuthController extends Controller
     public function actionLogout()
     {
         Yii::$app->user->logout();
-        $this->goHome();
+
+        return $this->goHome();
     }
 }

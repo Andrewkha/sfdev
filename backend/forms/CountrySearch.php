@@ -33,6 +33,11 @@ class CountrySearch extends Model
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'key' => function (Country $country) {
+                return [
+                    'slug' => $country->slug,
+                ];
+            },
             'sort' => [
                 'defaultOrder' => ['name' => SORT_ASC]
             ]

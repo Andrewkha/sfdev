@@ -7,11 +7,14 @@
  */
 return [
     'class' => 'yii\web\UrlManager',
+    'hostInfo' => $params['frontendHostInfo'],
     'enablePrettyUrl' => true,
     'showScriptName' => false,
     'cache' => false,
     'rules' => [
         '' => 'site/index',
+
+        'pass-reset' => 'auth/reset/request',
 
         'contact' => 'contact/index',
         'signup' => 'auth/signup/request',

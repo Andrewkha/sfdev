@@ -52,7 +52,7 @@ class SignupController extends Controller
                 return $this->goHome();
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
-                Yii::$app->session->setFlash('error', 'Произошла ошибка регистрации. Обратитесь к администрации');
+                Yii::$app->session->setFlash('error', $e->getMessage());
             }
         }
 
