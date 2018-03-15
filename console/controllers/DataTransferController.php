@@ -11,7 +11,7 @@ namespace console\controllers;
 
 use core\access\Rbac;
 use core\entities\sf\Country;
-use yii\helpers\StringHelper;
+use core\entities\sf\Team;
 use Zelenin\yii\behaviors\Slug;
 use core\entities\user\User;
 use core\entities\user\UserData;
@@ -33,6 +33,8 @@ class DataTransferController extends Controller
 
     public function actionImport()
     {
+
+        \Yii::$app->db->createCommand("SET foreign_key_checks = 0")->execute();
 
         /** Import Countries */
         $this->stdout('Importing countries data' . PHP_EOL);
@@ -57,6 +59,27 @@ class DataTransferController extends Controller
         }
         $this->stdout('Done!' . PHP_EOL);
 
+        /** Import teams */
+        $this->stdout('Importing teams data' . PHP_EOL);
+        try {
+            $this->teamsData();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
+
+    }
+
+    public function actionImportTeams()
+    {
+        /** Import teams */
+        $this->stdout('Importing teams data' . PHP_EOL);
+        try {
+            $this->teamsData();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
     }
 
     private function countriesData()
@@ -114,7 +137,9 @@ class DataTransferController extends Controller
         }
 
         $users = [];
-        $path = 'static/origin/users/avatars/';
+        $path = 'static/origin/users/';
+        $sourcePath = 'console/import/users_avatars/';
+
 
         while ($reader->read()) {
             if($reader->nodeType == \XMLReader::ELEMENT) {
@@ -136,9 +161,14 @@ class DataTransferController extends Controller
                     //$newUser->avatar = $reader->getAttribute('avatar');
                     $newUser->avatar = ($reader->getAttribute('avatar') == 'default.jpg') ? '' : $newUser->id . stristr($reader->getAttribute('avatar'), '.');
 
-                    if (file_exists($path . $reader->getAttribute('avatar')) && $reader->getAttribute('avatar') != 'default.jpg') {
-                        $this->stdout('exists');
-                        if (rename($path . $reader->getAttribute('avatar'), $path . $newUser->id . stristr($reader->getAttribute('avatar'), '.'))) {
+                    if (file_exists($sourcePath . $reader->getAttribute('avatar')) && $reader->getAttribute('avatar') != 'default.jpg') {
+                        $folder = $path . 'avatars/';
+
+                        if (!file_exists($folder)) {
+                            mkdir($folder, 0777, true);
+                        }
+
+                        if (rename($sourcePath . $reader->getAttribute('avatar'), $folder . $newUser->id . stristr($reader->getAttribute('avatar'), '.'))) {
                             $this->stdout('Renamed' . PHP_EOL);
                         }
                     }
@@ -192,59 +222,42 @@ class DataTransferController extends Controller
             throw new \RuntimeException('Can not open the source file');
         }
 
-        $users = [];
+        $teams = [];
+        $sourcePath = 'console/import/teams_logos/';
         $path = 'static/origin/teams/logo/';
 
         while ($reader->read()) {
             if($reader->nodeType == \XMLReader::ELEMENT) {
-                if ($reader->localName == 'user') {
-                    $newUser = new User();
-                    $newUser->id = $reader->getAttribute('id');
-                    $newUser->userData = new UserData(
-                        $newUser->username = $reader->getAttribute('username'),
-                        $newUser->email = $reader->getAttribute('email'),
-                        $newUser->first_name = $reader->getAttribute('first_name'),
-                        $newUser->last_name = $reader->getAttribute('last_name')
-                    );
+                if ($reader->localName == 'team') {
+                    $newTeam = new Team();
+                    $newTeam->id = $reader->getAttribute('id');
+                    $newTeam->name = $reader->getAttribute('name');
+                    $newTeam->country_id = $reader->getAttribute('country_id');
+                    $newTeam->logo = $newTeam->id . '_' . $reader->getAttribute('logo');
 
-                    $newUser->password_hash = $reader->getAttribute('password');
+                    if (file_exists($sourcePath . $reader->getAttribute('logo'))) {
+                        $folder = $path . $newTeam->country_id . '/';
 
-                    $newUser->auth_key = $reader->getAttribute('auth_key');
-                    $newUser->status = $reader->getAttribute('active');
-                    $newUser->notification = $reader->getAttribute('notifications');
-                    //$newUser->avatar = $reader->getAttribute('avatar');
-                    $newUser->avatar = ($reader->getAttribute('avatar') == 'default.jpg') ? '' : $newUser->id . stristr($reader->getAttribute('avatar'), '.');
-
-                    if (file_exists($path . $reader->getAttribute('avatar')) && $reader->getAttribute('avatar') != 'default.jpg') {
-                        $this->stdout('exists');
-                        if (rename($path . $reader->getAttribute('avatar'), $path . $newUser->id . stristr($reader->getAttribute('avatar'), '.'))) {
+                        if (!file_exists($folder)) {
+                            mkdir($folder, 0777, true);
+                        }
+                        if (rename($sourcePath . $reader->getAttribute('logo'), $folder . $newTeam->id . '_' . $reader->getAttribute('logo'))) {
                             $this->stdout('Renamed' . PHP_EOL);
                         }
                     }
-                    $newUser->created_at = $reader->getAttribute('created_on');
-                    $newUser->updated_at = $reader->getAttribute('updated_on');
-                    $newUser->last_login = $reader->getAttribute('last_login');
 
-                    $users[] = $newUser;
+                    $teams[] = $newTeam;
                 }
             }
         }
 
         $reader->close();
 
-        User::deleteAll();
-        $roleManager = new RoleManager($this->manager);
+        Team::deleteAll();
 
-        foreach ($users as $one) {
-            /** @var $one User */
-            $one->detachBehaviors();
+        foreach ($teams as $one) {
+            /** @var $one Team */
             $one->save();
-            if ($one->username == 'administrator') {
-                $roleManager->assign($one->id, Rbac::ROLE_ADMIN);
-            } else {
-                $roleManager->assign($one->id, Rbac::ROLE_USER);
-            }
         }
     }
-
 }

@@ -65,4 +65,9 @@ class Team extends ActiveRecord
             ]
         ];
     }
+
+    public static function tableName()
+    {
+        return '{{%teams}}';
+    }
 }
