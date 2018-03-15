@@ -80,7 +80,7 @@ class ResetController extends Controller
             return $this->redirect('/auth/reset/request');
         } catch (InactiveUserException $e) {
             Yii::$app->session->setFlash('error', $e->getMessage());
-            return $this->goHome();
+            return $this->redirect('contact/index');
         }
 
         $form = new PasswordResetForm();
