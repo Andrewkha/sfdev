@@ -188,7 +188,7 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
     public function behaviors()
     {
         return [
-            TimestampBehavior::class(),
+            TimestampBehavior::class,
             [
                 'class' => ImageUploadBehavior::class,
                 'attribute' => 'avatar',

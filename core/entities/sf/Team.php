@@ -37,6 +37,8 @@ class Team extends ActiveRecord
 
         $team->name = $name;
         $team->logo = $logo;
+
+        return $team;
     }
 
     public function behaviors()
