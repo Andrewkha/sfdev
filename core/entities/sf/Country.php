@@ -9,6 +9,8 @@
 
 namespace core\entities\sf;
 
+use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -17,6 +19,10 @@ use yii\db\ActiveRecord;
  * @property integer $id
  * @property string $name
  * @property string $slug
+ *
+ * @property Team[] $teams
+ *
+ * @mixin SaveRelationsBehavior
  */
 
 class Country extends ActiveRecord
@@ -36,6 +42,11 @@ class Country extends ActiveRecord
         $this->slug = $slug;
     }
 
+    public function getTeams(): ActiveQuery
+    {
+        return $this->hasMany(Team::class, ['country_id' => 'id'])->orderBy('name');
+    }
+
     public static function tableName(): string
     {
         return '{{%countries}}';
@@ -47,6 +58,23 @@ class Country extends ActiveRecord
             'id' => 'ID',
             'name' => 'Название',
             'slug' => 'Slug'
+        ];
+    }
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => SaveRelationsBehavior::class,
+                'relations' => ['teams'],
+            ]
+        ];
+    }
+
+    public function transactions()
+    {
+        return [
+            self::SCENARIO_DEFAULT => self::OP_ALL
         ];
     }
 }

@@ -9,7 +9,9 @@
 namespace backend\controllers;
 
 
-class TeamController
+use yii\web\Controller;
+
+class TeamController extends Controller
 {
 
 }

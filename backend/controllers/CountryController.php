@@ -9,10 +9,12 @@
 namespace backend\controllers;
 
 use core\entities\sf\Country;
+use core\entities\sf\Team;
 use core\forms\sf\CountryForm;
 use core\services\sf\CountryManageService;
 use Yii;
 use backend\forms\CountrySearch;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 
@@ -51,8 +53,22 @@ class CountryController extends Controller
 
     public function actionView($slug)
     {
+        $country = $this->findModel($slug);
+
+        $teams = new ActiveDataProvider([
+            'query' => $country->getTeams(),
+            'key' => function (Team $team) {
+                return [
+                    'slug' => $team->slug
+                ];
+            },
+            'pagination' => false
+        ]);
+
+
         return $this->render('view', [
-            'country' => $this->findModel($slug)
+            'country' => $country,
+            'teams' => $teams,
         ]);
     }
 

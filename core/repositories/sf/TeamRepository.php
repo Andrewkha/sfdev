@@ -62,4 +62,9 @@ class TeamRepository
             throw new \RuntimeException('Ошибка удаления');
         }
     }
+
+    public function existsByCountry($id): bool
+    {
+        return Team::find()->andWhere(['country_id' => $id])->exists();
+    }
 }

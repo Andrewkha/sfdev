@@ -31,27 +31,42 @@ use yii\db\ActiveRecord;
 class Team extends ActiveRecord
 {
 
-    public static function create($name, UploadedFile $logo): self
+    public static function create($name, UploadedFile $logo, $slug = null): self
     {
         $team = new self();
 
+        if ($slug) {
+            $team->detachBehavior('slug');
+            $team->slug = $slug;
+        }
         $team->name = $name;
         $team->logo = $logo;
 
         return $team;
     }
 
+    public function edit($name, UploadedFile $logo, $slug = null): void
+    {
+        $this->name = $name;
+        $this->logo = $logo;
+        if ($slug) {
+            $this->detachBehavior('slug');
+            $this->slug = $slug;
+        }
+    }
+
     public function behaviors()
     {
         return [
-            [
-                'class' => Slug::class,
-                'slugAttribute' => 'slug',
-                'attribute' => 'name',
-                'ensureUnique' => true,
-                'replacement' => '-',
-                'lowercase' => true,
-            ],
+
+            'slug' => [
+                    'class' => Slug::class,
+                    'slugAttribute' => 'slug',
+                    'attribute' => 'name',
+                    'ensureUnique' => true,
+                    'replacement' => '-',
+                    'lowercase' => true,
+                ],
 
             [
                 'class' => ImageUploadBehavior::class,
@@ -65,6 +80,20 @@ class Team extends ActiveRecord
 
                 ]
             ]
+        ];
+    }
+
+    public static function tableName()
+    {
+        return '{{%teams}}';
+    }
+
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'name' => 'Название',
+            'slug' => 'slug'
         ];
     }
 }
