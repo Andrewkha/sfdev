@@ -183,4 +183,68 @@ class DataTransferController extends Controller
 
         $am->addChild($admin, $user);
     }
+
+    private function teamsData()
+    {
+        $reader = new \XMLReader();
+
+        if (!$reader->open('console/import/teams.xml')) {
+            throw new \RuntimeException('Can not open the source file');
+        }
+
+        $users = [];
+        $path = 'static/origin/teams/logo/';
+
+        while ($reader->read()) {
+            if($reader->nodeType == \XMLReader::ELEMENT) {
+                if ($reader->localName == 'user') {
+                    $newUser = new User();
+                    $newUser->id = $reader->getAttribute('id');
+                    $newUser->userData = new UserData(
+                        $newUser->username = $reader->getAttribute('username'),
+                        $newUser->email = $reader->getAttribute('email'),
+                        $newUser->first_name = $reader->getAttribute('first_name'),
+                        $newUser->last_name = $reader->getAttribute('last_name')
+                    );
+
+                    $newUser->password_hash = $reader->getAttribute('password');
+
+                    $newUser->auth_key = $reader->getAttribute('auth_key');
+                    $newUser->status = $reader->getAttribute('active');
+                    $newUser->notification = $reader->getAttribute('notifications');
+                    //$newUser->avatar = $reader->getAttribute('avatar');
+                    $newUser->avatar = ($reader->getAttribute('avatar') == 'default.jpg') ? '' : $newUser->id . stristr($reader->getAttribute('avatar'), '.');
+
+                    if (file_exists($path . $reader->getAttribute('avatar')) && $reader->getAttribute('avatar') != 'default.jpg') {
+                        $this->stdout('exists');
+                        if (rename($path . $reader->getAttribute('avatar'), $path . $newUser->id . stristr($reader->getAttribute('avatar'), '.'))) {
+                            $this->stdout('Renamed' . PHP_EOL);
+                        }
+                    }
+                    $newUser->created_at = $reader->getAttribute('created_on');
+                    $newUser->updated_at = $reader->getAttribute('updated_on');
+                    $newUser->last_login = $reader->getAttribute('last_login');
+
+                    $users[] = $newUser;
+                }
+            }
+        }
+
+        $reader->close();
+
+        User::deleteAll();
+        $roleManager = new RoleManager($this->manager);
+
+        foreach ($users as $one) {
+            /** @var $one User */
+            $one->detachBehaviors();
+            $one->save();
+            if ($one->username == 'administrator') {
+                $roleManager->assign($one->id, Rbac::ROLE_ADMIN);
+            } else {
+                $roleManager->assign($one->id, Rbac::ROLE_USER);
+            }
+        }
+    }
+
 }
