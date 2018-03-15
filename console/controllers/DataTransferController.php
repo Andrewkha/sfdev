@@ -68,6 +68,8 @@ class DataTransferController extends Controller
         }
         $this->stdout('Done!' . PHP_EOL);
 
+        \Yii::$app->db->createCommand("SET foreign_key_checks = 1")->execute();
+
     }
 
     public function actionImportTeams()
