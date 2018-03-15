@@ -2,6 +2,7 @@
 
 use backend\forms\CountrySearch;
 use core\entities\sf\Country;
+use kartik\grid\ActionColumn;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
@@ -35,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                     ],
                     'slug',
-                    ['class' => 'yii\grid\ActionColumn'],
+                    ['class' => ActionColumn::class],
                 ],
             ]); ?>
         </div>
