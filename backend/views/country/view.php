@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="panel-heading "><strong>Команды</strong></div>
                 <div class="panel-body">
                     <p>
-                        <?= Html::a('Создать команду', ['team/create', 'country_id' => $country->id], ['class' => 'btn btn-success']) ?>
+                        <?= Html::a('Создать команду', ['team/create', 'slug' => $country->slug], ['class' => 'btn btn-success']) ?>
                     </p>
                     <?= GridView::widget([
                         'dataProvider' => $teams,

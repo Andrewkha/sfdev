@@ -1,11 +1,13 @@
 <?php
 
 use core\forms\sf\CountryForm;
+use core\forms\sf\TeamForm;
+use kartik\file\FileInput;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model CountryForm */
+/* @var $model TeamForm */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
@@ -23,10 +25,24 @@ use yii\widgets\ActiveForm;
                         'autofocus' => true,
                         'placeholder' => $model->getAttributeLabel('name')
                     ])->label(false) ?>
+
                     <?= $form->field($model, 'slug')->textInput([
                         'maxlength' => true,
                         'placeholder' => $model->getAttributeLabel('slug')
                     ])->label(false) ?>
+
+                    <?= $form->field($model, 'logo', [
+                        'options' => [
+                            'class' => 'form-group'
+                        ]
+                    ])->widget(FileInput::class, [
+                        'options' => ['accept' => 'image/*'],
+                        'pluginOptions' => [
+                            'showRemove' => false,
+                            'showUpload' => false,
+                            'msgPlaceholder' => $model->getAttributeLabel('logo')
+                        ]
+                    ])->label(false); ?>
                 </div>
             </div>
         </div>

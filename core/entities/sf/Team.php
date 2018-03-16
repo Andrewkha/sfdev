@@ -31,7 +31,7 @@ use yii\db\ActiveRecord;
 class Team extends ActiveRecord
 {
 
-    public static function create($name, UploadedFile $logo, $slug = null): self
+    public static function create($name, $slug = null, UploadedFile $logo): self
     {
         $team = new self();
 
@@ -72,10 +72,10 @@ class Team extends ActiveRecord
                 'class' => ImageUploadBehavior::class,
                 'attribute' => 'logo',
                 'createThumbsOnRequest' => true,
-                'filePath' => '@staticRoot/origin/teams/logo/[[country_id]]/[[id]]_[[logo]]',
-                'fileUrl' => '@static/origin/teams/logo/[[country_id]]/[[id]]_[[logo]]',
-                'thumbPath' => '@staticRoot/cache/teams/logo/[[country_id]]/[[profile]]/[[id]]_[[logo]]',
-                'thumbUrl' => '@static/cache/teams/logo/[[country_id]]/[[profile]]/[[id]]_[[logo]]',
+                'filePath' => '@staticRoot/origin/teams/logo/[[attribute_country_id]]/[[id]]_[[attribute_logo]]',
+                'fileUrl' => '@static/origin/teams/logo/[[attribute_country_id]]/[[id]]_[[attribute_logo]]',
+                'thumbPath' => '@staticRoot/cache/teams/logo/[[attribute_country_id]]/[[profile]]/[[id]]_[[logo]]',
+                'thumbUrl' => '@static/cache/teams/logo/[[attribute_country_id]]/[[profile]]/[[id]]_[[logo]]',
                 'thumbs' => [
 
                 ]

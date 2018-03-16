@@ -12,6 +12,7 @@ namespace core\entities\sf;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\web\UploadedFile;
 
 /**
  * Class Country
@@ -40,6 +41,13 @@ class Country extends ActiveRecord
     {
         $this->name = $name;
         $this->slug = $slug;
+    }
+
+    public function addTeam($name, $slug, UploadedFile $logo)
+    {
+        $teams = $this->teams;
+        $teams[] = Team::create($name, $slug, $logo);
+        $this->teams = $teams;
     }
 
     public function getTeams(): ActiveQuery

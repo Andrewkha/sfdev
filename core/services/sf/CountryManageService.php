@@ -11,6 +11,7 @@ namespace core\services\sf;
 
 use core\entities\sf\Country;
 use core\forms\sf\CountryForm;
+use core\forms\sf\TeamForm;
 use core\repositories\sf\CountryRepository;
 use core\repositories\sf\TeamRepository;
 
@@ -61,6 +62,18 @@ class CountryManageService
             throw new \DomainException('Нельзя удалить страну, если есть связанные команды');
         }
         $this->countries->remove($country);
+    }
+
+    public function addTeam($country_id, TeamForm $form): void
+    {
+        $country = $this->countries->get($country_id);
+        $country->addTeam(
+            $form->name,
+            $form->slug,
+            $form->logo
+        );
+
+        $this->countries->save($country);
     }
 
     /**
