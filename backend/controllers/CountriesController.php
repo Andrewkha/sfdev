@@ -18,7 +18,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 
-class CountryController extends Controller
+class CountriesController extends Controller
 {
     private $countries;
 

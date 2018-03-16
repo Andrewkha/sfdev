@@ -14,7 +14,7 @@ use core\forms\sf\TeamForm;
 use core\services\sf\CountryManageService;
 use yii\web\Controller;
 
-class TeamController extends Controller
+class TeamsController extends Controller
 {
     public $service;
 
@@ -45,6 +45,14 @@ class TeamController extends Controller
             'country' => $country,
             'model' => $form
         ]);
+    }
+
+    public function actionUpdate($country_slug, $slug)
+    {
+        $country = $this->findCountryBySlug($country_slug);
+        $team = $country->getTeam($slug);
+
+
     }
 
     private function findCountryBySlug($slug): Country

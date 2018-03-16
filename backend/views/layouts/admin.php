@@ -24,8 +24,7 @@ Icon::map($this);
             'type' => SideNav::TYPE_DEFAULT,
             'heading' => '<i class="glyphicon glyphicon-cog"></i> Администрирование',
             'items' => [
-                ['label' => 'Страны', 'icon' => 'globe', 'url' => Url::to(['/country/index']), 'active' => $this->context->id == 'country'],
-                ['label' => 'Команды', 'icon' => 'star', 'url' => Url::to(['/team/index']), 'active' => $this->context->id == 'team'],
+                ['label' => 'Страны', 'icon' => 'globe', 'url' => Url::to(['/countries/index']), 'active' => $this->context->id == 'countries'],
                 ['label' => 'Турниры', 'icon' => 'glass', 'url' => Url::to(['/tournament/index']), 'active' => $this->context->id == 'tournament'],
                 ['label' => 'Новости', 'icon' => 'comment', 'url' => Url::to(['/news/index']), 'active' => $this->context->id == 'news'],
                 ['label' => 'Пользователи', 'icon' => 'user', 'url' => Url::to(['/user/index']), 'active' => $this->context->id == 'user'],

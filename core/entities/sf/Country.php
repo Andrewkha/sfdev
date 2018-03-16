@@ -50,6 +50,15 @@ class Country extends ActiveRecord
         $this->teams = $teams;
     }
 
+    public function getTeam($slug): Team
+    {
+        if ($team = $this->getTeams()->where(['slug' => $slug])->one()) {
+            return $team;
+        }
+
+        throw new \DomainException('Команда не найдена');
+    }
+
     public function getTeams(): ActiveQuery
     {
         return $this->hasMany(Team::class, ['country_id' => 'id'])->orderBy('name');
