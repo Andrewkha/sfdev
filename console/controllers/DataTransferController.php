@@ -12,6 +12,7 @@ namespace console\controllers;
 use core\access\Rbac;
 use core\entities\sf\Country;
 use core\entities\sf\Team;
+use core\entities\sf\Tournament;
 use Zelenin\yii\behaviors\Slug;
 use core\entities\user\User;
 use core\entities\user\UserData;
@@ -68,16 +69,25 @@ class DataTransferController extends Controller
         }
         $this->stdout('Done!' . PHP_EOL);
 
+        /** Import tournaments */
+        $this->stdout('Importing tournaments data' . PHP_EOL);
+        try {
+            $this->tournamentsData();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
+
         \Yii::$app->db->createCommand("SET foreign_key_checks = 1")->execute();
 
     }
 
-    public function actionImportTeams()
+    public function actionImportTournaments()
     {
-        /** Import teams */
-        $this->stdout('Importing teams data' . PHP_EOL);
+        /** Import tournaments */
+        $this->stdout('Importing tournaments data' . PHP_EOL);
         try {
-            $this->teamsData();
+            $this->tournamentsData();
         } catch (\Exception $e) {
             $this->stdout($e->getMessage() . PHP_EOL);
         }
@@ -258,6 +268,45 @@ class DataTransferController extends Controller
         Team::deleteAll();
 
         foreach ($teams as $one) {
+            /** @var $one Team */
+            $one->save();
+        }
+    }
+
+    private function tournamentsData()
+    {
+        $reader = new \XMLReader();
+
+        if (!$reader->open('console/import/tournaments.xml')) {
+            throw new \RuntimeException('Can not open the source file');
+        }
+
+        $tournaments = [];
+
+        while ($reader->read()) {
+            if($reader->nodeType == \XMLReader::ELEMENT) {
+                if ($reader->localName == 'tournament') {
+                    $newTournament = new Tournament();
+                    $newTournament->id = $reader->getAttribute('id');
+                    $newTournament->name = $reader->getAttribute('name');
+                    $newTournament->country_id = $reader->getAttribute('country_id');
+                    $newTournament->tours = $reader->getAttribute('tours');
+                    $newTournament->status = $reader->getAttribute('status');
+                    $newTournament->startDate = $reader->getAttribute('startDate');
+                    $newTournament->autoprocess = $reader->getAttribute('autoprocess');
+                    $newTournament->autoprocessUrl = $reader->getAttribute('autoprocessURL');
+                    $newTournament->winnersForecastDue = $reader->getAttribute('winnersForecastDue');
+
+                    $tournaments[] = $newTournament;
+                }
+            }
+        }
+
+        $reader->close();
+
+        Tournament::deleteAll();
+
+        foreach ($tournaments as $one) {
             /** @var $one Team */
             $one->save();
         }
