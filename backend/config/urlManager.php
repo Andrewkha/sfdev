@@ -22,7 +22,8 @@ return [
         '<_c:countries>/<_a:create>' => '<_c>/<_a>',
         '<_c:countries>/<slug:[\w\-]+>/<_a:update|delete>' => '<_c>/<_a>',
         '<country_slug:[\w\-]+>/<slug:[\w\-]+>' => 'teams/update',
-        '<_c:teams>/<slug:[\w\-]+>/<_a:create|delete>' => '<_c>/<_a>',
+        '<country_slug:[\w\-]+>/<slug:[\w\-]+>/delete' => 'teams/delete',
+        '<_c:teams>/<slug:[\w\-]+>/<_a:create>' => '<_c>/<_a>',
 
 /*
 

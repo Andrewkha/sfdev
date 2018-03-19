@@ -32,7 +32,7 @@ class CountriesController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ]
@@ -57,8 +57,9 @@ class CountriesController extends Controller
 
         $teams = new ActiveDataProvider([
             'query' => $country->getTeams(),
-            'key' => function (Team $team) {
+            'key' => function (Team $team) use ($country) {
                 return [
+                    'country_slug' => $country->slug,
                     'slug' => $team->slug
                 ];
             },

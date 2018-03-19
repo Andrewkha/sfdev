@@ -41,6 +41,13 @@ use yii\widgets\ActiveForm;
                         'pluginOptions' => [
                             'initialPreview' =>
                                 (isset($team)) ? [$team->getThumbFileUrl('logo', 'updatePreview')] : null,
+                            'initialPreviewConfig' =>
+                                (isset($team)) ? [
+                                    [
+                                        'width' => '1000px',
+                                        'caption' => $team->name,
+                                    ]
+                                ] : null,
                             'initialPreviewAsData'=>true,
                             'showRemove' => false,
                             'showUpload' => false,

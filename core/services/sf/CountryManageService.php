@@ -76,10 +76,17 @@ class CountryManageService
         $this->countries->save($country);
     }
 
-    public function editTeam($id, $teamId, TeamForm $form)
+    public function editTeam($id, $teamId, TeamForm $form): void
     {
         $country = $this->countries->get($id);
         $country->editTeam($teamId, $form->name, $form->slug, $form->logo);
+        $this->countries->save($country);
+    }
+
+    public function removeTeam($country_id, $team_id): void
+    {
+        $country = $this->countries->get($country_id);
+        $country->removeTeam($team_id);
         $this->countries->save($country);
     }
 

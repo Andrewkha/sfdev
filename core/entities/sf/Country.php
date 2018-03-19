@@ -64,6 +64,20 @@ class Country extends ActiveRecord
         throw new \DomainException('Команда не найдена');
     }
 
+    public function removeTeam($id): void
+    {
+        $teams = $this->teams;
+        foreach ($teams as $i => $team) {
+            if ($team->isIdEqualTo($id)) {
+                unset($teams[$i]);
+                $this->teams = $teams;
+                return;
+            }
+        }
+
+        throw new \DomainException('Команда не найдена');
+    }
+
     public function getTeam($slug): Team
     {
         if ($team = $this->getTeams()->where(['slug' => $slug])->one()) {
