@@ -50,7 +50,7 @@ class Country extends ActiveRecord
         $this->teams = $teams;
     }
 
-    public function editTeam($id, $name, $slug, UploadedFile $logo): void
+    public function editTeam($id, $name, $slug, $logo): void
     {
         $teams = $this->teams;
 
