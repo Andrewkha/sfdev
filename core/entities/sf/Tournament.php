@@ -10,6 +10,7 @@ namespace core\entities\sf;
 
 
 use yii\db\ActiveRecord;
+use Zelenin\yii\behaviors\Slug;
 
 /**
  * Class Tournament
@@ -29,6 +30,22 @@ use yii\db\ActiveRecord;
 
 class Tournament extends ActiveRecord
 {
+
+    public function behaviors()
+    {
+        return [
+
+            'slug' => [
+                'class' => Slug::class,
+                'slugAttribute' => 'slug',
+                'attribute' => 'name',
+                'ensureUnique' => true,
+                'replacement' => '-',
+                'lowercase' => true,
+            ],
+        ];
+    }
+
     public static function tableName()
     {
         return '{{%tournaments}}';
