@@ -1,11 +1,11 @@
 <?php
 /* @var $this yii\web\View */
 
-use core\entities\sf\Country;
+use core\forms\sf\CountryForm;
 
-/* @var $model Country */
+/* @var $model CountryForm */
 
-$this->title = 'Создать';
+$this->title = 'Создать страну';
 $this->params['breadcrumbs'][] = ['label' => 'Страны', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

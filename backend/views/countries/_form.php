@@ -18,8 +18,15 @@ use yii\widgets\ActiveForm;
             <div class="panel panel-default">
                 <div class="panel-heading"><strong>Параметры</strong></div>
                 <div class="panel-body">
-                    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
-                    <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'name')->textInput([
+                        'maxlength' => true,
+                        'autofocus' => true,
+                        'placeholder' => $model->getAttributeLabel('name')
+                    ])->label(false) ?>
+                    <?= $form->field($model, 'slug')->textInput([
+                        'maxlength' => true,
+                        'placeholder' => $model->getAttributeLabel('slug')
+                    ])->label(false) ?>
                 </div>
             </div>
         </div>

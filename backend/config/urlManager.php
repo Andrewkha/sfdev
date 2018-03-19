@@ -16,12 +16,24 @@ return [
         '' => 'site/index',
 
         '<_a:login|logout>' => 'auth/auth/<_a>',
+
+        '<_c:countries>' => '<_c>/index',
+        '<_c:countries>/<slug:[\w\-]+>' => '<_c>/view',
+        '<_c:countries>/<_a:create>' => '<_c>/<_a>',
+        '<_c:countries>/<slug:[\w\-]+>/<_a:update|delete>' => '<_c>/<_a>',
+        '<country_slug:[\w\-]+>/<slug:[\w\-]+>' => 'teams/update',
+        '<_c:teams>/<slug:[\w\-]+>/<_a:create|delete>' => '<_c>/<_a>',
+
+/*
+
+        '<_c:[\w\-]+>/<_a:create>/<slug:[\w\-]+>' => '<_c>/<_a>',
         '<_c:[\w\-]+>/<_a:create>' => '<_c>/<_a>',
 
 
-        '<_c:[\w\-]+>/<slug:[\w\-]+>' => '<_c>/view',
-        '<_c:[\w\-]+>/update/<slug:[\w\-]+>' => '<_c>/update',
-        '<_c:[\w\-]+>/delete/<slug:[\w\-]+>' => '<_c>/delete',
+
+
+
+*/
 
         '<_c:[\w\-]+>' => '<_c>/index',
         '<_c:[\w\-]+>/<id:\d+>' => '<_c>/view',

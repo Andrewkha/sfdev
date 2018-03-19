@@ -31,36 +31,58 @@ use yii\db\ActiveRecord;
 class Team extends ActiveRecord
 {
 
-    public static function create($name, UploadedFile $logo): self
+    public static function create($name, $slug = null, UploadedFile $logo): self
     {
         $team = new self();
 
+        if ($slug) {
+            $team->detachBehavior('slug');
+            $team->slug = $slug;
+        }
         $team->name = $name;
         $team->logo = $logo;
+
+        return $team;
+    }
+
+    public function edit($name, $slug, UploadedFile $logo): void
+    {
+        $this->name = $name;
+        $this->logo = $logo;
+        if ($slug != '') {
+            $this->detachBehavior('slug');
+            $this->slug = $slug;
+        }
+    }
+
+    public function isIdEqualTo($id): bool
+    {
+        return $this->id === $id;
     }
 
     public function behaviors()
     {
         return [
-            [
-                'class' => Slug::class,
-                'slugAttribute' => 'slug',
-                'attribute' => 'name',
-                'ensureUnique' => true,
-                'replacement' => '-',
-                'lowercase' => true,
-            ],
+
+            'slug' => [
+                    'class' => Slug::class,
+                    'slugAttribute' => 'slug',
+                    'attribute' => 'name',
+                    'ensureUnique' => true,
+                    'replacement' => '-',
+                    'lowercase' => true,
+                ],
 
             [
                 'class' => ImageUploadBehavior::class,
                 'attribute' => 'logo',
                 'createThumbsOnRequest' => true,
-                'filePath' => '@staticRoot/origin/teams/logo/[[country_id]]/[[id]]_[[logo]]',
-                'fileUrl' => '@static/origin/teams/logo/[[country_id]]/[[id]]_[[logo]]',
-                'thumbPath' => '@staticRoot/cache/teams/logo/[[country_id]]/[[profile]]/[[id]]_[[logo]]',
-                'thumbUrl' => '@static/cache/teams/logo/[[country_id]]/[[profile]]/[[id]]_[[logo]]',
+                'filePath' => '@staticRoot/origin/teams/logo/[[attribute_country_id]]/[[id]]_[[attribute_logo]]',
+                'fileUrl' => '@static/origin/teams/logo/[[attribute_country_id]]/[[id]]_[[attribute_logo]]',
+                'thumbPath' => '@staticRoot/cache/teams/logo/[[attribute_country_id]]/[[profile]]/[[attribute_logo]]',
+                'thumbUrl' => '@static/cache/teams/logo/[[attribute_country_id]]/[[profile]]/[[attribute_logo]]',
                 'thumbs' => [
-
+                    'updatePreview' => ['width' => 100, 'height' => 100],
                 ]
             ]
         ];
@@ -69,5 +91,14 @@ class Team extends ActiveRecord
     public static function tableName()
     {
         return '{{%teams}}';
+    }
+
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'name' => 'Название',
+            'slug' => 'slug'
+        ];
     }
 }

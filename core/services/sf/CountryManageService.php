@@ -11,15 +11,19 @@ namespace core\services\sf;
 
 use core\entities\sf\Country;
 use core\forms\sf\CountryForm;
+use core\forms\sf\TeamForm;
 use core\repositories\sf\CountryRepository;
+use core\repositories\sf\TeamRepository;
 
 class CountryManageService
 {
     private $countries;
+    private $teams;
 
-    public function __construct(CountryRepository $repository)
+    public function __construct(CountryRepository $repository, TeamRepository $teams)
     {
         $this->countries = $repository;
+        $this->teams = $teams;
     }
 
     public function create(CountryForm $form): Country
@@ -54,7 +58,29 @@ class CountryManageService
     public function remove($slug): void
     {
         $country = $this->getBySlug($slug);
+        if ($this->teams->existsByCountry($country->id)) {
+            throw new \DomainException('Нельзя удалить страну, если есть связанные команды');
+        }
         $this->countries->remove($country);
+    }
+
+    public function addTeam($country_id, TeamForm $form): void
+    {
+        $country = $this->countries->get($country_id);
+        $country->addTeam(
+            $form->name,
+            $form->slug,
+            $form->logo
+        );
+
+        $this->countries->save($country);
+    }
+
+    public function editTeam($id, $teamId, TeamForm $form)
+    {
+        $country = $this->countries->get($id);
+        $country->editTeam($teamId, $form->name, $form->slug, $form->logo);
+        $this->countries->save($country);
     }
 
     /**

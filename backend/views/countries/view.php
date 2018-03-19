@@ -1,11 +1,16 @@
 <?php
 
 use core\entities\sf\Country;
+use core\entities\sf\Team;
+use kartik\grid\ActionColumn;
+use yii\data\ActiveDataProvider;
+use kartik\grid\GridView;
 use yii\helpers\Html;
 use kartik\detail\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $country Country */
+/* @var $teams ActiveDataProvider */
 
 $this->title = $country->name;
 $this->params['breadcrumbs'][] = ['label' => 'Страны', 'url' => ['index']];
@@ -43,7 +48,29 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="panel panel-default">
                 <div class="panel-heading "><strong>Команды</strong></div>
                 <div class="panel-body">
+                    <p>
+                        <?= Html::a('Создать команду', ['teams/create', 'slug' => $country->slug], ['class' => 'btn btn-success']) ?>
+                    </p>
+                    <?= GridView::widget([
+                        'dataProvider' => $teams,
+                        'columns' => [
+                            'id',
+                            [
+                                'attribute' => 'name',
+                                'value' => function (Team $team) use ($country) {
+                                    return Html::a(Html::encode($team->name), ['teams/update', 'country_slug' => $country->slug, 'slug' => $team->slug]);
+                                },
 
+                                'format' => 'raw',
+                            ],
+                            'slug',
+                            [
+                                'class' => ActionColumn::class,
+                                'controller' => 'teams',
+                                'template' => '{delete}',
+                            ],
+                        ]
+                    ]); ?>
                 </div>
             </div>
         </div>
