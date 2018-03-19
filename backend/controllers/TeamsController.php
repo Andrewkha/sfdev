@@ -12,6 +12,7 @@ namespace backend\controllers;
 use core\entities\sf\Country;
 use core\forms\sf\TeamForm;
 use core\services\sf\CountryManageService;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 
 class TeamsController extends Controller
@@ -22,6 +23,18 @@ class TeamsController extends Controller
     {
         parent::__construct($id, $module, $config);
         $this->service = $service;
+    }
+
+    public function behaviors(): array
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                ]
+            ]
+        ];
     }
 
     public function actionCreate($slug)
@@ -70,6 +83,22 @@ class TeamsController extends Controller
             'country' => $country,
             'team' => $team
         ]);
+    }
+
+    public function actionDelete($country_slug, $slug)
+    {
+        $country = $this->findCountryBySlug($country_slug);
+        $team = $country->getTeam($slug);
+
+        try {
+            $this->service->removeTeam($country->id, $team->id);
+            \Yii::$app->session->setFlash('success', 'Запись успешно удалена');
+        } catch (\DomainException $e) {
+            \Yii::$app->errorHandler->logException($e);
+            \Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+
+        return $this->redirect(['countries/view', 'slug' => $country->slug]);
     }
 
     private function findCountryBySlug($slug): Country

@@ -50,7 +50,7 @@ class Country extends ActiveRecord
         $this->teams = $teams;
     }
 
-    public function editTeam($id, $name, $slug, UploadedFile $logo): void
+    public function editTeam($id, $name, $slug, $logo): void
     {
         $teams = $this->teams;
 
@@ -61,6 +61,20 @@ class Country extends ActiveRecord
                 return;
             }
         }
+        throw new \DomainException('Команда не найдена');
+    }
+
+    public function removeTeam($id): void
+    {
+        $teams = $this->teams;
+        foreach ($teams as $i => $team) {
+            if ($team->isIdEqualTo($id)) {
+                unset($teams[$i]);
+                $this->teams = $teams;
+                return;
+            }
+        }
+
         throw new \DomainException('Команда не найдена');
     }
 

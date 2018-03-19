@@ -39,9 +39,15 @@ use yii\widgets\ActiveForm;
                     ])->widget(FileInput::class, [
                         'options' => ['accept' => 'image/*'],
                         'pluginOptions' => [
-                            'initialPreview' => [
-                                isset($team) ? $team->getThumbFileUrl('logo', 'updatePreview') : ''
-                            ],
+                            'initialPreview' =>
+                                (isset($team)) ? [$team->getThumbFileUrl('logo', 'updatePreview')] : null,
+                            'initialPreviewConfig' =>
+                                (isset($team)) ? [
+                                    [
+                                        'width' => '1000px',
+                                        'caption' => $team->name,
+                                    ]
+                                ] : null,
                             'initialPreviewAsData'=>true,
                             'showRemove' => false,
                             'showUpload' => false,
