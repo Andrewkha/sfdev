@@ -235,7 +235,7 @@ class DataTransferController extends Controller
                     $newTeam->id = $reader->getAttribute('id');
                     $newTeam->name = $reader->getAttribute('name');
                     $newTeam->country_id = $reader->getAttribute('country_id');
-                    $newTeam->logo = $newTeam->id . '_' . $reader->getAttribute('logo');
+                    $newTeam->logo = $reader->getAttribute('logo');
 
                     if (file_exists($sourcePath . $reader->getAttribute('logo'))) {
                         $folder = $path . $newTeam->country_id . '/';
