@@ -33,7 +33,7 @@ class TeamsController extends Controller
             try {
                 $this->service->addTeam($country->id, $form);
                 \Yii::$app->session->setFlash('success', 'Команда успешно добавлена');
-                return $this->redirect(['country/view', 'slug' => $country->slug]);
+                return $this->redirect(['countries/view', 'slug' => $country->slug]);
             } catch (\DomainException $e)
             {
                 \Yii::$app->errorHandler->logException($e);
@@ -52,7 +52,24 @@ class TeamsController extends Controller
         $country = $this->findCountryBySlug($country_slug);
         $team = $country->getTeam($slug);
 
+        $form = new TeamForm($team);
 
+        if ($form->load(\Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $this->service->editTeam($country->id, $team->id, $form);
+                \Yii::$app->session->setFlash('success', 'Изменения сохранены');
+                return $this->redirect(['countries/view', 'slug' => $country->slug]);
+            } catch (\DomainException $e) {
+                \Yii::$app->errorHandler->logException($e);
+                \Yii::$app->session->setFlash('error', $e->getMessage());
+            }
+        }
+
+        return $this->render('update', [
+            'model' => $form,
+            'country' => $country,
+            'team' => $team
+        ]);
     }
 
     private function findCountryBySlug($slug): Country

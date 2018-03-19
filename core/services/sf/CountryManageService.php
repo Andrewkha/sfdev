@@ -76,6 +76,13 @@ class CountryManageService
         $this->countries->save($country);
     }
 
+    public function editTeam($id, $teamId, TeamForm $form)
+    {
+        $country = $this->countries->get($id);
+        $country->editTeam($teamId, $form->name, $form->slug, $form->logo);
+        $this->countries->save($country);
+    }
+
     /**
      * @param $slug
      * @return Country

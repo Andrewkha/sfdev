@@ -7,9 +7,9 @@ required_plugins.each do |plugin|
 end
 
 domains = {
-  frontend: 'sf.dev',
-  backend:  'admin.sf.dev',
-  static: 'static.sf.dev'
+  frontend: 'sf.local',
+  backend:  'admin.sf.local',
+  static: 'static.sf.local'
 }
 
 config = {

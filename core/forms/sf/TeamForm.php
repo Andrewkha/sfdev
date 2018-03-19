@@ -44,12 +44,13 @@ class TeamForm extends Model
 
     public function rules()
     {
-        return [
+        return array_filter([
             [['name', 'slug'], 'string'],
-            [['name', 'logo'], 'required'],
+            ['name', 'required'],
+            (!$this->_team) ? ['logo', 'required'] : false,
             [['name', 'slug'], 'unique', 'targetClass' => Team::class, 'filter' => $this->_team ? ['<>', 'id', $this->_team->id] : null],
             [['logo'], 'image', 'maxSize' => 1024*1024, 'tooBig' => 'Максимальный размер файла 1Мб'],
-        ];
+        ]);
     }
 
     public function attributeLabels()

@@ -50,6 +50,20 @@ class Country extends ActiveRecord
         $this->teams = $teams;
     }
 
+    public function editTeam($id, $name, $slug, UploadedFile $logo): void
+    {
+        $teams = $this->teams;
+
+        foreach ($teams as $team) {
+            if ($team->isIdEqualTo($id)) {
+                $team->edit($name, $slug, $logo);
+                $this->teams = $teams;
+                return;
+            }
+        }
+        throw new \DomainException('Команда не найдена');
+    }
+
     public function getTeam($slug): Team
     {
         if ($team = $this->getTeams()->where(['slug' => $slug])->one()) {
