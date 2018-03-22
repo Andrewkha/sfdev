@@ -12,6 +12,8 @@ namespace core\entities\sf;
 use core\entities\AggregateRoot;
 use core\entities\EventTrait;
 use core\entities\sf\events\TournamentFinished;
+use core\entities\sf\events\TournamentStarted;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use Zelenin\yii\behaviors\Slug;
 
@@ -22,6 +24,7 @@ use Zelenin\yii\behaviors\Slug;
  * @property integer $id
  * @property string $name
  * @property string $slug
+ * @property integer $type
  * @property integer $country_id
  * @property integer $tours
  * @property integer $status
@@ -39,16 +42,21 @@ class Tournament extends ActiveRecord implements AggregateRoot
     const STATUS_IN_PROGRESS = 1;
     const STATUS_FINISHED = 2;
 
-    public static function create($name, $slug, $country_id, $tours, $startDate, $autoprocess, $autoprocessUrl, $winnersForecastDue): self
+    const TYPE_REGULAR = 1;
+    const TYPE_PLAY_OFF = 10;
+
+    public static function create($name, $slug, $type, $country_id, $tours, $startDate, $autoprocess, $autoprocessUrl, $winnersForecastDue): self
     {
         $tournament = new self();
 
         $tournament->name = $name;
+
         if ($slug) {
             $tournament->detachBehavior('slug');
             $tournament->slug = $slug;
         }
 
+        $tournament->type = $type;
         $tournament->country_id = $country_id;
         $tournament->tours = $tours;
         $tournament->status = self::STATUS_NOT_STARTED;
@@ -60,10 +68,14 @@ class Tournament extends ActiveRecord implements AggregateRoot
         return $tournament;
     }
 
-    public function edit($name, $slug, $country_id, $tours, $startDate, $autoprocess, $autoprocessUrl, $winnersForecastDue): void
+    public function edit($name, $slug, $type, $country_id, $tours, $startDate, $autoprocess, $autoprocessUrl, $winnersForecastDue): void
     {
         $this->name = $name;
+        if ($slug != '') {
+            $this->detachBehavior('slug');
+        }
         $this->slug = $slug;
+        $this->type = $type;
         $this->country_id = $country_id;
         $this->tours = $tours;
         $this->startDate = $startDate;
@@ -77,6 +89,7 @@ class Tournament extends ActiveRecord implements AggregateRoot
         if ($this->isInProgress()) {
             throw new \DomainException('Турнир уже проходит');
         }
+        $this->recordEvent(new TournamentStarted($this));
 
         $this->status = self::STATUS_IN_PROGRESS;
     }
@@ -119,6 +132,11 @@ class Tournament extends ActiveRecord implements AggregateRoot
                 'lowercase' => true,
             ],
         ];
+    }
+
+    public function getCountry(): ActiveQuery
+    {
+        return $this->hasOne(Country::class, ['id' => 'country_id']);
     }
 
     public static function tableName()

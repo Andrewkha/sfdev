@@ -23,9 +23,22 @@ class TournamentHelper
         ];
     }
 
+    public static function typesList(): array
+    {
+        return [
+            Tournament::TYPE_REGULAR => 'Регулярный',
+            Tournament::TYPE_PLAY_OFF => 'Плей-офф',
+        ];
+    }
+
     public static function statusName($status): string
     {
         return ArrayHelper::getValue(self::statusList(), $status);
+    }
+
+    public static function typeName($type): string
+    {
+        return ArrayHelper::getValue(self::typesList(), $type);
     }
 
     public static function statusLabel($status): string
@@ -44,6 +57,23 @@ class TournamentHelper
                 $class = 'label label-default';
         }
         return Html::tag('span', ArrayHelper::getValue(self::statusList(), $status), [
+            'class' => $class,
+        ]);
+    }
+
+    public static function typeLabel($type): string
+    {
+        switch ($type) {
+            case Tournament::TYPE_REGULAR:
+                $class = 'label label-default';
+                break;
+            case Tournament::TYPE_PLAY_OFF:
+                $class = 'label label-success';
+                break;
+            default:
+                $class = 'label label-default';
+        }
+        return Html::tag('span', ArrayHelper::getValue(self::typesList(), $type), [
             'class' => $class,
         ]);
     }
