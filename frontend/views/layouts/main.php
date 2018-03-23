@@ -48,11 +48,9 @@ AppAsset::register($this);
         $menuItems[] = [
             'label' => 'Администрирование',
             'items' => [
-                ['label' => 'Страны', 'url' => $urlManager->createAbsoluteUrl(['/country/index'])],
+                ['label' => 'Страны', 'url' => $urlManager->createAbsoluteUrl(['/countries/index'])],
                 '<li class="divider"></li>',
-                ['label' => 'Команды', 'url' => $urlManager->createAbsoluteUrl(['/team/index'])],
-                '<li class="divider"></li>',
-                ['label' => 'Турниры', 'url' => $urlManager->createAbsoluteUrl(['/tournament/index'])],
+                ['label' => 'Турниры', 'url' => $urlManager->createAbsoluteUrl(['/tournaments/index'])],
                 '<li class="divider"></li>',
                 ['label' => 'Новости', 'url' => $urlManager->createAbsoluteUrl(['/news/index'])],
                 '<li class="divider"></li>',

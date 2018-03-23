@@ -10,7 +10,6 @@ use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use common\widgets\Alert;
 use core\entities\user\User;
-use kartik\icons\Icon;
 
 AppAsset::register($this);
 ?>
@@ -51,7 +50,7 @@ AppAsset::register($this);
             'items' => [
                 ['label' => 'Страны', 'url' => ['/countries/index']],
                 '<li class="divider"></li>',
-                ['label' => 'Турниры', 'url' => ['/tournament/index']],
+                ['label' => 'Турниры', 'url' => ['/tournaments/index']],
                 '<li class="divider"></li>',
                 ['label' => 'Новости', 'url' => ['/news/index']],
                 '<li class="divider"></li>',

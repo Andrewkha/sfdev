@@ -25,7 +25,7 @@ Icon::map($this);
             'heading' => '<i class="glyphicon glyphicon-cog"></i> Администрирование',
             'items' => [
                 ['label' => 'Страны', 'icon' => 'globe', 'url' => Url::to(['/countries/index']), 'active' => $this->context->id == 'countries'],
-                ['label' => 'Турниры', 'icon' => 'glass', 'url' => Url::to(['/tournament/index']), 'active' => $this->context->id == 'tournament'],
+                ['label' => 'Турниры', 'icon' => 'glass', 'url' => Url::to(['/tournaments/index']), 'active' => $this->context->id == 'tournaments'],
                 ['label' => 'Новости', 'icon' => 'comment', 'url' => Url::to(['/news/index']), 'active' => $this->context->id == 'news'],
                 ['label' => 'Пользователи', 'icon' => 'user', 'url' => Url::to(['/user/index']), 'active' => $this->context->id == 'user'],
                 ['label' => 'Журнал', 'icon' => 'list-alt', 'url' => Url::to(['/log/index']), 'active' => $this->context->id == 'log'],
