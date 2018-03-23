@@ -9,6 +9,11 @@
 namespace core\entities\sf;
 
 
+use core\entities\AggregateRoot;
+use core\entities\EventTrait;
+use core\entities\sf\events\TournamentFinished;
+use core\entities\sf\events\TournamentStarted;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use Zelenin\yii\behaviors\Slug;
 
@@ -19,6 +24,7 @@ use Zelenin\yii\behaviors\Slug;
  * @property integer $id
  * @property string $name
  * @property string $slug
+ * @property integer $type
  * @property integer $country_id
  * @property integer $tours
  * @property integer $status
@@ -28,8 +34,90 @@ use Zelenin\yii\behaviors\Slug;
  * @property integer $winnersForecastDue
  */
 
-class Tournament extends ActiveRecord
+class Tournament extends ActiveRecord implements AggregateRoot
 {
+    use EventTrait;
+
+    const STATUS_NOT_STARTED = 0;
+    const STATUS_IN_PROGRESS = 1;
+    const STATUS_FINISHED = 2;
+
+    const TYPE_REGULAR = 1;
+    const TYPE_PLAY_OFF = 10;
+
+    public static function create($name, $slug, $type, $country_id, $tours, $startDate, $autoprocess, $autoprocessUrl, $winnersForecastDue): self
+    {
+        $tournament = new self();
+
+        $tournament->name = $name;
+
+        if ($slug) {
+            $tournament->detachBehavior('slug');
+            $tournament->slug = $slug;
+        }
+
+        $tournament->type = $type;
+        $tournament->country_id = $country_id;
+        $tournament->tours = $tours;
+        $tournament->status = self::STATUS_NOT_STARTED;
+        $tournament->startDate = $startDate;
+        $tournament->autoprocess = $autoprocess;
+        $tournament->autoprocessUrl = $autoprocessUrl;
+        $tournament->winnersForecastDue = $winnersForecastDue;
+
+        return $tournament;
+    }
+
+    public function edit($name, $slug, $type, $country_id, $tours, $startDate, $autoprocess, $autoprocessUrl, $winnersForecastDue): void
+    {
+        $this->name = $name;
+        if ($slug != '') {
+            $this->detachBehavior('slug');
+        }
+        $this->slug = $slug;
+        $this->type = $type;
+        $this->country_id = $country_id;
+        $this->tours = $tours;
+        $this->startDate = $startDate;
+        $this->autoprocess = $autoprocess;
+        $this->autoprocessUrl = $autoprocessUrl;
+        $this->winnersForecastDue = $winnersForecastDue;
+    }
+
+    public function start(): void
+    {
+        if ($this->isInProgress()) {
+            throw new \DomainException('Турнир уже проходит');
+        }
+        $this->recordEvent(new TournamentStarted($this));
+
+        $this->status = self::STATUS_IN_PROGRESS;
+    }
+
+    public function finish(): void
+    {
+        if ($this->isFinished()) {
+            throw new \DomainException('Турнир уже закончен');
+        }
+
+        $this->status = self::STATUS_FINISHED;
+        $this->recordEvent(new TournamentFinished($this));
+    }
+
+    public function isFinished(): bool
+    {
+        return $this->status === self::STATUS_FINISHED;
+    }
+
+    public function isNotStarted(): bool
+    {
+        return $this->status === self::STATUS_NOT_STARTED;
+    }
+
+    public function isInProgress(): bool
+    {
+        return $this->status === self::STATUS_IN_PROGRESS;
+    }
 
     public function behaviors()
     {
@@ -44,6 +132,11 @@ class Tournament extends ActiveRecord
                 'lowercase' => true,
             ],
         ];
+    }
+
+    public function getCountry(): ActiveQuery
+    {
+        return $this->hasOne(Country::class, ['id' => 'country_id']);
     }
 
     public static function tableName()
