@@ -288,6 +288,7 @@ class DataTransferController extends Controller
                 if ($reader->localName == 'tournament') {
                     $newTournament = new Tournament();
                     $newTournament->id = $reader->getAttribute('id');
+                    ($newTournament->id == 16) ? $newTournament->type = Tournament::TYPE_PLAY_OFF : $newTournament->type = Tournament::TYPE_REGULAR;
                     $newTournament->name = $reader->getAttribute('name');
                     $newTournament->country_id = $reader->getAttribute('country_id');
                     $newTournament->tours = $reader->getAttribute('tours');
