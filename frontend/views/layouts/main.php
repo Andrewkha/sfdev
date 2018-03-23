@@ -92,7 +92,7 @@ AppAsset::register($this);
                 'options' => [
                     'class' => 'col-xs-12 col-xs-offset-0 col-sm-offset-1 col-sm-10 breadcrumb'
                 ],
-                'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+                'links' => $this->params['breadcrumbs'] ?? [],
             ]) ?>
         </div>
         <div class="row">
