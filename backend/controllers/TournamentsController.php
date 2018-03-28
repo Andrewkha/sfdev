@@ -50,9 +50,9 @@ class TournamentsController extends Controller
         ]);
     }
 
-    public function actionCreate()
+    public function actionCreate($country_id = null)
     {
-        $form = new TournamentForm();
+        $form = new TournamentForm($country_id);
 
         if ($form->load(\Yii::$app->request->post()) && $form->validate()) {
             try {
@@ -68,5 +68,18 @@ class TournamentsController extends Controller
         return $this->render('create', [
             'model' => $form,
         ]);
+    }
+
+    public function actionDelete($slug)
+    {
+        try {
+            $this->tournamentService->remove($slug);
+            Yii::$app->session->setFlash('success', 'Запись успешно удалена');
+        } catch (\DomainException $e) {
+            Yii::$app->errorHandler->logException($e);
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+
+        return $this->redirect(['index']);
     }
 }

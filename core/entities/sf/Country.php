@@ -22,6 +22,8 @@ use yii\web\UploadedFile;
  * @property string $slug
  *
  * @property Team[] $teams
+ * @property Tournament[] $tournaments
+ * @property Team $team
  *
  * @mixin SaveRelationsBehavior
  */

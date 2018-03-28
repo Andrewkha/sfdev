@@ -58,4 +58,15 @@ class TournamentManageService
 
         $this->tournaments->save($tournament);
     }
+
+    public function remove($slug): void
+    {
+        $tournament = $this->getBySlug($slug);
+        $this->tournaments->remove($tournament);
+    }
+
+    public function getBySlug($slug): Tournament
+    {
+        return $this->tournaments->getBySlug($slug);
+    }
 }

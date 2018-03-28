@@ -27,8 +27,11 @@ class TournamentForm extends Model
 
     private $_tournament;
 
-    public function __construct(Tournament $tournament = null, array $config = [])
+    public function __construct($country_id = null, Tournament $tournament = null, array $config = [])
     {
+        if ($country_id) {
+            $this->country_id = $country_id;
+        }
         if ($tournament) {
             $this->name = $tournament->name;
             $this->slug = $tournament->slug;

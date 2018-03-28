@@ -1,6 +1,7 @@
 <?php
 
 use backend\forms\TournamentSearch;
+use backend\widgets\grid\WinnersForecastColumn;
 use core\entities\sf\Tournament;
 use core\helpers\TournamentHelper;
 use kartik\grid\ActionColumn;
@@ -29,6 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filterModel' => $searchModel,
                 'bordered' => true,
                 'hover' => true,
+                'emptyCell' => '-',
                 'responsive' => false,
                 'toolbar' => false,
                 'panel' => [
@@ -45,7 +47,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         'hAlign' => 'center'
                     ],
                     [
-                        'label' => 'Название',
                         'attribute' => 'name',
                         'value' => function (Tournament $tournament) {
                             return Html::a(Html::encode($tournament->name), ['view', 'slug' => $tournament->slug]);
@@ -54,14 +55,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     'slug',
                     [
-                        'label' => 'Страна',
                         'filter' => \core\helpers\CountryHelper::countryListWithTournaments(),
                         'attribute' => 'country_id',
-                        'value' => 'country.name'
+                        'value' => function (Tournament $tournament) {
+                            return Html::a(Html::encode($tournament->country->name), ['countries/view', 'slug' => $tournament->country->slug]);
+                        },
+                        'format' => 'raw'
                     ],
 
                     [
-                        'label' => 'Статус',
                         'attribute' => 'status',
                         'filter' => TournamentHelper::statusList(),
                         'value' => function (Tournament $tournament) {
@@ -71,7 +73,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw'
                     ],
                     [
-                        'label' => 'Дата начала',
                         'attribute' => 'startDate',
                         'filter' => DatePicker::widget([
                             'model' => $searchModel,
@@ -85,18 +86,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'dd.mm.yyyy',
                             ]
                         ]),
-                        'value' => function (Tournament $tournament) {
-                            return date('d.m.Y', $tournament->startDate);
-                        },
-                        'format' => 'raw',
+
+                        'format' => 'date',
                         'hAlign' => 'center',
                     ],
                     [
-                        'label' => "Прогнозы на победителя до",
                         'attribute' => 'winnersForecastDue',
-                        'value' => function (Tournament $tournament) {
-                            return (null !== $tournament->winnersForecastDue) ? date('d.m.Y', $tournament->winnersForecastDue) : '-';
-                        },
+                        'class' => WinnersForecastColumn::class,
                         'hAlign' => 'center',
                         'format' => 'html',
                         'mergeHeader' => true,
