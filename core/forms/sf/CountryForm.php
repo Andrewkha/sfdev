@@ -10,6 +10,7 @@ namespace core\forms\sf;
 
 
 use core\entities\sf\Country;
+use core\validators\SlugValidator;
 use yii\base\Model;
 
 class CountryForm extends Model
@@ -34,6 +35,7 @@ class CountryForm extends Model
         return [
             [['name', 'slug'], 'required'],
             [['name', 'slug'], 'string', 'max' => 255],
+            ['slug', SlugValidator::class],
             [['name', 'slug'], 'unique', 'targetClass' => Country::class, 'filter' => $this->country ? ['<>', 'id', $this->country->id] : null],
         ];
     }

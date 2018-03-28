@@ -10,6 +10,7 @@ namespace core\forms\sf;
 
 
 use core\entities\sf\Team;
+use core\validators\SlugValidator;
 use yii\base\Model;
 use yii\web\UploadedFile;
 
@@ -48,6 +49,7 @@ class TeamForm extends Model
             [['name', 'slug'], 'string'],
             ['name', 'required'],
             (!$this->_team) ? ['logo', 'required'] : false,
+            ['slug', SlugValidator::class],
             [['name', 'slug'], 'unique', 'targetClass' => Team::class, 'filter' => $this->_team ? ['<>', 'id', $this->_team->id] : null],
             [['logo'], 'image', 'maxSize' => 1024*1024, 'tooBig' => 'Максимальный размер файла 1Мб'],
         ]);

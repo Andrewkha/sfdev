@@ -97,13 +97,13 @@ AppAsset::register($this);
         <div class="row">
             <?= Breadcrumbs::widget([
                 'options' => [
-                    'class' => 'col-xs-12 col-xs-offset-0 col-sm-offset-1 col-sm-10 breadcrumb'
+                    'class' => 'col-xs-12 col-xs-offset-0 col-md-offset-1 col-md-10 breadcrumb'
                 ],
                 'links' => $this->params['breadcrumbs'] ?? [],
             ]) ?>
         </div>
         <div class="row">
-            <div class="col-xs-12 col-xs-offset-0 col-sm-offset-1 col-sm-10">
+            <div class="col-xs-12 col-xs-offset-0 col-md-offset-1 col-md-10">
                 <?= Alert::widget() ?>
                 <?= $content ?>
             </div>

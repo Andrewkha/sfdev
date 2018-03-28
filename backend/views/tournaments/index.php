@@ -4,6 +4,7 @@ use backend\forms\TournamentSearch;
 use core\entities\sf\Tournament;
 use core\helpers\TournamentHelper;
 use kartik\grid\ActionColumn;
+use kartik\widgets\DatePicker;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
@@ -29,9 +30,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 'bordered' => true,
                 'hover' => true,
                 'responsive' => false,
+                'toolbar' => false,
                 'panel' => [
                     'type' => GridView::TYPE_PRIMARY,
-                    'heading' => $this->title,
+                    'heading' => '<i class="glyphicon glyphicon-glass"></i>' . ' ' . $this->title,
+                    'footer' => false,
                 ],
                 'columns' => [
                     [
@@ -52,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'slug',
                     [
                         'label' => 'Страна',
-                        'filter' => \core\helpers\CountryHelper::coutnryList(),
+                        'filter' => \core\helpers\CountryHelper::countryListWithTournaments(),
                         'attribute' => 'country_id',
                         'value' => 'country.name'
                     ],
@@ -70,6 +73,18 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'label' => 'Дата начала',
                         'attribute' => 'startDate',
+                        'filter' => DatePicker::widget([
+                            'model' => $searchModel,
+                            'attribute' => 'date_from',
+                            'attribute2' => 'date_to',
+                            'type' => DatePicker::TYPE_RANGE,
+                            'separator' => '-',
+                            'pluginOptions' => [
+                                'todayHighlight' => true,
+                                'autoclose' => true,
+                                'format' => 'dd.mm.yyyy',
+                            ]
+                        ]),
                         'value' => function (Tournament $tournament) {
                             return date('d.m.Y', $tournament->startDate);
                         },

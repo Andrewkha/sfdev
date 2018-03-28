@@ -81,6 +81,7 @@ class Country extends ActiveRecord
     public function getTeam($slug): Team
     {
         if ($team = $this->getTeams()->where(['slug' => $slug])->one()) {
+            /**@var $team Team */
             return $team;
         }
 
@@ -90,6 +91,11 @@ class Country extends ActiveRecord
     public function getTeams(): ActiveQuery
     {
         return $this->hasMany(Team::class, ['country_id' => 'id'])->orderBy('name');
+    }
+
+    public function getTournaments(): ActiveQuery
+    {
+        return $this->hasMany(Tournament::class, ['country_id' => 'id']);
     }
 
     public static function tableName(): string

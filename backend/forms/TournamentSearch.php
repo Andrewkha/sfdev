@@ -21,13 +21,15 @@ class TournamentSearch extends Model
     public $type;
     public $country_id;
     public $status;
-    public $startDate;
+    public $date_from;
+    public $date_to;
 
     public function rules()
     {
         return [
-            [['id', 'type', 'country_id', 'status', 'startDate'], 'integer'],
-            [['name', 'slug'], 'safe' ]
+            [['id', 'type', 'country_id', 'status'], 'integer'],
+            [['name', 'slug'], 'safe' ],
+            [['date_from', 'date_to'], 'date', 'format' => 'php:d.m.Y']
         ];
     }
 
@@ -58,8 +60,12 @@ class TournamentSearch extends Model
             'type' => $this->type,
             'country_id' => $this->country_id,
             'status' => $this->status,
-            'startDate' => $this->startDate,
+
         ]);
+
+        $query
+            ->andFilterWhere(['>=', 'startDate', $this->date_from ? strtotime($this->date_from . ' 00:00:00') : null])
+            ->andFilterWhere(['<=', 'startDate', $this->date_to ? strtotime($this->date_to . ' 23:59:59') : null]);
 
         $query
             ->andFilterWhere(['like', 'name', $this->name])

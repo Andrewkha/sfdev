@@ -14,8 +14,15 @@ use yii\helpers\ArrayHelper;
 
 class CountryHelper
 {
-    public static function coutnryList()
+    public static function countryList()
     {
         return ArrayHelper::map(Country::find()->all(), 'id', 'name');
+    }
+
+    public static function countryListWithTournaments()
+    {
+        return ArrayHelper::map(Country::find()->joinWith('tournaments t', false)
+            ->where(['not', ['t.id' => null]])
+            ->all(), 'id', 'name');
     }
 }

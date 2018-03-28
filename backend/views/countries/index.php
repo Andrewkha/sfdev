@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'responsive' => false,
                     'panel' => [
                         'type' => GridView::TYPE_PRIMARY,
-                        'heading' => $this->title,
+                        'heading' => '<i class="glyphicon glyphicon-globe"></i>' . ' ' . $this->title,
                     ],
                     'itemLabelSingle' => 'страна',
                     'itemLabelPlural' => 'страны',
