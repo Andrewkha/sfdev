@@ -79,7 +79,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             <div class="panel panel-default">
-                <div class="panel-heading "><strong>Турниры</strong></div>
+                <div class="panel-heading "><strong><?= Html::a('Турниры', ['tournaments/index']) ?></strong></div>
                 <div class="panel-body">
                     <p>
                         <?= Html::a('Создать турнир', ['tournaments/create', 'country_id' => $country->id], ['class' => 'btn btn-success']) ?>
