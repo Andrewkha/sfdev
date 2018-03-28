@@ -19,7 +19,7 @@ Icon::map($this);
 <?php $this->beginContent('@backend/views/layouts/main.php') ?>
 
 <div class="row">
-    <aside id="column-left" class="col-sm-4 col-md-3 hidden-xs">
+    <aside id="column-left" class="col-sm-4 col-md-3 col-lg-2 hidden-xs">
         <?= SideNav::widget([
             'type' => SideNav::TYPE_DEFAULT,
             'heading' => '<i class="glyphicon glyphicon-cog"></i> Администрирование',
@@ -32,7 +32,7 @@ Icon::map($this);
             ]
         ]);?>
     </aside>
-    <div id="content" class="col-sm-8 col-md-9">
+    <div id="content" class="col-sm-8 col-md-9 col-lg-10">
         <?= $content;?>
     </div>
 </div>

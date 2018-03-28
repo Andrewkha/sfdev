@@ -83,7 +83,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             'pluginOptions' => [
                                 'todayHighlight' => true,
                                 'autoclose' => true,
-                                'format' => 'dd.mm.yyyy',
                             ]
                         ]),
 

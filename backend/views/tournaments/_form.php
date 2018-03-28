@@ -65,7 +65,6 @@ use yii\widgets\ActiveForm;
                             'pluginOptions' => [
                                 'todayHighlight' => true,
                                 'autoclose' => true,
-                                'format' => 'dd.mm.yyyy',
                             ]
                         ]
                     );?>
@@ -79,7 +78,6 @@ use yii\widgets\ActiveForm;
                             'pluginOptions' => [
                                 'todayHighlight' => true,
                                 'autoclose' => true,
-                                'format' => 'dd.mm.yyyy',
                             ]
                         ]
                     );?>
