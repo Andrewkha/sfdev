@@ -10,6 +10,7 @@ namespace backend\controllers;
 
 
 use backend\forms\TournamentSearch;
+use core\entities\sf\Tournament;
 use core\forms\sf\TournamentForm;
 use core\services\sf\TournamentManageService;
 use yii\filters\VerbFilter;
@@ -50,6 +51,15 @@ class TournamentsController extends Controller
         ]);
     }
 
+    public function actionView($slug)
+    {
+        $tournament = $this->findModel($slug);
+
+        return $this->render('view', [
+            'tournament' => $tournament,
+        ]);
+    }
+
     public function actionCreate($country_id = null)
     {
         $form = new TournamentForm($country_id);
@@ -70,6 +80,26 @@ class TournamentsController extends Controller
         ]);
     }
 
+    public function actionUpdate($slug)
+    {
+        $tournament = $this->findModel($slug);
+
+        $form = new TournamentForm(null, $tournament);
+
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $tournament = $this->tournamentService->edit($tournament->slug, $form);
+                Yii::$app->session->setFlash('success', 'Запись успешно изменена');
+                return $this->redirect(['view', 'slug' => $tournament->slug]);
+            } catch (\DomainException $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
+            }
+        }
+
+        return $this->render('update', ['model' => $form, 'tournament' => $tournament]);
+    }
+
     public function actionDelete($slug)
     {
         try {
@@ -81,5 +111,10 @@ class TournamentsController extends Controller
         }
 
         return $this->redirect(['index']);
+    }
+
+    private function findModel($slug): Tournament
+    {
+        return $this->tournamentService->getBySlug($slug);
     }
 }
