@@ -20,8 +20,21 @@ use yii\db\ActiveRecord;
  */
 class TeamTournaments extends ActiveRecord
 {
-   public static function tableName()
-   {
+    public function create($team_id): self
+    {
+        $assignment = new static();
+        $assignment->team_id = $team_id;
+
+        return $assignment;
+    }
+
+    public function isForTeam($id): bool
+    {
+        return $this->team_id == $id;
+    }
+
+    public static function tableName()
+    {
        return '{{%team_tournament}}';
-   }
+    }
 }
