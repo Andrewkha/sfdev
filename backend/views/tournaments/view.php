@@ -6,6 +6,7 @@
  * Time: 12:17 PM
  */
 
+use backend\widgets\tournament\StatusManage;
 use core\entities\sf\Tournament;
 use kartik\detail\DetailView;
 use yii\helpers\Html;
@@ -30,6 +31,8 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
+    <?= StatusManage::widget(['tournament' => $tournament]);?>
+
     <div class="row">
         <div class="col-sm-6">
             <div class="panel panel-default">
@@ -45,4 +48,5 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]) ?>
                 </div>
             </div>
+        </div>
 </div>

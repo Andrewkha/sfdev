@@ -91,9 +91,8 @@ class Tournament extends ActiveRecord implements AggregateRoot
         if ($this->isInProgress()) {
             throw new \DomainException('Турнир уже проходит');
         }
-        $this->recordEvent(new TournamentStarted($this));
-
         $this->status = self::STATUS_IN_PROGRESS;
+        $this->recordEvent(new TournamentStarted($this));
     }
 
     public function finish(): void

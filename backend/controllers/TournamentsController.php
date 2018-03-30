@@ -12,6 +12,7 @@ namespace backend\controllers;
 use backend\forms\TournamentSearch;
 use core\entities\sf\Tournament;
 use core\forms\sf\TournamentForm;
+use core\helpers\TournamentHelper;
 use core\services\sf\TournamentManageService;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -29,6 +30,8 @@ class TournamentsController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                    'finish' => ['POST'],
+                    'start' => ['POST'],
                 ]
             ]
         ];
@@ -111,6 +114,32 @@ class TournamentsController extends Controller
         }
 
         return $this->redirect(['index']);
+    }
+
+    public function actionStart($slug)
+    {
+        try {
+            $this->tournamentService->start($slug);
+            Yii::$app->session->setFlash('success', 'Турнир переведен в статус ' . TournamentHelper::statusName(Tournament::STATUS_IN_PROGRESS));
+        } catch (\DomainException $e) {
+            Yii::$app->errorHandler->logException($e);
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionFinish($slug)
+    {
+        try {
+            $this->tournamentService->finish($slug);
+            Yii::$app->session->setFlash('success', 'Турнир переведен в статус ' . TournamentHelper::statusName(Tournament::STATUS_FINISHED));
+        } catch (\DomainException $e) {
+            Yii::$app->errorHandler->logException($e);
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     private function findModel($slug): Tournament
