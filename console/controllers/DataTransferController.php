@@ -94,6 +94,52 @@ class DataTransferController extends Controller
         $this->stdout('Done!' . PHP_EOL);
     }
 
+    private function teamTournamentsData()
+    {
+        $reader = new \XMLReader();
+
+        if (!$reader->open('console/import/team-tournaments.xml')) {
+            throw new \RuntimeException('Can not open the source file');
+        }
+
+        $model = [];
+
+        while ($reader->read()) {
+            if($reader->nodeType == \XMLReader::ELEMENT) {
+                if ($reader->localName == 'TeamTournament') {
+                    $newModel = new Country();
+                    $newCountry->id = $reader->getAttribute('id');
+                    $newCountry->name = $reader->getAttribute('name');
+                    $country[] = $newCountry;
+                }
+            }
+        }
+
+        $reader->close();
+
+        Country::deleteAll();
+        foreach ($country as $one) {
+            /**
+             * @var $one Country
+             */
+            $one->attachBehavior(
+                'slug', [
+                    'class' => Slug::class,
+                    'slugAttribute' => 'slug',
+                    'attribute' => 'name',
+                    // optional params
+                    'ensureUnique' => true,
+                    'replacement' => '-',
+                    'lowercase' => true,
+                    'immutable' => false,
+                    // If intl extension is enabled, see http://userguide.icu-project.org/transforms/general.
+                    'transliterateOptions' => 'Russian-Latin/BGN; Any-Latin; Latin-ASCII; NFD; [:Nonspacing Mark:] Remove; NFC;'
+                ]
+            );
+            $this->countries->save($one);
+        }
+    }
+
     private function countriesData()
     {
         $reader = new \XMLReader();
