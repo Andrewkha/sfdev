@@ -8,7 +8,6 @@
 
 namespace core\entities\sf;
 
-
 use core\entities\AggregateRoot;
 use core\entities\EventTrait;
 use core\entities\sf\events\TournamentFinished;
@@ -34,6 +33,8 @@ use Zelenin\yii\behaviors\Slug;
  * @property integer $winnersForecastDue
  *
  * @property Country $country
+ * @property Team[] $teams
+ * @property TeamTournaments[] $teamAssignments
  */
 
 class Tournament extends ActiveRecord implements AggregateRoot
@@ -143,6 +144,16 @@ class Tournament extends ActiveRecord implements AggregateRoot
     public function getCountry(): ActiveQuery
     {
         return $this->hasOne(Country::class, ['id' => 'country_id']);
+    }
+
+    public function getTeamAssignments(): ActiveQuery
+    {
+        return $this->hasMany(TeamTournaments::class, ['team_id' => 'id']);
+    }
+
+    public function getTeams(): ActiveQuery
+    {
+        return $this->hasMany(Team::class, ['id' => 'team_id'])->via('teamAssignments');
     }
 
     public static function tableName()
