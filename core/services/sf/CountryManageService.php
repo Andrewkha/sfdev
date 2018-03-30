@@ -14,16 +14,19 @@ use core\forms\sf\CountryForm;
 use core\forms\sf\TeamForm;
 use core\repositories\sf\CountryRepository;
 use core\repositories\sf\TeamRepository;
+use core\repositories\sf\TournamentRepository;
 
 class CountryManageService
 {
     private $countries;
     private $teams;
+    private $tournaments;
 
-    public function __construct(CountryRepository $repository, TeamRepository $teams)
+    public function __construct(CountryRepository $repository, TeamRepository $teams, TournamentRepository $tournaments)
     {
         $this->countries = $repository;
         $this->teams = $teams;
+        $this->tournaments = $tournaments;
     }
 
     public function create(CountryForm $form): Country
@@ -61,6 +64,12 @@ class CountryManageService
         if ($this->teams->existsByCountry($country->id)) {
             throw new \DomainException('Нельзя удалить страну, если есть связанные команды');
         }
+
+        if ($this->tournaments->existsByCountry($country->id)) {
+            throw new \DomainException('Нельзя удалить страну, если есть связанные турниры');
+        }
+
+
         $this->countries->remove($country);
     }
 

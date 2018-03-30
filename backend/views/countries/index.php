@@ -20,25 +20,47 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Создать', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <div class="box">
-        <div class="box-body">
-            <?= GridView::widget([
-                'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
-                'columns' => [
-                    'id',
-                    [
-                        'label' => 'Название',
-                        'attribute' => 'name',
-                        'value' => function (Country $country) {
-                            return Html::a(Html::encode($country->name), ['view', 'slug' => $country->slug]);
-                        },
-                        'format' => 'raw',
+    <div class="row">
+        <div class="box col-md-6">
+            <div class="box-body">
+                <?= GridView::widget([
+                    'dataProvider' => $dataProvider,
+                    'filterModel' => $searchModel,
+                    'bordered' => true,
+                    'hover' => true,
+                    'responsive' => false,
+                    'panel' => [
+                        'type' => GridView::TYPE_PRIMARY,
+                        'heading' => '<i class="glyphicon glyphicon-globe"></i>' . ' ' . $this->title,
                     ],
-                    'slug',
-                    ['class' => ActionColumn::class],
-                ],
-            ]); ?>
+                    'itemLabelSingle' => 'страна',
+                    'itemLabelPlural' => 'страны',
+                    'toolbar' => false,
+                    'columns' => [
+                        [
+                            'attribute' => 'id',
+                            'filter' => false,
+                            'width' => '50px',
+                            'hAlign' => 'center',
+                            'mergeHeader' => true,
+                        ],
+                        [
+                            'label' => 'Название',
+                            'attribute' => 'name',
+                            'value' => function (Country $country) {
+                                return Html::a(Html::encode($country->name), ['view', 'slug' => $country->slug]);
+                            },
+                            'format' => 'raw',
+                        ],
+                        'slug',
+                        [
+                            'class' => ActionColumn::class,
+                            'template' => '{delete}'
+                        ],
+                    ],
+                ]); ?>
+            </div>
         </div>
     </div>
+
 </div>

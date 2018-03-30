@@ -41,9 +41,9 @@ class TournamentManageService
         return $tournament;
     }
 
-    public function edit($slug, TournamentForm $form): void
+    public function edit($slug, TournamentForm $form): Tournament
     {
-        $tournament = $this->tournaments->getBySlug($slug);
+        $tournament = $this->getBySlug($slug);
         $tournament->edit(
             $form->name,
             $form->slug,
@@ -57,5 +57,32 @@ class TournamentManageService
         );
 
         $this->tournaments->save($tournament);
+
+        return $tournament;
+    }
+
+    public function start($slug): void
+    {
+        $tournament = $this->getBySlug($slug);
+        $tournament->start();
+        $this->tournaments->save($tournament);
+    }
+
+    public function finish($slug): void
+    {
+        $tournament = $this->getBySlug($slug);
+        $tournament->finish();
+        $this->tournaments->save($tournament);
+    }
+
+    public function remove($slug): void
+    {
+        $tournament = $this->getBySlug($slug);
+        $this->tournaments->remove($tournament);
+    }
+
+    public function getBySlug($slug): Tournament
+    {
+        return $this->tournaments->getBySlug($slug);
     }
 }

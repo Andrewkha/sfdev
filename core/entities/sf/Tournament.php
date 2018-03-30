@@ -32,6 +32,8 @@ use Zelenin\yii\behaviors\Slug;
  * @property boolean $autoprocess
  * @property string $autoprocessUrl
  * @property integer $winnersForecastDue
+ *
+ * @property Country $country
  */
 
 class Tournament extends ActiveRecord implements AggregateRoot
@@ -89,9 +91,8 @@ class Tournament extends ActiveRecord implements AggregateRoot
         if ($this->isInProgress()) {
             throw new \DomainException('Турнир уже проходит');
         }
-        $this->recordEvent(new TournamentStarted($this));
-
         $this->status = self::STATUS_IN_PROGRESS;
+        $this->recordEvent(new TournamentStarted($this));
     }
 
     public function finish(): void
@@ -119,6 +120,11 @@ class Tournament extends ActiveRecord implements AggregateRoot
         return $this->status === self::STATUS_IN_PROGRESS;
     }
 
+    public function isWinnersForecastOpen(): bool
+    {
+        return $this->winnersForecastDue >= time();
+    }
+
     public function behaviors()
     {
         return [
@@ -142,5 +148,18 @@ class Tournament extends ActiveRecord implements AggregateRoot
     public static function tableName()
     {
         return '{{%tournaments}}';
+    }
+
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'name' => 'Название',
+            'slug' => 'slug',
+            'status' => 'Статус',
+            'country_id' => 'Страна',
+            'startDate' => 'Дата начала',
+            'winnersForecastDue' => 'Прогнозы на победителя до'
+        ];
     }
 }

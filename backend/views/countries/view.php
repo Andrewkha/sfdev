@@ -2,6 +2,8 @@
 
 use core\entities\sf\Country;
 use core\entities\sf\Team;
+use core\entities\sf\Tournament;
+use core\helpers\TournamentHelper;
 use kartik\grid\ActionColumn;
 use yii\data\ActiveDataProvider;
 use kartik\grid\GridView;
@@ -10,6 +12,7 @@ use kartik\detail\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $country Country */
+/* @var $tournaments ActiveDataProvider */
 /* @var $teams ActiveDataProvider */
 
 $this->title = $country->name;
@@ -68,6 +71,39 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'class' => ActionColumn::class,
                                 'controller' => 'teams',
                                 'template' => '{delete}',
+                            ],
+                        ]
+                    ]); ?>
+                </div>
+            </div>
+
+
+            <div class="panel panel-default">
+                <div class="panel-heading "><strong><?= Html::a('Турниры', ['tournaments/index']) ?></strong></div>
+                <div class="panel-body">
+                    <p>
+                        <?= Html::a('Создать турнир', ['tournaments/create', 'country_id' => $country->id], ['class' => 'btn btn-success']) ?>
+                    </p>
+                    <?= GridView::widget([
+                        'dataProvider' => $tournaments,
+                        'columns' => [
+                            [
+                                'attribute' => 'name',
+                                'value' => function (Tournament $tournament) {
+                                    return Html::a(Html::encode($tournament->name), ['tournaments/view', 'slug' => $tournament->slug]);
+                                },
+
+                                'format' => 'raw',
+                            ],
+
+                            [
+                                'attribute' => 'status',
+                                'filter' => TournamentHelper::statusList(),
+                                'value' => function (Tournament $tournament) {
+                                    return TournamentHelper::statusLabel($tournament->status);
+                                },
+                                'hAlign' => 'center',
+                                'format' => 'raw'
                             ],
                         ]
                     ]); ?>

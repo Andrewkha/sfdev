@@ -66,10 +66,14 @@ class CountriesController extends Controller
             'pagination' => false
         ]);
 
+        $tournaments = new ActiveDataProvider([
+            'query' => $country->getTournaments(),
+        ]);
 
         return $this->render('view', [
             'country' => $country,
             'teams' => $teams,
+            'tournaments' => $tournaments,
         ]);
     }
 

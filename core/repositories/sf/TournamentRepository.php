@@ -29,17 +29,17 @@ class TournamentRepository
 
     public function get($id): Tournament
     {
-        if (!$team = Tournament::findOne($id)) {
+        if (!$tournament = Tournament::findOne($id)) {
             throw new NotFoundHttpException('Турнир не найден' );
         }
 
-        return $team;
+        return $tournament;
     }
 
     public function getBySlug($slug): Tournament
     {
         /* @var $tournament Tournament  */
-        if (!$team = Tournament::find()->andWhere(['slug' => $slug])->one()) {
+        if (!$tournament = Tournament::find()->andWhere(['slug' => $slug])->one()) {
             throw new NotFoundHttpException('Турнир не найден' );
         }
 
@@ -73,5 +73,10 @@ class TournamentRepository
         }
 
         $this->eventDispatcher->dispatchAll($tournament->releaseEvents());
+    }
+
+    public function existsByCountry($id): bool
+    {
+        return Tournament::find()->andWhere(['country_id' => $id])->exists();
     }
 }

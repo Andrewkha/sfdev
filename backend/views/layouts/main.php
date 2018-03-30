@@ -10,7 +10,6 @@ use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use common\widgets\Alert;
 use core\entities\user\User;
-use kartik\icons\Icon;
 
 AppAsset::register($this);
 ?>
@@ -51,7 +50,7 @@ AppAsset::register($this);
             'items' => [
                 ['label' => 'Страны', 'url' => ['/countries/index']],
                 '<li class="divider"></li>',
-                ['label' => 'Турниры', 'url' => ['/tournament/index']],
+                ['label' => 'Турниры', 'url' => ['/tournaments/index']],
                 '<li class="divider"></li>',
                 ['label' => 'Новости', 'url' => ['/news/index']],
                 '<li class="divider"></li>',
@@ -98,13 +97,13 @@ AppAsset::register($this);
         <div class="row">
             <?= Breadcrumbs::widget([
                 'options' => [
-                    'class' => 'col-xs-12 col-xs-offset-0 col-sm-offset-1 col-sm-10 breadcrumb'
+                    'class' => 'col-xs-12 col-xs-offset-0 col-md-offset-1 col-md-10 breadcrumb'
                 ],
-                'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+                'links' => $this->params['breadcrumbs'] ?? [],
             ]) ?>
         </div>
         <div class="row">
-            <div class="col-xs-12 col-xs-offset-0 col-sm-offset-1 col-sm-10">
+            <div class="col-xs-12 col-xs-offset-0 col-md-offset-1 col-md-10">
                 <?= Alert::widget() ?>
                 <?= $content ?>
             </div>
