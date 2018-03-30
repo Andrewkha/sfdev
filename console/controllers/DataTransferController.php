@@ -11,6 +11,8 @@ namespace console\controllers;
 
 use core\access\Rbac;
 use core\entities\sf\Country;
+use core\entities\sf\Forecast;
+use core\entities\sf\Game;
 use core\entities\sf\Team;
 use core\entities\sf\TeamTournaments;
 use core\entities\sf\Tournament;
@@ -88,8 +90,48 @@ class DataTransferController extends Controller
         }
         $this->stdout('Done!' . PHP_EOL);
 
+        /** Import games */
+        $this->stdout('Importing games data' . PHP_EOL);
+        try {
+            $this->gamesData();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
+
+        /** Import forecasts */
+        $this->stdout('Importing games data' . PHP_EOL);
+        try {
+            $this->forecastsData();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
+
         \Yii::$app->db->createCommand("SET foreign_key_checks = 1")->execute();
 
+    }
+
+    public function actionImportGames()
+    {
+        $this->stdout('Importing games data' . PHP_EOL);
+        try {
+            $this->gamesData();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
+    }
+
+    public function actionImportForecasts()
+    {
+        $this->stdout('Importing forecasts data' . PHP_EOL);
+        try {
+            $this->forecastsData();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
     }
 
     public function actionImportTeamTournaments()
@@ -353,6 +395,80 @@ class DataTransferController extends Controller
 
         foreach ($tournaments as $one) {
             /** @var $one Team */
+            $one->save();
+        }
+    }
+
+    private function gamesData()
+    {
+        $reader = new \XMLReader();
+
+        if (!$reader->open('console/import/games.xml')) {
+            throw new \RuntimeException('Can not open the source file');
+        }
+
+        $games = [];
+
+        while ($reader->read()) {
+            if($reader->nodeType == \XMLReader::ELEMENT) {
+                if ($reader->localName == 'game') {
+                    $newGame = new Game();
+                    $newGame->id = $reader->getAttribute('id');
+                    $newGame->tournament_id = $reader->getAttribute('tournament_id');
+                    $newGame->home_team_id = $reader->getAttribute('home_team_id');
+                    $newGame->guest_team_id = $reader->getAttribute('guest_team_id');
+                    $newGame->tour = $reader->getAttribute('tour');
+                    $newGame->homeScore = $reader->getAttribute('homeScore');
+                    $newGame->guestScore = $reader->getAttribute('guestScore');
+                    $newGame->date = $reader->getAttribute('date');
+                    $games[] = $newGame;
+                }
+            }
+        }
+
+        $reader->close();
+
+        Game::deleteAll();
+        foreach ($games as $one) {
+            /**
+             * @var $one Game
+             */
+            $one->save();
+        }
+    }
+
+    private function forecastsData()
+    {
+        $reader = new \XMLReader();
+
+        if (!$reader->open('console/import/forecasts.xml')) {
+            throw new \RuntimeException('Can not open the source file');
+        }
+
+        $forecasts = [];
+
+        while ($reader->read()) {
+            if($reader->nodeType == \XMLReader::ELEMENT) {
+                if ($reader->localName == 'forecast') {
+                    $newForecast = new Forecast();
+                    $newForecast->id = $reader->getAttribute('id');
+                    $newForecast->game_id = $reader->getAttribute('game_id');
+                    $newForecast->user_id = $reader->getAttribute('user_id');
+                    $newForecast->homeFscore = $reader->getAttribute('homeFscore');
+                    $newForecast->guestFscore = $reader->getAttribute('guestFscore');
+                    $newForecast->date = $reader->getAttribute('date');
+                    $forecasts[] = $newForecast;
+                }
+            }
+        }
+
+        $reader->close();
+
+        Forecast::deleteAll();
+        foreach ($forecasts as $one) {
+            /**
+             * @var $one Forecast
+             */
             $one->save();
         }
     }
