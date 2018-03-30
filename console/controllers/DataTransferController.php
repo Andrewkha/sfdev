@@ -12,6 +12,7 @@ namespace console\controllers;
 use core\access\Rbac;
 use core\entities\sf\Country;
 use core\entities\sf\Team;
+use core\entities\sf\TeamTournaments;
 use core\entities\sf\Tournament;
 use Zelenin\yii\behaviors\Slug;
 use core\entities\user\User;
@@ -78,16 +79,25 @@ class DataTransferController extends Controller
         }
         $this->stdout('Done!' . PHP_EOL);
 
+        /** Import team tournaments */
+        $this->stdout('Importing team tournaments data' . PHP_EOL);
+        try {
+            $this->teamTournamentsData();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
+
         \Yii::$app->db->createCommand("SET foreign_key_checks = 1")->execute();
 
     }
 
-    public function actionImportTournaments()
+    public function actionImportTeamTournaments()
     {
         /** Import tournaments */
-        $this->stdout('Importing tournaments data' . PHP_EOL);
+        $this->stdout('Importing team tournaments data' . PHP_EOL);
         try {
-            $this->tournamentsData();
+            $this->teamTournamentsData();
         } catch (\Exception $e) {
             $this->stdout($e->getMessage() . PHP_EOL);
         }
@@ -98,45 +108,33 @@ class DataTransferController extends Controller
     {
         $reader = new \XMLReader();
 
-        if (!$reader->open('console/import/team-tournaments.xml')) {
+        if (!$reader->open('console/import/team_tournaments.xml')) {
             throw new \RuntimeException('Can not open the source file');
         }
 
-        $model = [];
+        $models = [];
 
         while ($reader->read()) {
             if($reader->nodeType == \XMLReader::ELEMENT) {
                 if ($reader->localName == 'TeamTournament') {
-                    $newModel = new Country();
-                    $newCountry->id = $reader->getAttribute('id');
-                    $newCountry->name = $reader->getAttribute('name');
-                    $country[] = $newCountry;
+                    $newModel = new TeamTournaments();
+                    $newModel->team_id = $reader->getAttribute('team_id');
+                    $newModel->tournament_id = $reader->getAttribute('tournament_id');
+                    $newModel->alias = $reader->getAttribute('alias');
+                    $models[] = $newModel;
                 }
             }
         }
 
         $reader->close();
 
-        Country::deleteAll();
-        foreach ($country as $one) {
+        TeamTournaments::deleteAll();
+        foreach ($models as $one) {
             /**
-             * @var $one Country
+             * @var $one TeamTournaments
              */
-            $one->attachBehavior(
-                'slug', [
-                    'class' => Slug::class,
-                    'slugAttribute' => 'slug',
-                    'attribute' => 'name',
-                    // optional params
-                    'ensureUnique' => true,
-                    'replacement' => '-',
-                    'lowercase' => true,
-                    'immutable' => false,
-                    // If intl extension is enabled, see http://userguide.icu-project.org/transforms/general.
-                    'transliterateOptions' => 'Russian-Latin/BGN; Any-Latin; Latin-ASCII; NFD; [:Nonspacing Mark:] Remove; NFC;'
-                ]
-            );
-            $this->countries->save($one);
+
+            $one->save();
         }
     }
 
