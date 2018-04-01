@@ -34,10 +34,13 @@ class ParticipantsManage extends Widget
     public function run(): string
     {
         $participants = $this->tournament->getTeams()->indexBy('id')->all();
-        $allTeamInCountry = $this->teams->getByCountry($this->tournament->country_id);
+        $allTeamsInCountry = $this->teams->getByCountry($this->tournament->country_id);
 
-        $candidates = array_intersect_key($allTeamInCountry, $participants);
+        $candidates = array_diff_key($allTeamsInCountry, $participants);
 
-        return $this->render('candidates', ['candidates' => $candidates]);
+        return $this->render('candidates', [
+            'candidates' => $candidates,
+            'participants' => $participants,
+        ]);
     }
 }
