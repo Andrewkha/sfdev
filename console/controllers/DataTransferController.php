@@ -100,7 +100,7 @@ class DataTransferController extends Controller
         $this->stdout('Done!' . PHP_EOL);
 
         /** Import forecasts */
-        $this->stdout('Importing games data' . PHP_EOL);
+        $this->stdout('Importing forecasts data' . PHP_EOL);
         try {
             $this->forecastsData();
         } catch (\Exception $e) {
