@@ -126,7 +126,7 @@ class Tournament extends ActiveRecord implements AggregateRoot
         return $this->winnersForecastDue >= time();
     }
 
-    public function behaviors()
+    public function behaviors() :array
     {
         return [
 
@@ -148,7 +148,7 @@ class Tournament extends ActiveRecord implements AggregateRoot
 
     public function getTeamAssignments(): ActiveQuery
     {
-        return $this->hasMany(TeamTournaments::class, ['team_id' => 'id']);
+        return $this->hasMany(TeamTournaments::class, ['tournament_id' => 'id']);
     }
 
     public function getTeams(): ActiveQuery
@@ -156,7 +156,7 @@ class Tournament extends ActiveRecord implements AggregateRoot
         return $this->hasMany(Team::class, ['id' => 'team_id'])->via('teamAssignments');
     }
 
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%tournaments}}';
     }

@@ -38,6 +38,11 @@ class TeamRepository
         return $team;
     }
 
+    public function getByCountry($id): array
+    {
+        return Team::find()->andWhere(['country_id' => $id])->indexBy('id')->all();
+    }
+
     /**
      * @param Team $team
      * @throws \RuntimeException

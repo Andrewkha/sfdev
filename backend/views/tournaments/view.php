@@ -10,6 +10,7 @@ use backend\widgets\tournament\StatusManage;
 use core\entities\sf\Tournament;
 use kartik\detail\DetailView;
 use yii\helpers\Html;
+use backend\widgets\tournament\ParticipantsManage;
 
 /* @var $this yii\web\View */
 /* @var $tournament Tournament*/
@@ -31,7 +32,9 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
-    <?= StatusManage::widget(['tournament' => $tournament]);?>
+    <?= StatusManage::widget(['tournament' => $tournament]); ?>
+
+    <?= ParticipantsManage::widget(['tournament' => $tournament]); ?>
 
     <div class="row">
         <div class="col-sm-6">
