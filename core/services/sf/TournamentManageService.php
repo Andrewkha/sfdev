@@ -96,6 +96,20 @@ class TournamentManageService
         $this->tournaments->save($tournament);
     }
 
+    public function removeParticipants($slug, array $remove): void
+    {
+        $tournament = $this->getBySlug($slug);
+
+        $remove = array_keys(array_filter($remove));
+
+        foreach ($remove as $id) {
+            $participant = $this->teams->get($id);
+            $tournament->removeParticipant($participant->id);
+        }
+
+        $this->tournaments->save($tournament);
+    }
+
     public function getBySlug($slug): Tournament
     {
         return $this->tournaments->getBySlug($slug);

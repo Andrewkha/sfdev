@@ -161,6 +161,21 @@ class TournamentsController extends Controller
         return $this->redirect(Yii::$app->request->referrer);
     }
 
+    public function actionRemoveParticipants($slug)
+    {
+        $tournament = $this->findModel($slug);
+        $remove = Yii::$app->request->post('participants');
+
+        try {
+            $this->tournamentService->removeParticipants($tournament->slug, $remove);
+            Yii::$app->session->setFlash('success', 'Участники успешно удалены');
+        } catch (\DomainException $e) {
+            Yii::$app->errorHandler->logException($e);
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
     private function findModel($slug): Tournament
     {
         return $this->tournamentService->getBySlug($slug);

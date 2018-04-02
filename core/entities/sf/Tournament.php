@@ -120,6 +120,20 @@ class Tournament extends ActiveRecord implements AggregateRoot
         $this->teamAssignments = $participants;
     }
 
+    public function removeParticipant($participantId): void
+    {
+        $assignments = $this->teamAssignments;
+
+        foreach ($assignments as $i => $assignment) {
+            if ($assignment->isForTeam($participantId)) {
+                unset($assignments[$i]);
+                $this->teamAssignments = $assignments;
+                return;
+            }
+        }
+        throw new \DomainException('Данная команда не принимает участие в турнире');
+    }
+
     public function isFinished(): bool
     {
         return $this->status === self::STATUS_FINISHED;

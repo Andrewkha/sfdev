@@ -27,7 +27,7 @@ use yii\helpers\Html;
             <div class="panel-heading "><strong>Управление участниками</strong></div>
             <div class="panel-body">
                 <?php $form = ActiveForm::begin([
-                    'action' => ['remove-participant', 'slug' => $tournament->slug],
+                    'action' => ['remove-participants', 'slug' => $tournament->slug],
                     'method' => 'post',
                 ]);?>
                     <table class="table table-striped table condensed">
@@ -39,8 +39,8 @@ use yii\helpers\Html;
                             <tr>
                                 <td><?= $one;?></td>
                                 <td><?= CheckboxX::widget([
-                                    'name' => $k,
-                                    'options' => ['id' => $k],
+                                    'name' => "participants[$k]",
+                                    //'options' => ['id' => $k],
                                     'pluginOptions' => ['threeState' => false]
                                 ]) ?></td>
                             </tr>
