@@ -32,18 +32,21 @@ use yii\helpers\Html;
                 ]);?>
                     <table class="table table-striped table condensed">
                         <tr>
+                            <th>#</th>
                             <th>Команда</th>
                             <th>Удалить</th>
                         </tr>
+                        <?php $i = 1; ?>
                         <?php foreach ($participants as $k => $one) : ?>
                             <tr>
+                                <td><?= $i ;?></td>
                                 <td><?= $one;?></td>
                                 <td><?= CheckboxX::widget([
                                     'name' => "participants[$k]",
-                                    //'options' => ['id' => $k],
                                     'pluginOptions' => ['threeState' => false]
                                 ]) ?></td>
                             </tr>
+                        <?php $i++;?>
                         <?php endforeach;?>
                     </table>
                 <div class="form-group">
