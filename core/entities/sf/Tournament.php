@@ -35,6 +35,7 @@ use Zelenin\yii\behaviors\Slug;
  * @property Country $country
  * @property Team[] $teams
  * @property TeamTournaments[] $teamAssignments
+ * @property Game[] $games
  */
 
 class Tournament extends ActiveRecord implements AggregateRoot
@@ -126,7 +127,7 @@ class Tournament extends ActiveRecord implements AggregateRoot
         return $this->winnersForecastDue >= time();
     }
 
-    public function behaviors() :array
+    public function behaviors()
     {
         return [
 
@@ -148,7 +149,7 @@ class Tournament extends ActiveRecord implements AggregateRoot
 
     public function getTeamAssignments(): ActiveQuery
     {
-        return $this->hasMany(TeamTournaments::class, ['tournament_id' => 'id']);
+        return $this->hasMany(TeamTournaments::class, ['team_id' => 'id']);
     }
 
     public function getTeams(): ActiveQuery
@@ -156,7 +157,12 @@ class Tournament extends ActiveRecord implements AggregateRoot
         return $this->hasMany(Team::class, ['id' => 'team_id'])->via('teamAssignments');
     }
 
-    public static function tableName(): string
+    public function getGames(): ActiveQuery
+    {
+        return $this->hasMany(Game::class, ['tournament_id' => 'id']);
+    }
+
+    public static function tableName()
     {
         return '{{%tournaments}}';
     }
