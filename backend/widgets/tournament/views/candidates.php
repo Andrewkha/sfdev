@@ -27,7 +27,7 @@ use yii\helpers\Html;
             <div class="panel-heading "><strong>Управление участниками</strong></div>
             <div class="panel-body">
                 <?php $form = ActiveForm::begin([
-                    'action' => ['delete-participant', 'slug' => $tournament->slug],
+                    'action' => ['remove-participant', 'slug' => $tournament->slug],
                     'method' => 'post',
                 ]);?>
                     <table class="table table-striped table condensed">
@@ -53,7 +53,7 @@ use yii\helpers\Html;
                 <?php ActiveForm::end();?>
 
                 <?php $form = ActiveForm::begin([
-                    'action' => ['add-participants', 'slug' => $tournament->slug],
+                    'action' => ['assign-participants', 'slug' => $tournament->slug],
                     'method' => 'post'
                 ]); ?>
                 <p>

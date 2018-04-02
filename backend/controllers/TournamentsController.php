@@ -32,6 +32,8 @@ class TournamentsController extends Controller
                     'delete' => ['POST'],
                     'finish' => ['POST'],
                     'start' => ['POST'],
+                    'assign-participants' => ['POST'],
+                    'remove-participants' => ['POST'],
                 ]
             ]
         ];
@@ -137,6 +139,23 @@ class TournamentsController extends Controller
         } catch (\DomainException $e) {
             Yii::$app->errorHandler->logException($e);
             Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionAssignParticipants($slug)
+    {
+        $tournament = $this->findModel($slug);
+
+        if ($candidates = Yii::$app->request->post('candidates')) {
+            try {
+                $this->tournamentService->assignParticipants($tournament->slug, $candidates);
+                Yii::$app->session->setFlash('success', 'Участники успешно добавлены');
+            } catch (\DomainException $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
+            }
         }
 
         return $this->redirect(Yii::$app->request->referrer);

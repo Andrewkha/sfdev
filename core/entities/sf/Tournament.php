@@ -12,6 +12,7 @@ use core\entities\AggregateRoot;
 use core\entities\EventTrait;
 use core\entities\sf\events\TournamentFinished;
 use core\entities\sf\events\TournamentStarted;
+use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use Zelenin\yii\behaviors\Slug;
@@ -107,6 +108,18 @@ class Tournament extends ActiveRecord implements AggregateRoot
         $this->recordEvent(new TournamentFinished($this));
     }
 
+    public function assignParticipant($participantId): void
+    {
+        $participants = $this->teamAssignments;
+        foreach ($participants as $assignment) {
+            if ($assignment->isForTeam($participantId)) {
+                return;
+            }
+        }
+        $participants[] = TeamTournaments::create($participantId);
+        $this->teamAssignments = $participants;
+    }
+
     public function isFinished(): bool
     {
         return $this->status === self::STATUS_FINISHED;
@@ -139,6 +152,10 @@ class Tournament extends ActiveRecord implements AggregateRoot
                 'replacement' => '-',
                 'lowercase' => true,
             ],
+            [
+                'class' => SaveRelationsBehavior::class,
+                'relations' => ['teamAssignments'],
+            ]
         ];
     }
 

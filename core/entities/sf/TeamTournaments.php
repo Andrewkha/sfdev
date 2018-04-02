@@ -20,7 +20,7 @@ use yii\db\ActiveRecord;
  */
 class TeamTournaments extends ActiveRecord
 {
-    public function create($team_id): self
+    public static function create($team_id): self
     {
         $assignment = new static();
         $assignment->team_id = $team_id;

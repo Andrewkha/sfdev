@@ -11,15 +11,18 @@ namespace core\services\sf;
 
 use core\entities\sf\Tournament;
 use core\forms\sf\TournamentForm;
+use core\repositories\sf\TeamRepository;
 use core\repositories\sf\TournamentRepository;
 
 class TournamentManageService
 {
     public $tournaments;
+    public $teams;
 
-    public function __construct(TournamentRepository $tournamentRepository)
+    public function __construct(TournamentRepository $tournamentRepository, TeamRepository $teamRepository)
     {
         $this->tournaments = $tournamentRepository;
+        $this->teams = $teamRepository;
     }
 
     public function create(TournamentForm $form): Tournament
@@ -79,6 +82,18 @@ class TournamentManageService
     {
         $tournament = $this->getBySlug($slug);
         $this->tournaments->remove($tournament);
+    }
+
+    public function assignParticipants($slug, array $participants): void
+    {
+        $tournament = $this->getBySlug($slug);
+
+        foreach ($participants as $id) {
+            $participant = $this->teams->get($id);
+            $tournament->assignParticipant($participant->id);
+        }
+
+        $this->tournaments->save($tournament);
     }
 
     public function getBySlug($slug): Tournament
