@@ -204,6 +204,8 @@ class Tournament extends ActiveRecord implements AggregateRoot
             'id' => 'ID',
             'name' => 'Название',
             'slug' => 'slug',
+            'tours' => 'Количество туров',
+            'type' => 'Тип',
             'status' => 'Статус',
             'country_id' => 'Страна',
             'startDate' => 'Дата начала',

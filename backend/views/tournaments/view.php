@@ -8,6 +8,7 @@
 
 use backend\widgets\tournament\StatusManage;
 use core\entities\sf\Tournament;
+use core\helpers\TournamentHelper;
 use kartik\detail\DetailView;
 use yii\helpers\Html;
 use backend\widgets\tournament\ParticipantsManage;
@@ -45,6 +46,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             'id',
                             'name',
                             'slug',
+                            'tours',
+                            [
+                                'attribute' => 'type',
+                                'value' => TournamentHelper::typeName($tournament->type)
+                            ]
                         ],
                     ]) ?>
                 </div>
@@ -52,5 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 
-    <?= ParticipantsManage::widget(['tournament' => $tournament]); ?>
+    <?php if ($tournament->isNotStarted()) :?>
+        <?= ParticipantsManage::widget(['tournament' => $tournament]); ?>
+    <?php endif;?>
 </div>
