@@ -9,6 +9,8 @@
 namespace core\entities\sf;
 
 
+use core\entities\sf\queries\TeamTournamentsQuery;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -17,6 +19,8 @@ use yii\db\ActiveRecord;
  * @property integer $team_id
  * @property integer $tournament_id
  * @property string $alias
+ *
+ * @property Team $team
  */
 class TeamTournaments extends ActiveRecord
 {
@@ -28,6 +32,11 @@ class TeamTournaments extends ActiveRecord
         return $assignment;
     }
 
+    public function getTeam(): ActiveQuery
+    {
+        return $this->hasOne(Team::class, ['id' => 'team_id']);
+    }
+
     public function isForTeam($id): bool
     {
         return $this->team_id == $id;
@@ -36,5 +45,10 @@ class TeamTournaments extends ActiveRecord
     public static function tableName()
     {
        return '{{%team_tournament}}';
+    }
+
+    public static function find() : ActiveQuery
+    {
+        return new TeamTournamentsQuery(static::class);
     }
 }

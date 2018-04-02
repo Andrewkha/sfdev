@@ -11,6 +11,7 @@ namespace backend\controllers;
 
 use backend\forms\TournamentSearch;
 use core\entities\sf\Tournament;
+use core\forms\sf\TournamentAliasesForm;
 use core\forms\sf\TournamentForm;
 use core\helpers\TournamentHelper;
 use core\services\sf\TournamentManageService;
@@ -174,6 +175,24 @@ class TournamentsController extends Controller
             Yii::$app->session->setFlash('error', $e->getMessage());
         }
         return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionAliases($slug)
+    {
+        $tournament = $this->findModel($slug);
+        $form = new TournamentAliasesForm($tournament);
+
+        if ($form->load(Yii::$app->request->post()) && $form->validate())
+        try {
+            $this->tournamentService->assignAliases($slug, $form);
+            Yii::$app->session->setFlash('success', 'Операция выполнена успешно');
+            $this->redirect(['view', 'slug' => $tournament->slug]);
+        } catch (\DomainException $e) {
+            Yii::$app->errorHandler->logException($e);
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+
+        return $this->render('aliases', ['tournament' => $tournament, 'forms' => $form]);
     }
 
     private function findModel($slug): Tournament

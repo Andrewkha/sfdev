@@ -50,7 +50,14 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'type',
                                 'value' => TournamentHelper::typeName($tournament->type)
-                            ]
+                            ],
+                            'autoprocess:boolean',
+                            [
+                                'attribute' => 'autoprocessUrl',
+                                'value' => Html::tag('p', isset($tournament->autoprocessUrl) ? Html::a($tournament->autoprocessUrl, $tournament->autoprocessUrl) : '') .
+                                Html::a('Назначить псевдонимы', ['aliases', 'slug' => $tournament->slug]),
+                                'format' => 'raw',
+                            ],
                         ],
                     ]) ?>
                 </div>

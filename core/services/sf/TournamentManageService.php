@@ -10,14 +10,15 @@ namespace core\services\sf;
 
 
 use core\entities\sf\Tournament;
+use core\forms\sf\TournamentAliasesForm;
 use core\forms\sf\TournamentForm;
 use core\repositories\sf\TeamRepository;
 use core\repositories\sf\TournamentRepository;
 
 class TournamentManageService
 {
-    public $tournaments;
-    public $teams;
+    private $tournaments;
+    private $teams;
 
     public function __construct(TournamentRepository $tournamentRepository, TeamRepository $teamRepository)
     {
@@ -108,6 +109,12 @@ class TournamentManageService
         }
 
         $this->tournaments->save($tournament);
+    }
+
+    public function assignAliases($slug, TournamentAliasesForm $form): void
+    {
+        $tournament = $this->getBySlug($slug);
+        print_r($form); exit;
     }
 
     public function getBySlug($slug): Tournament

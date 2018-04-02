@@ -12,6 +12,7 @@ use core\entities\AggregateRoot;
 use core\entities\EventTrait;
 use core\entities\sf\events\TournamentFinished;
 use core\entities\sf\events\TournamentStarted;
+use core\entities\sf\queries\TournamentQuery;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -206,10 +207,17 @@ class Tournament extends ActiveRecord implements AggregateRoot
             'slug' => 'slug',
             'tours' => 'Количество туров',
             'type' => 'Тип',
+            'autoprocess' => 'Автозагрузка результатов',
+            'autoprocessUrl' => 'Источник данных',
             'status' => 'Статус',
             'country_id' => 'Страна',
             'startDate' => 'Дата начала',
             'winnersForecastDue' => 'Прогнозы на победителя до'
         ];
+    }
+
+    public static function find(): TournamentQuery
+    {
+        return new TournamentQuery(static::class);
     }
 }
