@@ -114,7 +114,12 @@ class TournamentManageService
     public function assignAliases($slug, TournamentAliasesForm $form): void
     {
         $tournament = $this->getBySlug($slug);
-        print_r($form); exit;
+
+        foreach ($form->aliases as $one) {
+            $tournament->assignAlias($one->id, $one->alias);
+        }
+
+        $this->tournaments->save($tournament);
     }
 
     public function getBySlug($slug): Tournament

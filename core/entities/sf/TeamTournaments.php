@@ -32,6 +32,11 @@ class TeamTournaments extends ActiveRecord
         return $assignment;
     }
 
+    public function editAlias($alias): void
+    {
+        $this->alias = $alias;
+    }
+
     public function getTeam(): ActiveQuery
     {
         return $this->hasOne(Team::class, ['id' => 'team_id']);

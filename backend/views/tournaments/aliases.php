@@ -32,9 +32,14 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="panel panel-default">
                 <div class="panel-heading"><strong>Псевдонимы</strong></div>
                 <div class="panel-body">
-                    <?php foreach ($forms->aliasForms as $item) :?>
-                        <?= $form->field($item, 'alias')->textInput([
-                            'placeholder' => 'Псевдоним команды ' . $item->name
+                    <?php if (count($forms->aliases) == 0) :?>
+                        <p>
+                            Сначала добавьте участников
+                        </p>
+                    <?php endif;?>
+                    <?php foreach ($forms->aliases as $k => $item) :?>
+                        <?= $form->field($item, '[' . $item->id . ']alias')->textInput([
+                            'placeholder' => 'Псевдоним команды ' . $item->name,
                         ])->label(false);?>
                     <?php endforeach; ?>
                 </div>

@@ -18,19 +18,30 @@ class AliasForm extends Model
     public $name;
     public $id;
 
-    public function __construct(TeamTournaments $teamTournament, array $config = [])
+    private $tournamentAutoProcess;
+
+    public function __construct(TeamTournaments $teamTournament, bool $autoProcess, array $config = [])
     {
         $this->alias = $teamTournament->alias;
         $this->name = $teamTournament->team->name;
         $this->id = $teamTournament->team_id;
 
+        $this->tournamentAutoProcess = $autoProcess;
+
         parent::__construct($config);
     }
+
 
     public function rules(): array
     {
         return [
-            ['alias', 'string', 'max' => 255]
+            ['alias', 'string', 'max' => 255],
+            ['alias', 'required', 'when' => function ($model) {
+                    return $this->tournamentAutoProcess == true;
+                }, 'whenClient' => "function (attribute, value) {
+                    return $('#autoprocess').val() == '1';
+                }"
+            ]
         ];
     }
-}
+ }

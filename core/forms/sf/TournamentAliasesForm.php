@@ -9,30 +9,52 @@
 namespace core\forms\sf;
 
 use core\entities\sf\Tournament;
-use core\forms\CompositeForm;
+use elisdn\compositeForm\CompositeForm;
+use yii\helpers\ArrayHelper;
 
 
 /**
- * Class AliasesForm
+ * Class TournamentAliasesForm
  * @package core\forms\sf
- * @property AliasForm[] $aliasForms
+ * @property AliasForm[] $aliases
+ * @property Tournament $tournament
  */
 
 class TournamentAliasesForm extends CompositeForm
 {
-    public $aliasForms;
+    private $tournament;
 
     public function __construct(Tournament $tournament, array $config = [])
     {
         $participants = $tournament->teamAssignments;
+        $aliases = [];
         foreach ($participants as $one) {
-            $this->aliasForms[] = new AliasForm($one);
+            $aliases[$one->team_id] = new AliasForm($one, $tournament->autoprocess);
         }
+
+        $this->aliases = $aliases;
+        $this->tournament = $tournament;
         parent::__construct($config);
+    }
+
+    public function rules()
+    {
+        return [
+            ['aliases', function ($attribute, $params, $validator) {
+                if ($this->tournament->autoprocess) {
+                    $values = ArrayHelper::getColumn($this->aliases, 'alias');
+                    $uniqueValues = array_unique($values);
+                    if ($values != $uniqueValues) {
+                        $this->addError($attribute, 'Значения должны быть уникальны');
+                    }
+                }
+            }]
+        ];
     }
 
     public function internalForms(): array
     {
-        return ['alias'];
+
+        return ['aliases'];
     }
 }

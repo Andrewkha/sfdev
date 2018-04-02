@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "bcfcf685e16ec2c710ceab921a6148f3",
+    "content-hash": "66ceb66682d0fdb29fd1748cded7ba83",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -360,6 +360,50 @@
                 "validator"
             ],
             "time": "2017-11-15T23:40:40+00:00"
+        },
+        {
+            "name": "elisdn/yii2-composite-form",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ElisDN/yii2-composite-form.git",
+                "reference": "4178ddf3c54d9d51185e1a083813f36409cb9343"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ElisDN/yii2-composite-form/zipball/4178ddf3c54d9d51185e1a083813f36409cb9343",
+                "reference": "4178ddf3c54d9d51185e1a083813f36409cb9343",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "~2.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "elisdn\\compositeForm\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Dmitry Eliseev",
+                    "email": "mail@elisdn.ru",
+                    "homepage": "http://www.elisdn.ru"
+                }
+            ],
+            "description": "Nested forms base class for Yii2 Framework.",
+            "keywords": [
+                "yii 2",
+                "yii2"
+            ],
+            "time": "2018-03-04T14:15:03+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
