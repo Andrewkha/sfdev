@@ -112,6 +112,8 @@ class DataTransferController extends Controller
 
     }
 
+
+
     public function actionImportGames()
     {
         $this->stdout('Importing games data' . PHP_EOL);
@@ -121,6 +123,22 @@ class DataTransferController extends Controller
             $this->stdout($e->getMessage() . PHP_EOL);
         }
         $this->stdout('Done!' . PHP_EOL);
+    }
+
+    public function actionImportTournaments()
+    {
+        \Yii::$app->db->createCommand("SET foreign_key_checks = 0")->execute();
+
+        /** Import tournaments */
+        $this->stdout('Importing tournaments data' . PHP_EOL);
+        try {
+            $this->tournamentsData();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
+
+        \Yii::$app->db->createCommand("SET foreign_key_checks = 1")->execute();
     }
 
     public function actionImportForecasts()
