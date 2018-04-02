@@ -115,10 +115,14 @@ class TournamentManageService
     {
         $tournament = $this->getBySlug($slug);
 
+        $entities = [];
         foreach ($form->aliases as $one) {
-            $tournament->assignAlias($one->id, $one->alias);
+            $entity['id'] = $one->id;
+            $entity['alias'] = $one->alias;
+            $entities[$one->id] = $entity;
         }
 
+        $tournament->assignAliases($entities);
         $this->tournaments->save($tournament);
     }
 

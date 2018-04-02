@@ -16,6 +16,7 @@ use core\entities\sf\queries\TournamentQuery;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 use Zelenin\yii\behaviors\Slug;
 
 /**
@@ -135,19 +136,19 @@ class Tournament extends ActiveRecord implements AggregateRoot
         throw new \DomainException('Данная команда не принимает участие в турнире');
     }
 
-    public function assignAlias($team_id, $alias): void
+    public function assignAliases(array $entities): void
     {
-
         $assignments = $this->teamAssignments;
+        $ids = ArrayHelper::getColumn($entities, 'id');
+
 
         foreach ($assignments as $i => $assignment) {
-            if ($assignment->isForTeam($team_id)) {
-                $assignments[$i]->editAlias($alias);
-                $this->teamAssignments = $assignments;
-                return;
+            if (in_array($assignment->team_id, $ids)) {
+                $assignments[$i]->editAlias($entities[$assignment->team_id]['alias']);
             }
         }
-        throw new \DomainException('Данная команда не принимает участие в турнире');
+        $this->teamAssignments = $assignments;
+        return;
     }
 
     public function isFinished(): bool
