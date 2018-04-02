@@ -149,7 +149,7 @@ class Tournament extends ActiveRecord implements AggregateRoot
 
     public function getTeamAssignments(): ActiveQuery
     {
-        return $this->hasMany(TeamTournaments::class, ['team_id' => 'id']);
+        return $this->hasMany(TeamTournaments::class, ['tournament_id' => 'id']);
     }
 
     public function getTeams(): ActiveQuery

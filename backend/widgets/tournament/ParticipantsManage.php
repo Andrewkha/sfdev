@@ -9,9 +9,11 @@
 namespace backend\widgets\tournament;
 
 
+use core\entities\sf\Team;
 use core\entities\sf\Tournament;
 use core\repositories\sf\TeamRepository;
 use yii\base\Widget;
+use yii\helpers\ArrayHelper;
 
 /**
  * Class ParticipantsManage
@@ -33,14 +35,18 @@ class ParticipantsManage extends Widget
 
     public function run(): string
     {
-        $participants = $this->tournament->getTeams()->indexBy('id')->all();
-        $allTeamsInCountry = $this->teams->getByCountry($this->tournament->country_id);
+        $participants = ArrayHelper::map($this->tournament->getTeams()->indexBy('id')->orderBy(Team::tableName() . '.name')->all(),
+            'id', 'name');
+        $allTeamsInCountry = ArrayHelper::map($this->teams->getByCountry($this->tournament->country_id),
+            'id', 'name');
 
         $candidates = array_diff_key($allTeamsInCountry, $participants);
+
 
         return $this->render('candidates', [
             'candidates' => $candidates,
             'participants' => $participants,
+            'tournament' => $this->tournament,
         ]);
     }
 }

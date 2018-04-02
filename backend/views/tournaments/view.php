@@ -34,8 +34,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= StatusManage::widget(['tournament' => $tournament]); ?>
 
-    <?= ParticipantsManage::widget(['tournament' => $tournament]); ?>
-
     <div class="row">
         <div class="col-sm-6">
             <div class="panel panel-default">
@@ -52,4 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
         </div>
+    </div>
+
+    <?= ParticipantsManage::widget(['tournament' => $tournament]); ?>
 </div>

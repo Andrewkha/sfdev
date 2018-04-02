@@ -40,7 +40,7 @@ class TeamRepository
 
     public function getByCountry($id): array
     {
-        return Team::find()->andWhere(['country_id' => $id])->indexBy('id')->all();
+        return Team::find()->andWhere(['country_id' => $id])->indexBy('id')->orderBy('name')->all();
     }
 
     /**
