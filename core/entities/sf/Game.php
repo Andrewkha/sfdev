@@ -59,6 +59,42 @@ class Game extends ActiveRecord
         return $this->guestPoints;
     }
 
+    public function isGameFinished(): bool
+    {
+        if ($this->homeScore !== NULL && $this->guestScore !== NULL) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function ifHomeWin(): ?bool
+    {
+        if ($this->isGameFinished() && $this->homeScore > $this->guestScore) {
+            return true;
+        } else {
+            return null;
+        }
+    }
+
+    public function ifGuestWin(): ?bool
+    {
+        if ($this->isGameFinished() && $this->homeScore < $this->guestScore) {
+            return true;
+        } else {
+            return null;
+        }
+    }
+
+    public function ifDraw(): ?bool
+    {
+        if ($this->isGameFinished() && $this->homeScore == $this->guestScore) {
+            return true;
+        } else {
+            return null;
+        }
+    }
+
     public static function tableName()
     {
         return '{{%games}}';
