@@ -176,6 +176,16 @@ class Tournament extends ActiveRecord implements AggregateRoot
         return $this->autoprocess;
     }
 
+    public function isRegular(): bool
+    {
+        return $this->type === self::TYPE_REGULAR;
+    }
+
+    public function isPlayOff(): bool
+    {
+        return $this->type === self::TYPE_PLAY_OFF;
+    }
+
     public function behaviors()
     {
         return [
