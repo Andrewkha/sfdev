@@ -110,45 +110,45 @@ class Tournament extends ActiveRecord implements AggregateRoot
         $this->recordEvent(new TournamentFinished($this));
     }
 
-    public function assignParticipant($participantId): void
+    public function assignParticipants(array $ids): void
     {
         $participants = $this->teamAssignments;
-        foreach ($participants as $assignment) {
-            if ($assignment->isForTeam($participantId)) {
-                return;
+        $participantIds = ArrayHelper::getColumn($participants, 'team_id');
+
+        foreach ($ids as $id) {
+            if (in_array($id, $participantIds)) {
+                continue;
             }
+
+            $participants[] = TeamTournaments::create($id);
         }
-        $participants[] = TeamTournaments::create($participantId);
         $this->teamAssignments = $participants;
     }
 
-    public function removeParticipant($participantId): void
+    public function removeParticipants(array $ids): void
     {
-        $assignments = $this->teamAssignments;
+        $participants = $this->teamAssignments;
 
-        foreach ($assignments as $i => $assignment) {
-            if ($assignment->isForTeam($participantId)) {
-                unset($assignments[$i]);
-                $this->teamAssignments = $assignments;
-                return;
+        foreach ($participants as $i => $participant) {
+            if (in_array($participant->team_id, $ids)) {
+                unset($participants[$i]);
+                continue;
             }
         }
-        throw new \DomainException('Данная команда не принимает участие в турнире');
+        $this->teamAssignments = $participants;
+
     }
 
     public function assignAliases(array $entities): void
     {
         $assignments = $this->teamAssignments;
-        $ids = ArrayHelper::getColumn($entities, 'id');
-
 
         foreach ($assignments as $i => $assignment) {
-            if (in_array($assignment->team_id, $ids)) {
-                $assignments[$i]->editAlias($entities[$assignment->team_id]['alias']);
+            if (array_key_exists($assignment->team_id, $entities)) {
+                $assignments[$i]->editAlias($entities[$assignment->team_id]);
             }
         }
         $this->teamAssignments = $assignments;
-        return;
     }
 
     public function isFinished(): bool
@@ -169,6 +169,11 @@ class Tournament extends ActiveRecord implements AggregateRoot
     public function isWinnersForecastOpen(): bool
     {
         return $this->winnersForecastDue >= time();
+    }
+
+    public function isAutoprocess(): bool
+    {
+        return $this->autoprocess;
     }
 
     public function behaviors()

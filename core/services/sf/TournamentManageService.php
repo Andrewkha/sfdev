@@ -14,6 +14,7 @@ use core\forms\sf\TournamentAliasesForm;
 use core\forms\sf\TournamentForm;
 use core\repositories\sf\TeamRepository;
 use core\repositories\sf\TournamentRepository;
+use yii\helpers\ArrayHelper;
 
 class TournamentManageService
 {
@@ -85,14 +86,19 @@ class TournamentManageService
         $this->tournaments->remove($tournament);
     }
 
-    public function assignParticipants($slug, array $participants): void
+    public function assignParticipants($slug, $participants): void
     {
         $tournament = $this->getBySlug($slug);
 
-        foreach ($participants as $id) {
-            $participant = $this->teams->get($id);
-            $tournament->assignParticipant($participant->id);
+        if (empty($participants)) {
+            throw new \DomainException('Не выбраны команды для добавления');
         }
+
+        $participants = array_map(function ($id) {
+            return $this->teams->get($id);
+        }, $participants);
+
+        $tournament->assignParticipants(ArrayHelper::getColumn($participants, 'id'));
 
         $this->tournaments->save($tournament);
     }
@@ -102,11 +108,15 @@ class TournamentManageService
         $tournament = $this->getBySlug($slug);
 
         $remove = array_keys(array_filter($remove));
-
-        foreach ($remove as $id) {
-            $participant = $this->teams->get($id);
-            $tournament->removeParticipant($participant->id);
+        if (empty($remove)) {
+            throw new \DomainException('Не выбраны команды для удаления');
         }
+
+        $participants = array_map(function ($id) {
+            return $this->teams->get($id);
+        }, $remove);
+
+        $tournament->removeParticipants(ArrayHelper::getColumn($participants, 'id'));
 
         $this->tournaments->save($tournament);
     }
@@ -115,12 +125,7 @@ class TournamentManageService
     {
         $tournament = $this->getBySlug($slug);
 
-        $entities = [];
-        foreach ($form->aliases as $one) {
-            $entity['id'] = $one->id;
-            $entity['alias'] = $one->alias;
-            $entities[$one->id] = $entity;
-        }
+        $entities = array_combine(ArrayHelper::getColumn($form->aliases, 'id'), ArrayHelper::getColumn($form->aliases, 'alias'));
 
         $tournament->assignAliases($entities);
         $this->tournaments->save($tournament);

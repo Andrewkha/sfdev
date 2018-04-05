@@ -17,23 +17,24 @@ use yii\helpers\ArrayHelper;
  * Class TournamentAliasesForm
  * @package core\forms\sf
  * @property AliasForm[] $aliases
- * @property Tournament $tournament
+ * @property bool $autoprocess
  */
 
 class TournamentAliasesForm extends CompositeForm
 {
-    private $tournament;
+    private $autoprocess;
 
     public function __construct(Tournament $tournament, array $config = [])
     {
         $participants = $tournament->teamAssignments;
+        $this->autoprocess = $tournament->isAutoprocess();
         $aliases = [];
         foreach ($participants as $one) {
-            $aliases[$one->team_id] = new AliasForm($one, $tournament->autoprocess);
+            $aliases[$one->team_id] = new AliasForm($one, $this->autoprocess);
         }
 
         $this->aliases = $aliases;
-        $this->tournament = $tournament;
+
         parent::__construct($config);
     }
 
@@ -41,7 +42,7 @@ class TournamentAliasesForm extends CompositeForm
     {
         return [
             ['aliases', function ($attribute, $params, $validator) {
-                if ($this->tournament->autoprocess) {
+                if ($this->autoprocess) {
                     $values = ArrayHelper::getColumn($this->aliases, 'alias');
                     $uniqueValues = array_unique($values);
                     if ($values != $uniqueValues) {

@@ -149,14 +149,13 @@ class TournamentsController extends Controller
     {
         $tournament = $this->findModel($slug);
 
-        if ($candidates = Yii::$app->request->post('candidates')) {
-            try {
-                $this->tournamentService->assignParticipants($tournament->slug, $candidates);
-                Yii::$app->session->setFlash('success', 'Участники успешно добавлены');
-            } catch (\DomainException $e) {
-                Yii::$app->errorHandler->logException($e);
-                Yii::$app->session->setFlash('error', $e->getMessage());
-            }
+        try {
+            $candidates = Yii::$app->request->post('candidates');
+            $this->tournamentService->assignParticipants($tournament->slug, $candidates);
+            Yii::$app->session->setFlash('success', 'Участники успешно добавлены');
+        } catch (\DomainException $e) {
+            Yii::$app->errorHandler->logException($e);
+            Yii::$app->session->setFlash('error', $e->getMessage());
         }
 
         return $this->redirect(Yii::$app->request->referrer);
@@ -165,14 +164,16 @@ class TournamentsController extends Controller
     public function actionRemoveParticipants($slug)
     {
         $tournament = $this->findModel($slug);
-        $remove = Yii::$app->request->post('participants');
 
-        try {
-            $this->tournamentService->removeParticipants($tournament->slug, $remove);
-            Yii::$app->session->setFlash('success', 'Участники успешно удалены');
-        } catch (\DomainException $e) {
-            Yii::$app->errorHandler->logException($e);
-            Yii::$app->session->setFlash('error', $e->getMessage());
+        if ($remove = Yii::$app->request->post('participants')) {
+
+            try {
+                $this->tournamentService->removeParticipants($tournament->slug, $remove);
+                Yii::$app->session->setFlash('success', 'Участники успешно удалены');
+            } catch (\DomainException $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
+            }
         }
         return $this->redirect(Yii::$app->request->referrer);
     }
@@ -186,7 +187,7 @@ class TournamentsController extends Controller
         try {
             $this->tournamentService->assignAliases($slug, $form);
             Yii::$app->session->setFlash('success', 'Операция выполнена успешно');
-            $this->redirect(['view', 'slug' => $tournament->slug]);
+            return $this->redirect(['view', 'slug' => $tournament->slug]);
         } catch (\DomainException $e) {
             Yii::$app->errorHandler->logException($e);
             Yii::$app->session->setFlash('error', $e->getMessage());
