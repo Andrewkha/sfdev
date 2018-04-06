@@ -10,16 +10,21 @@ namespace core\services\sf;
 
 
 use core\entities\sf\Tournament;
+use core\forms\sf\TournamentAliasesForm;
 use core\forms\sf\TournamentForm;
+use core\repositories\sf\TeamRepository;
 use core\repositories\sf\TournamentRepository;
+use yii\helpers\ArrayHelper;
 
 class TournamentManageService
 {
-    public $tournaments;
+    private $tournaments;
+    private $teams;
 
-    public function __construct(TournamentRepository $tournamentRepository)
+    public function __construct(TournamentRepository $tournamentRepository, TeamRepository $teamRepository)
     {
         $this->tournaments = $tournamentRepository;
+        $this->teams = $teamRepository;
     }
 
     public function create(TournamentForm $form): Tournament
@@ -79,6 +84,51 @@ class TournamentManageService
     {
         $tournament = $this->getBySlug($slug);
         $this->tournaments->remove($tournament);
+    }
+
+    public function assignParticipants($slug, $participants): void
+    {
+        $tournament = $this->getBySlug($slug);
+
+        if (empty($participants)) {
+            throw new \DomainException('Не выбраны команды для добавления');
+        }
+
+        $participants = array_map(function ($id) {
+            return $this->teams->get($id);
+        }, $participants);
+
+        $tournament->assignParticipants(ArrayHelper::getColumn($participants, 'id'));
+
+        $this->tournaments->save($tournament);
+    }
+
+    public function removeParticipants($slug, array $remove): void
+    {
+        $tournament = $this->getBySlug($slug);
+
+        $remove = array_keys(array_filter($remove));
+        if (empty($remove)) {
+            throw new \DomainException('Не выбраны команды для удаления');
+        }
+
+        $participants = array_map(function ($id) {
+            return $this->teams->get($id);
+        }, $remove);
+
+        $tournament->removeParticipants(ArrayHelper::getColumn($participants, 'id'));
+
+        $this->tournaments->save($tournament);
+    }
+
+    public function assignAliases($slug, TournamentAliasesForm $form): void
+    {
+        $tournament = $this->getBySlug($slug);
+
+        $entities = array_combine(ArrayHelper::getColumn($form->aliases, 'id'), ArrayHelper::getColumn($form->aliases, 'alias'));
+
+        $tournament->assignAliases($entities);
+        $this->tournaments->save($tournament);
     }
 
     public function getBySlug($slug): Tournament

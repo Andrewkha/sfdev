@@ -45,7 +45,7 @@ class TournamentSearch extends Model
                 ];
             },
             'sort' => [
-                'defaultOrder' => ['name' => SORT_ASC]
+                'defaultOrder' => ['startDate' => SORT_DESC]
             ]
         ]);
 

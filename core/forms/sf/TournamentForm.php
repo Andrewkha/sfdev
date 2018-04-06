@@ -64,7 +64,7 @@ class TournamentForm extends Model
             ['autoprocessUrl', 'required', 'when' => function ($model) {
                     return $model->autoprocess == true;
                 }, 'whenClient' => "function (attribute, value) {
-                    return $('#country').val() == '1';
+                    return $('#autoprocess').val() == '1';
                 }"
             ],
             ['startDate', 'date', 'format' => 'php:d.m.Y', 'timestampAttribute' => 'startDate'],

@@ -12,8 +12,11 @@ use core\entities\AggregateRoot;
 use core\entities\EventTrait;
 use core\entities\sf\events\TournamentFinished;
 use core\entities\sf\events\TournamentStarted;
+use core\entities\sf\queries\GameQuery;
+use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 use Zelenin\yii\behaviors\Slug;
 
 /**
@@ -35,6 +38,7 @@ use Zelenin\yii\behaviors\Slug;
  * @property Country $country
  * @property Team[] $teams
  * @property TeamTournaments[] $teamAssignments
+ * @property Game[] $games
  */
 
 class Tournament extends ActiveRecord implements AggregateRoot
@@ -106,6 +110,47 @@ class Tournament extends ActiveRecord implements AggregateRoot
         $this->recordEvent(new TournamentFinished($this));
     }
 
+    public function assignParticipants(array $ids): void
+    {
+        $participants = $this->teamAssignments;
+        $participantIds = ArrayHelper::getColumn($participants, 'team_id');
+
+        foreach ($ids as $id) {
+            if (in_array($id, $participantIds)) {
+                continue;
+            }
+
+            $participants[] = TeamTournaments::create($id);
+        }
+        $this->teamAssignments = $participants;
+    }
+
+    public function removeParticipants(array $ids): void
+    {
+        $participants = $this->teamAssignments;
+
+        foreach ($participants as $i => $participant) {
+            if (in_array($participant->team_id, $ids)) {
+                unset($participants[$i]);
+                continue;
+            }
+        }
+        $this->teamAssignments = $participants;
+
+    }
+
+    public function assignAliases(array $entities): void
+    {
+        $assignments = $this->teamAssignments;
+
+        foreach ($assignments as $i => $assignment) {
+            if (array_key_exists($assignment->team_id, $entities)) {
+                $assignments[$i]->editAlias($entities[$assignment->team_id]);
+            }
+        }
+        $this->teamAssignments = $assignments;
+    }
+
     public function isFinished(): bool
     {
         return $this->status === self::STATUS_FINISHED;
@@ -126,6 +171,21 @@ class Tournament extends ActiveRecord implements AggregateRoot
         return $this->winnersForecastDue >= time();
     }
 
+    public function isAutoprocess(): bool
+    {
+        return $this->autoprocess;
+    }
+
+    public function isRegular(): bool
+    {
+        return $this->type === self::TYPE_REGULAR;
+    }
+
+    public function isPlayOff(): bool
+    {
+        return $this->type === self::TYPE_PLAY_OFF;
+    }
+
     public function behaviors()
     {
         return [
@@ -138,6 +198,10 @@ class Tournament extends ActiveRecord implements AggregateRoot
                 'replacement' => '-',
                 'lowercase' => true,
             ],
+            [
+                'class' => SaveRelationsBehavior::class,
+                'relations' => ['teamAssignments'],
+            ]
         ];
     }
 
@@ -148,12 +212,19 @@ class Tournament extends ActiveRecord implements AggregateRoot
 
     public function getTeamAssignments(): ActiveQuery
     {
-        return $this->hasMany(TeamTournaments::class, ['team_id' => 'id']);
+        return $this->hasMany(TeamTournaments::class, ['tournament_id' => 'id']);
     }
 
     public function getTeams(): ActiveQuery
     {
         return $this->hasMany(Team::class, ['id' => 'team_id'])->via('teamAssignments');
+    }
+
+    public function getGames(): GameQuery
+    {
+        /** @var GameQuery $query */
+        $query = $this->hasMany(Game::class, ['tournament_id' => 'id']);
+        return $query;
     }
 
     public static function tableName()
@@ -167,10 +238,15 @@ class Tournament extends ActiveRecord implements AggregateRoot
             'id' => 'ID',
             'name' => 'Название',
             'slug' => 'slug',
+            'tours' => 'Количество туров',
+            'type' => 'Тип',
+            'autoprocess' => 'Автозагрузка результатов',
+            'autoprocessUrl' => 'Источник данных',
             'status' => 'Статус',
             'country_id' => 'Страна',
             'startDate' => 'Дата начала',
             'winnersForecastDue' => 'Прогнозы на победителя до'
         ];
     }
+
 }

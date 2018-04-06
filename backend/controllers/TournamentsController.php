@@ -11,6 +11,7 @@ namespace backend\controllers;
 
 use backend\forms\TournamentSearch;
 use core\entities\sf\Tournament;
+use core\forms\sf\TournamentAliasesForm;
 use core\forms\sf\TournamentForm;
 use core\helpers\TournamentHelper;
 use core\services\sf\TournamentManageService;
@@ -32,6 +33,8 @@ class TournamentsController extends Controller
                     'delete' => ['POST'],
                     'finish' => ['POST'],
                     'start' => ['POST'],
+                    'assign-participants' => ['POST'],
+                    'remove-participants' => ['POST'],
                 ]
             ]
         ];
@@ -140,6 +143,57 @@ class TournamentsController extends Controller
         }
 
         return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionAssignParticipants($slug)
+    {
+        $tournament = $this->findModel($slug);
+
+        try {
+            $candidates = Yii::$app->request->post('candidates');
+            $this->tournamentService->assignParticipants($tournament->slug, $candidates);
+            Yii::$app->session->setFlash('success', 'Участники успешно добавлены');
+        } catch (\DomainException $e) {
+            Yii::$app->errorHandler->logException($e);
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionRemoveParticipants($slug)
+    {
+        $tournament = $this->findModel($slug);
+
+        if ($remove = Yii::$app->request->post('participants')) {
+
+            try {
+                $this->tournamentService->removeParticipants($tournament->slug, $remove);
+                Yii::$app->session->setFlash('success', 'Участники успешно удалены');
+            } catch (\DomainException $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
+            }
+        }
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionAliases($slug)
+    {
+        $tournament = $this->findModel($slug);
+        $form = new TournamentAliasesForm($tournament);
+
+        if ($form->load(Yii::$app->request->post()) && $form->validate())
+        try {
+            $this->tournamentService->assignAliases($slug, $form);
+            Yii::$app->session->setFlash('success', 'Операция выполнена успешно');
+            return $this->redirect(['view', 'slug' => $tournament->slug]);
+        } catch (\DomainException $e) {
+            Yii::$app->errorHandler->logException($e);
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+
+        return $this->render('aliases', ['tournament' => $tournament, 'forms' => $form]);
     }
 
     private function findModel($slug): Tournament

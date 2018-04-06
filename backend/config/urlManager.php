@@ -21,6 +21,8 @@ return [
         '<_c:countries|tournaments>/<_a:create>' => '<_c>/<_a>',
         '<_c:countries|tournaments>/<slug:[\w\-]+>' => '<_c>/view',
         '<_c:countries|tournaments>/<slug:[\w\-]+>/<_a:update|delete>' => '<_c>/<_a>',
+        '<_c:tournaments>/<slug:[\w\-]+>/<_a:assign-participants|remove-participants|aliases>' => '<_c>/<_a>',
+
         '<_c:tournaments>/<slug:[\w\-]+>/<_a:start|finish>' => '<_c>/<_a>',
         '<country_slug:[\w\-]+>/<slug:[\w\-]+>' => 'teams/update',
         '<country_slug:[\w\-]+>/<slug:[\w\-]+>/delete' => 'teams/delete',

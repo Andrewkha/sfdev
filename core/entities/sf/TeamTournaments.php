@@ -8,7 +8,7 @@
 
 namespace core\entities\sf;
 
-
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -17,15 +17,27 @@ use yii\db\ActiveRecord;
  * @property integer $team_id
  * @property integer $tournament_id
  * @property string $alias
+ *
+ * @property Team $team
  */
 class TeamTournaments extends ActiveRecord
 {
-    public function create($team_id): self
+    public static function create($team_id): self
     {
         $assignment = new static();
         $assignment->team_id = $team_id;
 
         return $assignment;
+    }
+
+    public function editAlias($alias): void
+    {
+        $this->alias = $alias;
+    }
+
+    public function getTeam(): ActiveQuery
+    {
+        return $this->hasOne(Team::class, ['id' => 'team_id']);
     }
 
     public function isForTeam($id): bool

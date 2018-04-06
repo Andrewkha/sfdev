@@ -6,10 +6,13 @@
  * Time: 12:17 PM
  */
 
+use backend\widgets\tournament\StandingsWidget;
 use backend\widgets\tournament\StatusManage;
 use core\entities\sf\Tournament;
+use core\helpers\TournamentHelper;
 use kartik\detail\DetailView;
 use yii\helpers\Html;
+use backend\widgets\tournament\ParticipantsManage;
 
 /* @var $this yii\web\View */
 /* @var $tournament Tournament*/
@@ -31,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
-    <?= StatusManage::widget(['tournament' => $tournament]);?>
+    <?= StatusManage::widget(['tournament' => $tournament]); ?>
 
     <div class="row">
         <div class="col-sm-6">
@@ -44,9 +47,30 @@ $this->params['breadcrumbs'][] = $this->title;
                             'id',
                             'name',
                             'slug',
+                            'tours',
+                            [
+                                'attribute' => 'type',
+                                'value' => TournamentHelper::typeName($tournament->type)
+                            ],
+                            'autoprocess:boolean',
+                            [
+                                'attribute' => 'autoprocessUrl',
+                                'value' => Html::tag('p', isset($tournament->autoprocessUrl) ? Html::a($tournament->autoprocessUrl, $tournament->autoprocessUrl) : '') .
+                                Html::a('Назначить псевдонимы', ['aliases', 'slug' => $tournament->slug]),
+                                'format' => 'raw',
+                            ],
                         ],
                     ]) ?>
                 </div>
             </div>
         </div>
+    </div>
+
+    <?php if ($tournament->isNotStarted()) :?>
+        <?= ParticipantsManage::widget(['tournament' => $tournament]); ?>
+    <?php endif;?>
+
+    <?php if ($tournament->isInProgress() || $tournament->isFinished()) : ?>
+        <?= StandingsWidget::widget(['tournament' => $tournament]); ?>
+    <?php endif; ?>
 </div>
