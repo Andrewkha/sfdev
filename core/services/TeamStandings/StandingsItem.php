@@ -87,7 +87,7 @@ class StandingsItem
                 $outcome = GameItem::RESULT_DRAW;
             }
 
-            $this->gameItems[$game->tour] = new GameItem($game->tour, $game->date, $outcome, $homeTeam, $guestTeam, $home, $homeScore, $guestScore);
+            $this->gameItems[$game->tour] = new GameItem($game->tour, $game->date, $outcome, $homeTeam, $guestTeam, $homeScore, $guestScore);
         }
 
     }
