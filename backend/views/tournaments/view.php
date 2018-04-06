@@ -6,6 +6,7 @@
  * Time: 12:17 PM
  */
 
+use backend\widgets\tournament\StandingsWidget;
 use backend\widgets\tournament\StatusManage;
 use core\entities\sf\Tournament;
 use core\helpers\TournamentHelper;
@@ -68,4 +69,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php if ($tournament->isNotStarted()) :?>
         <?= ParticipantsManage::widget(['tournament' => $tournament]); ?>
     <?php endif;?>
+
+    <?php if ($tournament->isInProgress() || $tournament->isFinished()) : ?>
+        <?= StandingsWidget::widget(['tournament' => $tournament]); ?>
+    <?php endif; ?>
 </div>

@@ -9,6 +9,8 @@
 namespace core\entities\sf;
 
 
+use core\entities\sf\queries\GameQuery;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -22,6 +24,9 @@ use yii\db\ActiveRecord;
  * @property integer $homeScore
  * @property integer $guestScore
  * @property integer $date
+ *
+ * @property Team $homeTeam;
+ * @property Team $guestTeam;
  */
 
 class Game extends ActiveRecord
@@ -95,8 +100,27 @@ class Game extends ActiveRecord
         }
     }
 
+    public function getHomeTeam(): ActiveQuery
+    {
+        return $this->hasOne(Team::class, ['id' => 'home_team_id']);
+    }
+
+    public function getGuestTeam(): ActiveQuery
+    {
+        return $this->hasOne(Team::class, ['id' => 'guest_team_id']);
+    }
+
     public static function tableName()
     {
         return '{{%games}}';
+    }
+
+    /**
+     * @return GameQuery
+     */
+
+    public static function find(): GameQuery
+    {
+        return new GameQuery(static::class);
     }
 }

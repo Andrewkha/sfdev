@@ -25,6 +25,8 @@ use core\entities\sf\Team;
  * @property integer $gamesLost
  * @property integer $gamesDraw
  *
+ * @property GameItem[] $gameItems
+ *
  */
 
 class StandingsItem
@@ -38,6 +40,8 @@ class StandingsItem
     public $gamesLost = 0;
     public $gamesDraw = 0;
 
+    public $gameItems;
+
     public function __construct(Team $team)
     {
         $this->team = $team;
@@ -46,30 +50,44 @@ class StandingsItem
     public function setItems(Game $game, bool $home): void
     {
         if ($game->isGameFinished()) {
+            $homeScore = $game->homeScore;
+            $guestScore = $game->guestScore;
             $this->gamesPlayed++;
             if ($home) {
-                $this->goalsScored += $game->homeScore;
-                $this->goalsMissed += $game->guestScore;
+                $this->goalsScored += $homeScore;
+                $this->goalsMissed += $guestScore;
                 $this->points += $game->getHomePoints();
                 if ($game->ifHomeWin()) {
                     $this->gamesWon++;
+                    $outcome = GameItem::RESULT_WIN;
                 } elseif ($game->ifGuestWin()) {
                     $this->gamesLost++;
+                    $outcome = GameItem::RESULT_LOST;
                 }
+                $homeTeam = $this->team->name;
+                $guestTeam = $game->guestTeam->name;
 
             } else {
-                $this->goalsScored += $game->guestScore;
-                $this->goalsMissed += $game->homeScore;
+                $this->goalsScored += $guestScore;
+                $this->goalsMissed += $homeScore;
                 $this->points += $game->getGuestPoints();
                 if ($game->ifHomeWin()) {
                     $this->gamesLost++;
+                    $outcome = GameItem::RESULT_LOST;
                 } elseif ($game->ifGuestWin()) {
                     $this->gamesWon++;
+                    $outcome = GameItem::RESULT_WIN;
                 }
+                $homeTeam = $game->homeTeam->name;
+                $guestTeam = $this->team->name;
             }
+
             if ($game->ifDraw()) {
                 $this->gamesDraw++;
+                $outcome = GameItem::RESULT_DRAW;
             }
+
+            $this->gameItems[$game->tour] = new GameItem($game->tour, $game->date, $outcome, $homeTeam, $guestTeam, $home, $homeScore, $guestScore);
         }
 
     }

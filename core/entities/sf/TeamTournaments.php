@@ -8,8 +8,6 @@
 
 namespace core\entities\sf;
 
-
-use core\entities\sf\queries\TeamTournamentsQuery;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -50,10 +48,5 @@ class TeamTournaments extends ActiveRecord
     public static function tableName()
     {
        return '{{%team_tournament}}';
-    }
-
-    public static function find() : ActiveQuery
-    {
-        return new TeamTournamentsQuery(static::class);
     }
 }

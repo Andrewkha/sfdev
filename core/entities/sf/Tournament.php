@@ -12,7 +12,7 @@ use core\entities\AggregateRoot;
 use core\entities\EventTrait;
 use core\entities\sf\events\TournamentFinished;
 use core\entities\sf\events\TournamentStarted;
-use core\entities\sf\queries\TournamentQuery;
+use core\entities\sf\queries\GameQuery;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -220,9 +220,11 @@ class Tournament extends ActiveRecord implements AggregateRoot
         return $this->hasMany(Team::class, ['id' => 'team_id'])->via('teamAssignments');
     }
 
-    public function getGames(): ActiveQuery
+    public function getGames(): GameQuery
     {
-        return $this->hasMany(Game::class, ['tournament_id' => 'id']);
+        /** @var GameQuery $query */
+        $query = $this->hasMany(Game::class, ['tournament_id' => 'id']);
+        return $query;
     }
 
     public static function tableName()
@@ -247,8 +249,4 @@ class Tournament extends ActiveRecord implements AggregateRoot
         ];
     }
 
-    public static function find(): TournamentQuery
-    {
-        return new TournamentQuery(static::class);
-    }
 }

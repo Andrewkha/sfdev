@@ -11,6 +11,7 @@ namespace core\repositories\sf;
 use core\entities\sf\Tournament;
 use yii\web\NotFoundHttpException;
 use core\dispatchers\EventDispatcher;
+use core\entities\sf\Game;
 
 class TournamentRepository
 {
@@ -73,6 +74,16 @@ class TournamentRepository
         }
 
         $this->eventDispatcher->dispatchAll($tournament->releaseEvents());
+    }
+
+    /**
+     * @param Tournament $tournament
+     * @return Game[]
+     *
+     */
+    public function getFinishedGames(Tournament $tournament): array
+    {
+        return $tournament->getGames()->finished()->with('homeTeam')->with('guestTeam')->orderBy('tour')->all();
     }
 
     public function existsByCountry($id): bool
