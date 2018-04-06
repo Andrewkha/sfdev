@@ -16,9 +16,9 @@ use yii\db\ActiveRecord;
  * Class UserTournaments
  * @package core\entities\sf
  *
- * @var integer $user_id
- * @var integer $tournament_id
- * @var boolean $notification
+ * @property  integer $user_id
+ * @property  integer $tournament_id
+ * @property  boolean $notification
  */
 
 class UserTournaments extends ActiveRecord

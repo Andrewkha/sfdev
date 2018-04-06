@@ -16,6 +16,7 @@ use core\entities\sf\Game;
 use core\entities\sf\Team;
 use core\entities\sf\TeamTournaments;
 use core\entities\sf\Tournament;
+use core\entities\sf\UserTournaments;
 use Zelenin\yii\behaviors\Slug;
 use core\entities\user\User;
 use core\entities\user\UserData;
@@ -108,11 +109,32 @@ class DataTransferController extends Controller
         }
         $this->stdout('Done!' . PHP_EOL);
 
+
+        /** Import UserSTournaments */
+        $this->stdout('Importing users tournaments data' . PHP_EOL);
+        try {
+            $this->usersTournamentsData();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
+
+
         \Yii::$app->db->createCommand("SET foreign_key_checks = 1")->execute();
 
     }
 
-
+    public function actionUsersTournaments()
+    {
+        /** Import UserSTournaments */
+        $this->stdout('Importing users tournaments data' . PHP_EOL);
+        try {
+            $this->usersTournamentsData();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
+    }
 
     public function actionImportGames()
     {
@@ -162,6 +184,36 @@ class DataTransferController extends Controller
             $this->stdout($e->getMessage() . PHP_EOL);
         }
         $this->stdout('Done!' . PHP_EOL);
+    }
+
+    private function usersTournamentsData()
+    {
+        $reader = new \XMLReader();
+
+        if (!$reader->open('console/import/userTournaments.xml')) {
+            throw new \RuntimeException('Can not open the source file');
+        }
+
+        $models = [];
+
+        while ($reader->read()) {
+            if($reader->nodeType == \XMLReader::ELEMENT) {
+                if ($reader->localName == 'userTournament') {
+                    $newModel = new UserTournaments();
+                    $newModel->user_id = $reader->getAttribute('user_id');
+                    $newModel->tournament_id = $reader->getAttribute('tournament_id');
+                    $newModel->notification = $reader->getAttribute('notification');
+                    $models[] = $newModel;
+                }
+            }
+        }
+
+        $reader->close();
+
+        UserTournaments::deleteAll();
+        foreach ($models as $one) {
+            $one->save();
+        }
     }
 
     private function teamTournamentsData()
