@@ -6,6 +6,7 @@
  * Time: 12:17 PM
  */
 
+use backend\widgets\tournament\ForecastStandingsWidget;
 use backend\widgets\tournament\StandingsWidget;
 use backend\widgets\tournament\StatusManage;
 use core\entities\sf\Tournament;
@@ -72,5 +73,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php if ($tournament->isInProgress() || $tournament->isFinished()) : ?>
         <?= StandingsWidget::widget(['tournament' => $tournament]); ?>
+        <?= ForecastStandingsWidget::widget(['tournament' => $tournament]); ?>
     <?php endif; ?>
+
 </div>

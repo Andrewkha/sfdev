@@ -18,6 +18,7 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 use Zelenin\yii\behaviors\Slug;
+use core\entities\user\User;
 
 /**
  * Class Tournament
@@ -39,6 +40,8 @@ use Zelenin\yii\behaviors\Slug;
  * @property Team[] $teams
  * @property TeamTournaments[] $teamAssignments
  * @property Game[] $games
+ * @property User[] $users;
+ * @property UserTournaments $userAssignments
  */
 
 class Tournament extends ActiveRecord implements AggregateRoot
@@ -218,6 +221,16 @@ class Tournament extends ActiveRecord implements AggregateRoot
     public function getTeams(): ActiveQuery
     {
         return $this->hasMany(Team::class, ['id' => 'team_id'])->via('teamAssignments');
+    }
+
+    public function getUserAssignments(): ActiveQuery
+    {
+        return $this->hasMany(UserTournaments::class, ['tournament_id' => 'id']);
+    }
+
+    public function getUsers(): ActiveQuery
+    {
+        return $this->hasMany(User::class, ['id' => 'user_id'])->via('userAssignments');
     }
 
     public function getGames(): GameQuery

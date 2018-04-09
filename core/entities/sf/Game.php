@@ -27,6 +27,7 @@ use yii\db\ActiveRecord;
  *
  * @property Team $homeTeam;
  * @property Team $guestTeam;
+ * @property Forecast[] $forecasts
  */
 
 class Game extends ActiveRecord
@@ -64,7 +65,7 @@ class Game extends ActiveRecord
         return $this->guestPoints;
     }
 
-    public function isGameFinished(): bool
+    public function isFinished(): bool
     {
         if ($this->homeScore !== NULL && $this->guestScore !== NULL) {
             return true;
@@ -75,7 +76,7 @@ class Game extends ActiveRecord
 
     public function ifHomeWin(): ?bool
     {
-        if ($this->isGameFinished() && $this->homeScore > $this->guestScore) {
+        if ($this->isFinished() && $this->homeScore > $this->guestScore) {
             return true;
         } else {
             return null;
@@ -84,7 +85,7 @@ class Game extends ActiveRecord
 
     public function ifGuestWin(): ?bool
     {
-        if ($this->isGameFinished() && $this->homeScore < $this->guestScore) {
+        if ($this->isFinished() && $this->homeScore < $this->guestScore) {
             return true;
         } else {
             return null;
@@ -93,7 +94,7 @@ class Game extends ActiveRecord
 
     public function ifDraw(): ?bool
     {
-        if ($this->isGameFinished() && $this->homeScore == $this->guestScore) {
+        if ($this->isFinished() && $this->homeScore == $this->guestScore) {
             return true;
         } else {
             return null;
@@ -108,6 +109,11 @@ class Game extends ActiveRecord
     public function getGuestTeam(): ActiveQuery
     {
         return $this->hasOne(Team::class, ['id' => 'guest_team_id']);
+    }
+
+    public function getForecasts(): ActiveQuery
+    {
+        return $this->hasMany(Forecast::class, ['game_id' => 'id']);
     }
 
     public static function tableName()

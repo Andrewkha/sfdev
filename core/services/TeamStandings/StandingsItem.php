@@ -49,7 +49,7 @@ class StandingsItem
 
     public function setItems(Game $game, bool $home): void
     {
-        if ($game->isGameFinished()) {
+        if ($game->isFinished()) {
             $homeScore = $game->homeScore;
             $guestScore = $game->guestScore;
             $this->gamesPlayed++;
