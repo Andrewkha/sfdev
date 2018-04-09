@@ -21,7 +21,7 @@ class ForecastGameItem
     public $tour;
     public $points;
 
-    public function __construct(string $homeTeam, string $guestTeam, int $tour, int $date, int $homeScore, int $guestScore, int $homeFScore = null, int $guestFScore = null, int $points = null)
+    public function __construct(string $homeTeam, string $guestTeam, $tour, $date, $homeScore, $guestScore, $homeFScore, $guestFScore, $points)
     {
         $this->homeTeam = $homeTeam;
         $this->guestTeam = $guestTeam;
