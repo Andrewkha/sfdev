@@ -10,18 +10,19 @@ namespace core\services\UsersStandings;
 use core\entities\sf\Forecast;
 use core\entities\sf\Game;
 use core\entities\user\User;
+use yii\data\ArrayDataProvider;
 
 /**
  * Class ForecastStandingsItem
  * @package core\services\UsersStandings
  *
  * @property User $user
- * @property ForecastGameItem[] $forecastGamesItem
  * @property integer $points
  * @property integer $exactCount
  * @property integer $scoreDiffCount
  * @property integer $outcomeCount
- * @property integer $forecastCount;
+ * @property integer $forecastCount
+ * @property ForecastTour[] $forecastTours
  */
 
 class ForecastStandingsItem
@@ -33,7 +34,7 @@ class ForecastStandingsItem
     public $outcomeCount = 0;
     public $forecastCount = 0;
 
-    public $forecastGameItems;
+    public $forecastTours;
 
     public function __construct(User $user)
     {
@@ -59,9 +60,9 @@ class ForecastStandingsItem
         }
 
         if ($needGameDetails) {
+            $forecastTour = $this->getForecastTours($game->tour);
             if ($forecast) {
-                $this->forecastGameItems[$game->tour] = new ForecastGameItem(
-                    $game->homeTeam->name,
+                $forecastTour->addGame($game->homeTeam->name,
                     $game->guestTeam->name,
                     $game->tour,
                     $game->date,
@@ -72,8 +73,7 @@ class ForecastStandingsItem
                     $forecast->getPoints()
                 );
             } else {
-                $this->forecastGameItems[$game->tour] = new ForecastGameItem(
-                    $game->homeTeam->name,
+                $forecastTour->addGame($game->homeTeam->name,
                     $game->guestTeam->name,
                     $game->tour,
                     $game->date,
@@ -85,5 +85,23 @@ class ForecastStandingsItem
                 );
             }
         }
+    }
+
+    private function getForecastTours($tour): ForecastTour
+    {
+        if (isset($this->forecastTours[$tour])) {
+            return $this->forecastTours[$tour];
+        } else {
+            $this->forecastTours[$tour] = new ForecastTour($tour);
+            return $this->forecastTours[$tour];
+        }
+    }
+
+    public function forecastToursDataProvider(): ArrayDataProvider
+    {
+        return new ArrayDataProvider([
+            'allModels' => $this->forecastTours,
+            'pagination' => false
+        ]);
     }
 }
