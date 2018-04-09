@@ -15,7 +15,7 @@ use kartik\grid\GridView;
 /* @var $this View */
 ?>
 <div class="row">
-    <div class="col-xs-12 col-lg-8">
+    <div class="col-xs-12">
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'bordered' => true,
@@ -41,8 +41,9 @@ use kartik\grid\GridView;
 
                 [
                     'header' => 'Пользователь',
+                    'vAlign' => 'middle',
                     'value' => function (ForecastStandingsItem $item) {
-                        return $this->render('_forecastByTour', ['item' => $item]);
+                        return $this->render('_forecastSummaryByTour', ['item' => $item]);
                     },
                     'format' => 'raw'
                 ],
@@ -112,6 +113,26 @@ use kartik\grid\GridView;
                         'class' => 'col-xs-1'
                     ],
                 ],
+
+                [
+                    'header' => 'По турам',
+                    'value' => function (ForecastStandingsItem $item) {
+                        $string = '';
+                        $count = 1;
+                        foreach ($item->forecastTours as $one) {
+                            $string .= $this->render('_forecastStatusByTour', ['tour' => $one]);
+                            if ($count % 15 == 0) {
+                                $string .= '<br>';
+                            }
+                            $count++;
+                        }
+
+                        return $string;
+                    },
+                    'hAlign' => 'center',
+                    'vAlign' => 'middle',
+                    'format' => 'raw'
+                ]
             ]
         ]);?>
     </div>

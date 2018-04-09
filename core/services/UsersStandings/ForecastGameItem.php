@@ -36,6 +36,6 @@ class ForecastGameItem
 
     public function isForecastSet(): bool
     {
-        return ($this->homeForecastScore && $this->guestForecastScore);
+        return ($this->homeForecastScore !== NULL && $this->guestForecastScore !== NULL);
     }
 }

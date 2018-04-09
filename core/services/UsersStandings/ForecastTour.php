@@ -7,6 +7,7 @@
  */
 
 namespace core\services\UsersStandings;
+use yii\data\ArrayDataProvider;
 
 /**
  * Class ForecastTour
@@ -82,5 +83,13 @@ class ForecastTour
     public function isTourForecastEmpty(): bool
     {
         return $this->getTourForecastStatus() === self::FORECAST_STATUS_EMPTY;
+    }
+
+    public function gameItemsDataProvider(): ArrayDataProvider
+    {
+        return new ArrayDataProvider([
+            'allModels' => $this->forecastGamesItem,
+            'pagination' => false
+        ]);
     }
 }

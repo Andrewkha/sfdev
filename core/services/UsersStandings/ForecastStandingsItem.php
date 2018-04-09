@@ -58,9 +58,9 @@ class ForecastStandingsItem
             $this->forecastCount++;
             $this->points += $forecast->getPoints();
         }
+        $forecastTour = $this->getForecastTours($game->tour);
 
         if ($needGameDetails) {
-            $forecastTour = $this->getForecastTours($game->tour);
             if ($forecast) {
                 $forecastTour->addGame($game->homeTeam->name,
                     $game->guestTeam->name,
