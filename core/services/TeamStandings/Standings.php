@@ -11,7 +11,6 @@ namespace core\services\TeamStandings;
 use core\entities\sf\Game;
 use core\entities\sf\Team;
 use core\entities\sf\Tournament;
-use core\repositories\sf\TournamentRepository;
 use core\services\TeamStandings\calculator\GameCalculator;
 use yii\helpers\ArrayHelper;
 
@@ -30,9 +29,9 @@ class Standings
     private $standingsItems;
     private $calculator;
 
-    public function __construct(Tournament $tournament, TournamentRepository $repository, bool $needDetails)
+    public function __construct(Tournament $tournament, bool $needDetails)
     {
-        $this->games = $repository->getFinishedGames($tournament);
+        $this->games = $tournament->getGames()->finished()->withParticipants()->orderBy('tour')->all();
         foreach ($tournament->teams as $team) {
             $this->setStandingItem($team);
         }

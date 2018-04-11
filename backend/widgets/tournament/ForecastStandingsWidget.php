@@ -8,9 +8,6 @@
 
 namespace backend\widgets\tournament;
 
-
-use core\repositories\sf\ForecastRepository;
-use core\repositories\sf\TournamentRepository;
 use core\services\UsersStandings\ForecastStandings;
 use yii\data\ArrayDataProvider;
 use yii\base\Widget;
@@ -18,19 +15,10 @@ use yii\base\Widget;
 class ForecastStandingsWidget extends Widget
 {
     public $tournament;
-    private $tournamentRepository;
-    private $forecastRepository;
-
-    public function __construct(TournamentRepository $tournamentRepository, ForecastRepository $forecastRepository, array $config = [])
-    {
-        $this->forecastRepository = $forecastRepository;
-        $this->tournamentRepository = $tournamentRepository;
-        parent::__construct($config);
-    }
 
     public function run()
     {
-        $standings = new ForecastStandings($this->tournament, $this->tournamentRepository, $this->forecastRepository, true);
+        $standings = new ForecastStandings($this->tournament, true);
         $dataProvider = new ArrayDataProvider([
             'allModels' => $standings->generate(),
             'sort' => false

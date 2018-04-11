@@ -15,6 +15,7 @@ use core\repositories\sf\TournamentRepository;
 use core\services\UsersStandings\calculator\ForecastCalculator;
 use core\services\UsersStandings\calculator\ForecastCalculatorInterface;
 use yii\helpers\ArrayHelper;
+use core\entities\sf\Game;
 
 /**
  * Class ForecastStandings
@@ -31,18 +32,14 @@ class ForecastStandings
 {
     private $calculatorPrimary;
     private $tournament;
-    private $tournamentRepository;
-    private $forecastRepository;
     public $forecastStandingsItems;
 
-    public function __construct(Tournament $tournament, TournamentRepository $repository, ForecastRepository $forecastRepository, bool $needDetails)
+    public function __construct(Tournament $tournament, bool $needDetails)
     {
         foreach ($tournament->users as $user) {
             $this->setStandingItem($user);
         }
 
-        $this->tournamentRepository = $repository;
-        $this->forecastRepository = $forecastRepository;
         $this->tournament = $tournament;
         $this->calculatorPrimary = new ForecastCalculator();
         $this->prepare($needDetails);
@@ -50,12 +47,13 @@ class ForecastStandings
 
     public function prepare(bool $needGameDetails): void
     {
-        $games = $this->tournamentRepository->getAllGames($this->tournament);
+        /** @var Game[] $games */
+        $games = $this->tournament->getGames()->withParticipants()->orderBy(['tour' => SORT_ASC, 'date' => SORT_ASC])->all();
         $users = $this->tournament->users;
 
         foreach ($users as $user) {
             $standingsItem = $this->getStandingsItem($user->id);
-            $forecasts = $this->forecastRepository->forUserAndGames($user->id, ArrayHelper::getColumn($games, 'id'));
+            $forecasts = $user->getForecasts()->where(['game_id' => ArrayHelper::getColumn($games, 'id')])->indexBy('game_id')->all();
 
             foreach ($games as $game) {
                 if ($forecast = ArrayHelper::getValue($forecasts, $game->id)) {

@@ -18,4 +18,11 @@ class GameQuery extends ActiveQuery
         return $this->andWhere(['not', ['homeScore' => NULL]])
         ->andWhere(['not', ['guestScore' => NULL]]);
     }
+
+    public function withParticipants()
+    {
+        return $this->with(['homeTeam', 'guestTeam']);
+    }
+
+
 }

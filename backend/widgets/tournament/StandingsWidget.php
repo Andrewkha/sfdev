@@ -10,7 +10,6 @@ namespace backend\widgets\tournament;
 
 
 use core\entities\sf\Tournament;
-use core\repositories\sf\TournamentRepository;
 use yii\base\Widget;
 use core\services\TeamStandings\Standings;
 use yii\data\ArrayDataProvider;
@@ -26,17 +25,15 @@ use yii\data\ArrayDataProvider;
 class StandingsWidget extends Widget
 {
     public $tournament;
-    private $repository;
 
-    public function __construct(TournamentRepository $repository, array $config = [])
+    public function __construct(array $config = [])
     {
-        $this->repository = $repository;
         parent::__construct($config);
     }
 
     public function run()
     {
-        $standings = new Standings($this->tournament, $this->repository, true);
+        $standings = new Standings($this->tournament,true);
         $dataProvider = new ArrayDataProvider([
             'allModels' => $standings->generate(),
             'sort' => false
