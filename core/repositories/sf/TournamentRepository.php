@@ -86,8 +86,39 @@ class TournamentRepository
         return $tournament->getGames()->finished()->with('homeTeam')->with('guestTeam')->orderBy('tour')->all();
     }
 
+    /**
+     * @param Tournament $tournament
+     * @return Game[]
+     */
+
+    public function getAllGames(Tournament $tournament): array
+    {
+        return $tournament->getGames()->with('homeTeam')->with('guestTeam')->orderBy(['tour' => SORT_ASC, 'date' => SORT_ASC])->all();
+    }
+
     public function existsByCountry($id): bool
     {
         return Tournament::find()->andWhere(['country_id' => $id])->exists();
+    }
+
+    public function getNextTour(Tournament $tournament)
+    {
+        if ($tournament->isFinished()) {
+            return null;
+        }
+        $minTour = $tournament->getGames()->where(['>', 'date', time()])->min('tour');
+        if ($minTour == $tournament->tours) {
+            return false;
+        }
+        while ($minTour < $tournament->tours) {
+            $games = $tournament->getGames()->andWhere(['tour' => $minTour])->finished()->count();
+            if ($games > 0) {
+                $minTour++;
+            } else {
+                break;
+            }
+        }
+
+        return $minTour;
     }
 }

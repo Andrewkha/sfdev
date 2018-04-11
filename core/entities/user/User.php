@@ -3,6 +3,7 @@ namespace core\entities\user;
 
 use core\entities\AggregateRoot;
 use core\entities\EventTrait;
+use core\entities\sf\Forecast;
 use core\entities\user\events\PasswordResetRequestSubmitted;
 use core\entities\user\events\UserSignupConfirmed;
 use core\entities\user\events\UserSignupRequested;
@@ -10,6 +11,7 @@ use core\entities\user\events\UserCreatedByAdmin;
 use core\services\auth\TokensManager;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 use yii\web\UploadedFile;
@@ -244,7 +246,10 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
         return $this->getAuthKey() === $authKey;
     }
 
-
+    public function getForecasts(): ActiveQuery
+    {
+        return$this->hasMany(Forecast::class, ['user_id' => 'id']);
+    }
 
     public function afterFind(): void
     {

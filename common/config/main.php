@@ -10,8 +10,8 @@ return [
     'components' => [
         'formatter' => [
             'dateFormat'     => 'php:d.m.Y',
-            'datetimeFormat' => 'php:d.m.Y в H:i:s',
-            'timeFormat'     => 'php:H:i:s',
+            'datetimeFormat' => 'php:d.m.Y H:i',
+            'timeFormat'     => 'php:H:i',
             'nullDisplay' => '-'
         ],
         'cache' => [
