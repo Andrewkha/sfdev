@@ -12,11 +12,14 @@ namespace console\controllers;
 use core\access\Rbac;
 use core\entities\sf\Country;
 use core\entities\sf\Forecast;
+use core\entities\sf\ForecastReminder;
 use core\entities\sf\Game;
 use core\entities\sf\Team;
 use core\entities\sf\TeamTournaments;
 use core\entities\sf\Tournament;
+use core\entities\sf\TourResultNotification;
 use core\entities\sf\UserTournaments;
+use core\entities\sf\WinnersForecast;
 use Zelenin\yii\behaviors\Slug;
 use core\entities\user\User;
 use core\entities\user\UserData;
@@ -119,8 +122,66 @@ class DataTransferController extends Controller
         }
         $this->stdout('Done!' . PHP_EOL);
 
+        /** Import ForecastReminders*/
+        $this->stdout('Importing forecast reminders data' . PHP_EOL);
+        try {
+            $this->forecastReminders();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
+
+        /** Import tour result notifications*/
+        $this->stdout('Importing tour result notifications data' . PHP_EOL);
+        try {
+            $this->tourResultNotifications();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
+
+        /** Import tour winners forecasts */
+        $this->stdout('Importing winners forecasts data' . PHP_EOL);
+        try {
+            $this->winnersForecasts();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
+
 
         \Yii::$app->db->createCommand("SET foreign_key_checks = 1")->execute();
+
+    }
+
+    public function actionNotificationsRemindersWinners()
+    {
+        /** Import ForecastReminders*/
+        $this->stdout('Importing forecast reminders data' . PHP_EOL);
+        try {
+            $this->forecastReminders();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
+
+        /** Import tour result notifications*/
+        $this->stdout('Importing tour result notifications data' . PHP_EOL);
+        try {
+            $this->tourResultNotifications();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
+
+        /** Import tour winners forecasts */
+        $this->stdout('Importing winners forecasts data' . PHP_EOL);
+        try {
+            $this->winnersForecasts();
+        } catch (\Exception $e) {
+            $this->stdout($e->getMessage() . PHP_EOL);
+        }
+        $this->stdout('Done!' . PHP_EOL);
 
     }
 
@@ -539,6 +600,101 @@ class DataTransferController extends Controller
             /**
              * @var $one Forecast
              */
+            $one->save();
+        }
+    }
+
+    private function forecastReminders()
+    {
+        $reader = new \XMLReader();
+
+        if (!$reader->open('console/import/forecastReminders.xml')) {
+            throw new \RuntimeException('Can not open the source file');
+        }
+
+        $models = [];
+
+        while ($reader->read()) {
+            if($reader->nodeType == \XMLReader::ELEMENT) {
+                if ($reader->localName == 'forecastReminder') {
+                    $newModel = new ForecastReminder();
+                    $newModel->user_id = $reader->getAttribute('user_id');
+                    $newModel->tournament_id = $reader->getAttribute('tournament_id');
+                    $newModel->tour = $reader->getAttribute('tour');
+                    $newModel->reminders = $reader->getAttribute('reminders');
+                    $newModel->date = $reader->getAttribute('date');
+                    $models[] = $newModel;
+                }
+            }
+        }
+
+        $reader->close();
+
+        ForecastReminder::deleteAll();
+        foreach ($models as $one) {
+            $one->save();
+        }
+    }
+
+
+    private function tourResultNotifications()
+    {
+        $reader = new \XMLReader();
+
+        if (!$reader->open('console/import/tourResultNotifications.xml')) {
+            throw new \RuntimeException('Can not open the source file');
+        }
+
+        $models = [];
+
+        while ($reader->read()) {
+            if($reader->nodeType == \XMLReader::ELEMENT) {
+                if ($reader->localName == 'notification') {
+                    $newModel = new TourResultNotification();
+                    $newModel->tournament_id = $reader->getAttribute('tournament_id');
+                    $newModel->tour = $reader->getAttribute('tour');
+                    $newModel->date = $reader->getAttribute('date');
+                    $models[] = $newModel;
+                }
+            }
+        }
+
+        $reader->close();
+
+        TourResultNotification::deleteAll();
+        foreach ($models as $one) {
+            $one->save();
+        }
+    }
+
+    private function winnersForecasts()
+    {
+        $reader = new \XMLReader();
+
+        if (!$reader->open('console/import/winnersForecasts.xml')) {
+            throw new \RuntimeException('Can not open the source file');
+        }
+
+        $models = [];
+
+        while ($reader->read()) {
+            if($reader->nodeType == \XMLReader::ELEMENT) {
+                if ($reader->localName == 'winnersForecast') {
+                    $newModel = new WinnersForecast();
+                    $newModel->user_id = $reader->getAttribute('user_id');
+                    $newModel->tournament_id = $reader->getAttribute('tournament_id');
+                    $newModel->team_id = $reader->getAttribute('team_id');
+                    $newModel->position = $reader->getAttribute('position');
+                    $newModel->date = $reader->getAttribute('date');
+                    $models[] = $newModel;
+                }
+            }
+        }
+
+        $reader->close();
+
+        WinnersForecast::deleteAll();
+        foreach ($models as $one) {
             $one->save();
         }
     }
