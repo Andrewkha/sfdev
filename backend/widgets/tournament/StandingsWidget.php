@@ -36,7 +36,7 @@ class StandingsWidget extends Widget
 
     public function run()
     {
-        $standings = new Standings($this->tournament, $this->repository);
+        $standings = new Standings($this->tournament, $this->repository, true);
         $dataProvider = new ArrayDataProvider([
             'allModels' => $standings->generate(),
             'sort' => false

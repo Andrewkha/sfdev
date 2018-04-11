@@ -7,6 +7,7 @@
  */
 
 namespace core\services\UsersStandings;
+
 use core\entities\sf\Tournament;
 use core\entities\user\User;
 use core\repositories\sf\ForecastRepository;
@@ -34,18 +35,20 @@ class ForecastStandings
     private $forecastRepository;
     public $forecastStandingsItems;
 
-    public function __construct(Tournament $tournament, TournamentRepository $repository, ForecastRepository $forecastRepository)
+    public function __construct(Tournament $tournament, TournamentRepository $repository, ForecastRepository $forecastRepository, bool $needDetails)
     {
         foreach ($tournament->users as $user) {
             $this->setStandingItem($user);
         }
+
         $this->tournamentRepository = $repository;
         $this->forecastRepository = $forecastRepository;
         $this->tournament = $tournament;
         $this->calculatorPrimary = new ForecastCalculator();
+        $this->prepare($needDetails);
     }
 
-    public function generate(bool $needGameDetails)
+    public function prepare(bool $needGameDetails): void
     {
         $games = $this->tournamentRepository->getAllGames($this->tournament);
         $users = $this->tournament->users;
@@ -65,20 +68,21 @@ class ForecastStandings
         }
 
         ArrayHelper::multisort($this->forecastStandingsItems, ['points', 'exactCount', 'scoreDiffCount'], [SORT_DESC, SORT_DESC, SORT_DESC], [SORT_NUMERIC, SORT_NUMERIC, SORT_NUMERIC]);
+    }
 
+    public function generate(): array
+    {
         return $this->forecastStandingsItems;
     }
 
     public function getWinners()
     {
-        $this->generate(false);
-        return array_slice($this->forecastStandingsItems, 0, 3, true);
+        return ArrayHelper::getColumn(array_slice($this->forecastStandingsItems, 0, 3, true), 'user');
     }
 
     public function getWinner()
     {
-        $this->generate(false);
-        return array_slice($this->forecastStandingsItems, 0, 1, true);
+        return ArrayHelper::getColumn(array_slice($this->forecastStandingsItems, 0, 1, true), 'user');
     }
 
     public function getPosition(User $user)

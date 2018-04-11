@@ -47,7 +47,7 @@ class StandingsItem
         $this->team = $team;
     }
 
-    public function setItems(Game $game, bool $home): void
+    public function setItems(Game $game, bool $home, bool $needDetails): void
     {
         if ($game->isFinished()) {
             $homeScore = $game->homeScore;
@@ -87,8 +87,9 @@ class StandingsItem
                 $outcome = GameItem::RESULT_DRAW;
             }
 
-            $this->gameItems[$game->tour] = new GameItem($game->tour, $game->date, $outcome, $homeTeam, $guestTeam, $homeScore, $guestScore);
+            if ($needDetails) {
+                $this->gameItems[$game->tour] = new GameItem($game->tour, $game->date, $outcome, $homeTeam, $guestTeam, $homeScore, $guestScore);
+            }
         }
-
     }
 }
