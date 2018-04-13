@@ -22,7 +22,52 @@ use yii\helpers\Html;
     'options' => ['tabindex' => false],
     'size' => Modal::SIZE_DEFAULT,
 ]); ?>
+
+<h2 class = 'text-center'><?= $item->user->username;?></h2>
+
+<?= Html::tag('h4', 'Прогноз - призеры турнира', ['class' => 'text-center'])?>
+
 <div class = "text-center">
+    <?php if ($item->forecastedWinnersDataProvider()->totalCount > 0): ?>
+        <?= GridView::widget([
+            'dataProvider' => $item->forecastedWinnersDataProvider(),
+            'showPageSummary' => true,
+            'summary' => false,
+            'condensed' => true,
+            'columns' => [
+                [
+                    'attribute' => 'position',
+                    'header' => 'Место',
+                    'headerOptions' => [
+                        'class' => 'kv-align-center',
+                    ],
+                    'vAlign' => 'middle',
+                    'options' => [
+                        'class' => 'col-xs-6'
+                    ],
+                ],
+
+                [
+                    'attribute' => 'team.name',
+                    'header' => 'Команда',
+                    'headerOptions' => [
+                        'class' => 'kv-align-center',
+                    ],
+                    'vAlign' => 'middle',
+                    'options' => [
+                        'class' => 'col-xs-6'
+                    ],
+                ]
+            ]
+        ]);?>
+    <?php else :?>
+        <?= Html::tag('h5', 'Прогноз не сделан', ['class' => 'text-center'])?>
+    <?php endif; ?>
+
+    <hr>
+
+    <?= Html::tag('h4', 'Очки по турам', ['class' => 'text-center'])?>
+
     <?= GridView::widget([
         'dataProvider' => $item->forecastToursDataProvider(),
         'showPageSummary' => true,

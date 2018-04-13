@@ -39,7 +39,7 @@ class Forecast extends ActiveRecord
 
     private $points;
 
-    public function assignPoints(int $points)
+    public function assignPoints($points)
     {
         $this->points = $points;
     }

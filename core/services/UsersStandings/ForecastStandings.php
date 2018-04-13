@@ -10,21 +10,18 @@ namespace core\services\UsersStandings;
 
 use core\entities\sf\Tournament;
 use core\entities\user\User;
-use core\repositories\sf\ForecastRepository;
-use core\repositories\sf\TournamentRepository;
 use core\services\UsersStandings\calculator\ForecastCalculator;
-use core\services\UsersStandings\calculator\ForecastCalculatorInterface;
 use yii\helpers\ArrayHelper;
 use core\entities\sf\Game;
+use core\entities\sf\Team;
 
 /**
  * Class ForecastStandings
  * @package core\services\UsersStandings
  *
  * @property Tournament $tournament
- * @property TournamentRepository $tournamentRepository
- * @property ForecastRepository $forecastRepository
- * @property ForecastCalculatorInterface $calculator
+ * @property ForecastCalculator $calculatorPrimary
+ * @property Team[] $winners
  * @property ForecastStandingsItem[] $forecastStandingsItems
  */
 
@@ -32,14 +29,15 @@ class ForecastStandings
 {
     private $calculatorPrimary;
     private $tournament;
+    private $winners;
     public $forecastStandingsItems;
 
-    public function __construct(Tournament $tournament, bool $needDetails)
+    public function __construct(Tournament $tournament, bool $needDetails, $winners)
     {
         foreach ($tournament->users as $user) {
             $this->setStandingItem($user);
         }
-
+        $this->winners = $winners;
         $this->tournament = $tournament;
         $this->calculatorPrimary = new ForecastCalculator();
         $this->prepare($needDetails);
@@ -54,6 +52,7 @@ class ForecastStandings
         foreach ($users as $user) {
             $standingsItem = $this->getStandingsItem($user->id);
             $forecasts = $user->getForecasts()->where(['game_id' => ArrayHelper::getColumn($games, 'id')])->indexBy('game_id')->all();
+            $standingsItem->forecastedWinners = $user->getWinnersForecasts()->andWhere(['tournament_id' => $this->tournament->id])->with('team')->orderBy('position')->all();
 
             foreach ($games as $game) {
                 if ($forecast = ArrayHelper::getValue($forecasts, $game->id)) {

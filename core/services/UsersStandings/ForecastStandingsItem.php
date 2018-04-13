@@ -34,6 +34,7 @@ class ForecastStandingsItem
     public $outcomeCount = 0;
     public $forecastCount = 0;
 
+    public $forecastedWinners;
     public $forecastTours;
 
     public function __construct(User $user)
@@ -101,6 +102,14 @@ class ForecastStandingsItem
     {
         return new ArrayDataProvider([
             'allModels' => $this->forecastTours,
+            'pagination' => false
+        ]);
+    }
+
+    public function forecastedWinnersDataProvider(): ArrayDataProvider
+    {
+        return new ArrayDataProvider([
+            'allModels' => $this->forecastedWinners,
             'pagination' => false
         ]);
     }

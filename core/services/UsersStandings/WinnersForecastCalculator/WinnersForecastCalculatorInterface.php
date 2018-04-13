@@ -8,10 +8,8 @@
 
 namespace core\services\UsersStandings\WinnersForecastCalculator;
 
-use core\entities\user\User;
-use core\entities\sf\Tournament;
 
 interface WinnersForecastCalculatorInterface
 {
-    public function assignForecastPoints(Tournament $tournament, User $user);
+    public function assignForecastPoints($forecastedWinners, $winners);
 }

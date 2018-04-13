@@ -8,9 +8,18 @@
 
 namespace backend\widgets\tournament;
 
+use core\entities\sf\Tournament;
+use core\services\TeamStandings\Standings;
 use core\services\UsersStandings\ForecastStandings;
 use yii\data\ArrayDataProvider;
 use yii\base\Widget;
+
+/**
+ * Class ForecastStandingsWidget
+ * @package backend\widgets\tournament
+ *
+ * @property Tournament $tournament
+ */
 
 class ForecastStandingsWidget extends Widget
 {
@@ -18,9 +27,13 @@ class ForecastStandingsWidget extends Widget
 
     public function run()
     {
-        $standings = new ForecastStandings($this->tournament, true);
+        $standings = new Standings($this->tournament, false);
+        $winners = $standings->getWinners();
+
+        $forecastStandings = new ForecastStandings($this->tournament, true, $winners);
+
         $dataProvider = new ArrayDataProvider([
-            'allModels' => $standings->generate(),
+            'allModels' => $forecastStandings->generate(),
             'sort' => false
         ]);
 

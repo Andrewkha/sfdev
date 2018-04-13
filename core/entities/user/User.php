@@ -4,6 +4,7 @@ namespace core\entities\user;
 use core\entities\AggregateRoot;
 use core\entities\EventTrait;
 use core\entities\sf\Forecast;
+use core\entities\sf\WinnersForecast;
 use core\entities\user\events\PasswordResetRequestSubmitted;
 use core\entities\user\events\UserSignupConfirmed;
 use core\entities\user\events\UserSignupRequested;
@@ -37,8 +38,11 @@ use yiidreamteam\upload\ImageUploadBehavior;
  * @property integer $updated_at
  * @property UserData $userData
  *
+ * @property Forecast[] $forecasts
+ * @property WinnersForecast[] $winnersForecasts
  * @mixin ImageUploadBehavior
  */
+
 class User extends ActiveRecord implements IdentityInterface, AggregateRoot
 {
 
@@ -248,7 +252,12 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
 
     public function getForecasts(): ActiveQuery
     {
-        return$this->hasMany(Forecast::class, ['user_id' => 'id']);
+        return $this->hasMany(Forecast::class, ['user_id' => 'id']);
+    }
+
+    public function getWinnersForecasts(): ActiveQuery
+    {
+        return $this->hasMany(WinnersForecast::class, ['user_id' => 'id']);
     }
 
     public function afterFind(): void

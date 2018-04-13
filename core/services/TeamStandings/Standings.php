@@ -21,6 +21,7 @@ use yii\helpers\ArrayHelper;
  * @property Game[] $games
  * @property StandingsItem[] $standingsItems
  * @property GameCalculator $calculator
+ * @property Tournament $tournament
  */
 
 class Standings
@@ -28,13 +29,17 @@ class Standings
     private $games;
     private $standingsItems;
     private $calculator;
+    private $tournament;
 
     public function __construct(Tournament $tournament, bool $needDetails)
     {
+        $this->tournament = $tournament;
         $this->games = $tournament->getGames()->finished()->withParticipants()->orderBy('tour')->all();
+
         foreach ($tournament->teams as $team) {
             $this->setStandingItem($team);
         }
+
         $this->calculator = new GameCalculator($tournament);
         $this->prepare($needDetails);
     }
@@ -57,9 +62,13 @@ class Standings
         return $this->standingsItems;
     }
 
-    public function getWinners()
+    public function getWinners(): array
     {
-        return ArrayHelper::getColumn(array_slice($this->standingsItems, 0, 3, true), 'team');
+        if ($this->tournament->isFinished()) {
+            return ArrayHelper::getColumn(array_slice($this->standingsItems, 0, 3, true), 'team');
+        } else {
+            return [];
+        }
     }
 
     private function setStandingItem(Team $team)

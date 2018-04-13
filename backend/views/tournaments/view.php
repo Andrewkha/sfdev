@@ -23,8 +23,8 @@ $this->title = $tournament->name;
 $this->params['breadcrumbs'][] = ['label' => 'Турниры', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="tournament-view">
 
+<div class="tournament-view">
     <p>
         <?= Html::a('Изменить', ['update', 'slug' => $tournament->slug], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Удалить', ['delete', 'slug' => $tournament->slug], [

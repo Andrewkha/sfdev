@@ -8,8 +8,10 @@
 
 namespace core\services\UsersStandings\WinnersForecastCalculator;
 
-
-class StandardWinnersForecastCalculator
+class StandardWinnersForecastCalculator implements WinnersForecastCalculatorInterface
 {
+    public function assignForecastPoints($forecastedWinners, $winners)
+    {
 
+    }
 }

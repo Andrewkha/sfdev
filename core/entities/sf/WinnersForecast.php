@@ -46,6 +46,6 @@ class WinnersForecast extends ActiveRecord
 
     public function getTeam(): ActiveQuery
     {
-        return $this->hasOne(Team::class, ['id' => 'tournament_id']);
+        return $this->hasOne(Team::class, ['id' => 'team_id']);
     }
 }
