@@ -18,17 +18,21 @@ use yii\data\ArrayDataProvider;
  *
  * @property User $user
  * @property integer $points
+ * @property integer $forecastWinnersPoints
  * @property integer $exactCount
  * @property integer $scoreDiffCount
  * @property integer $outcomeCount
  * @property integer $forecastCount
  * @property ForecastTour[] $forecastTours
+ * @property WinnersForecastResultItem[] $forecastedWinnersResult
+ *
  */
 
 class ForecastStandingsItem
 {
     public $user;
     public $points = 0;
+    public $forecastWinnersPoints = 0;
     public $exactCount = 0;
     public $scoreDiffCount = 0;
     public $outcomeCount = 0;
@@ -36,6 +40,8 @@ class ForecastStandingsItem
 
     public $forecastedWinners;
     public $forecastTours;
+
+    public $forecastedWinnersResult = [];
 
     public function __construct(User $user)
     {

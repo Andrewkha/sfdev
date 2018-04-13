@@ -64,7 +64,7 @@ class Forecast extends ActiveRecord
         return '{{%forecasts}}';
     }
 
-    private function forecastOutcome(int $homeScore, int $guestScore): string
+    private function forecastOutcome($homeScore, $guestScore): string
     {
         if ($homeScore === NULL || $guestScore === NULL) {
             return '';
@@ -86,22 +86,22 @@ class Forecast extends ActiveRecord
         return self::OUTCOME_NONE;
     }
 
-    public function isFullMatch(int $homeScore, int $guestScore): bool
+    public function isFullMatch($homeScore, $guestScore): bool
     {
         return $this->forecastOutcome($homeScore, $guestScore) === self::OUTCOME_FULL_MATCH;
     }
 
-    public function isScoreDiff(int $homeScore, int $guestScore): bool
+    public function isScoreDiff($homeScore, $guestScore): bool
     {
         return $this->forecastOutcome($homeScore, $guestScore) === self::OUTCOME_SCORE_DIFF;
     }
 
-    public function isWinner(int $homeScore, int $guestScore): bool
+    public function isWinner($homeScore, $guestScore): bool
     {
         return $this->forecastOutcome($homeScore, $guestScore) === self::OUTCOME_WINNER;
     }
 
-    public function isNone(int $homeScore, int $guestScore): bool
+    public function isNone($homeScore, $guestScore): bool
     {
         return $this->forecastOutcome($homeScore, $guestScore) === self::OUTCOME_NONE;
     }

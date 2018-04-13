@@ -29,6 +29,7 @@ use yii\db\ActiveRecord;
 
 class WinnersForecast extends ActiveRecord
 {
+
     public static function tableName()
     {
         return '{{%winners_forecast}}';

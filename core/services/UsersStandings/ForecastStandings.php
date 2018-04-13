@@ -10,7 +10,9 @@ namespace core\services\UsersStandings;
 
 use core\entities\sf\Tournament;
 use core\entities\user\User;
+use core\services\TeamStandings\Standings;
 use core\services\UsersStandings\calculator\ForecastCalculator;
+use core\services\UsersStandings\WinnersForecastCalculator\StandardWinnersForecastCalculator;
 use yii\helpers\ArrayHelper;
 use core\entities\sf\Game;
 use core\entities\sf\Team;
@@ -32,12 +34,12 @@ class ForecastStandings
     private $winners;
     public $forecastStandingsItems;
 
-    public function __construct(Tournament $tournament, bool $needDetails, $winners)
+    public function __construct(Tournament $tournament, bool $needDetails, Standings $standings)
     {
         foreach ($tournament->users as $user) {
             $this->setStandingItem($user);
         }
-        $this->winners = $winners;
+        $this->winners = $standings->getWinners();
         $this->tournament = $tournament;
         $this->calculatorPrimary = new ForecastCalculator();
         $this->prepare($needDetails);
@@ -52,7 +54,21 @@ class ForecastStandings
         foreach ($users as $user) {
             $standingsItem = $this->getStandingsItem($user->id);
             $forecasts = $user->getForecasts()->where(['game_id' => ArrayHelper::getColumn($games, 'id')])->indexBy('game_id')->all();
-            $standingsItem->forecastedWinners = $user->getWinnersForecasts()->andWhere(['tournament_id' => $this->tournament->id])->with('team')->orderBy('position')->all();
+            $forecastedWinners = $user->getWinnersForecasts()
+                ->andWhere(['tournament_id' => $this->tournament->id])
+                ->with('team')
+                ->orderBy('position')
+                ->indexBy('position')
+                ->all();
+
+            $standingsItem->forecastedWinners = $forecastedWinners;
+
+            if ($this->tournament->isFinished()) {
+                $forecastedWinnersCalculator = new StandardWinnersForecastCalculator($forecastedWinners, $this->winners);
+                $standingsItem->forecastedWinnersResult = $forecastedWinnersCalculator->calculate();
+                $standingsItem->forecastWinnersPoints += $forecastedWinnersCalculator->totalPoints();
+                $standingsItem->points += $standingsItem->forecastWinnersPoints;
+            }
 
             foreach ($games as $game) {
                 if ($forecast = ArrayHelper::getValue($forecasts, $game->id)) {
@@ -74,12 +90,21 @@ class ForecastStandings
 
     public function getWinners()
     {
-        return ArrayHelper::getColumn(array_slice($this->forecastStandingsItems, 0, 3, true), 'user');
+        if ($this->tournament->isFinished()) {
+            return ArrayHelper::getColumn(array_slice($this->forecastStandingsItems, 0, 3, true), 'user');
+        } else {
+            return [];
+        }
+
     }
 
     public function getWinner()
     {
-        return ArrayHelper::getColumn(array_slice($this->forecastStandingsItems, 0, 1, true), 'user');
+        if ($this->tournament->isFinished()) {
+            return ArrayHelper::getColumn(array_slice($this->forecastStandingsItems, 0, 1, true), 'user');
+        } else {
+            return [];
+        }
     }
 
     public function getPosition(User $user)

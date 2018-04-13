@@ -28,9 +28,8 @@ class ForecastStandingsWidget extends Widget
     public function run()
     {
         $standings = new Standings($this->tournament, false);
-        $winners = $standings->getWinners();
 
-        $forecastStandings = new ForecastStandings($this->tournament, true, $winners);
+        $forecastStandings = new ForecastStandings($this->tournament, true, $standings);
 
         $dataProvider = new ArrayDataProvider([
             'allModels' => $forecastStandings->generate(),

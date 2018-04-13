@@ -60,6 +60,16 @@ use yii\helpers\Html;
                 ]
             ]
         ]);?>
+
+        <?php if (!empty($item->forecastedWinnersResult)) :?>
+            <?php foreach ($item->forecastedWinnersResult as $one) : ?>
+                <span><?=$one->text ?></span>
+                <br>
+            <?php endforeach ;?>
+            <strong>Всего дополнительных очков: <?= $item->forecastWinnersPoints ;?></strong>
+        <?php else :?>
+
+        <?php endif ;?>
     <?php else :?>
         <?= Html::tag('h5', 'Прогноз не сделан', ['class' => 'text-center'])?>
     <?php endif; ?>
