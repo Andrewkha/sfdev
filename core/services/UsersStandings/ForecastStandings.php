@@ -50,6 +50,7 @@ class ForecastStandings
         /** @var Game[] $games */
         $games = $this->tournament->getGames()->withParticipants()->orderBy(['tour' => SORT_ASC, 'date' => SORT_ASC])->all();
         $users = $this->tournament->users;
+        $forecastedWinnersCalculator = new StandardWinnersForecastCalculator($this->winners);
 
         foreach ($users as $user) {
             $standingsItem = $this->getStandingsItem($user->id);
@@ -64,8 +65,7 @@ class ForecastStandings
             $standingsItem->forecastedWinners = $forecastedWinners;
 
             if ($this->tournament->isFinished()) {
-                $forecastedWinnersCalculator = new StandardWinnersForecastCalculator($forecastedWinners, $this->winners);
-                $standingsItem->forecastedWinnersResult = $forecastedWinnersCalculator->calculate();
+                $standingsItem->forecastedWinnersResult = $forecastedWinnersCalculator->calculate($forecastedWinners);
                 $standingsItem->forecastWinnersPoints += $forecastedWinnersCalculator->totalPoints();
                 $standingsItem->points += $standingsItem->forecastWinnersPoints;
             }

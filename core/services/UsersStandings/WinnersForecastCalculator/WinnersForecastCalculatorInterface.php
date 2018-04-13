@@ -11,5 +11,5 @@ namespace core\services\UsersStandings\WinnersForecastCalculator;
 
 interface WinnersForecastCalculatorInterface
 {
-    public function calculate();
+    public function calculate($forecastedWinners);
 }

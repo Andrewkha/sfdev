@@ -19,6 +19,7 @@ use yii\helpers\Html;
  * @package core\services\UsersStandings\WinnersForecastCalculator
  *
  * @property WinnersForecastResultItem[] $items
+ * @property Team[] $winners
  */
 
 class StandardWinnersForecastCalculator implements WinnersForecastCalculatorInterface
@@ -31,17 +32,17 @@ class StandardWinnersForecastCalculator implements WinnersForecastCalculatorInte
     const POINTS_TEAM_POSITION = 20;
     const POINTS_ALL_3_WINNERS = 20;
 
-    public $items = [];
+    private $items = [];
+
+    private $winners;
 
     /**
-     * @param WinnersForecast[] $forecastedWinners
      * @param Team[] $winners
      */
 
-    public function __construct($forecastedWinners, $winners)
+    public function __construct($winners)
     {
-        $this->assignEvents($forecastedWinners, $winners);
-        $this->assignPoints();
+        $this->winners = $winners;
     }
 
     private function assignEvents($forecastedWinners, $winners):void
@@ -88,8 +89,10 @@ class StandardWinnersForecastCalculator implements WinnersForecastCalculatorInte
         }
     }
 
-    public function calculate(): array
+    public function calculate($forecastedWinners): array
     {
+        $this->assignEvents($forecastedWinners, $this->winners);
+        $this->assignPoints();
         return $this->items;
     }
 

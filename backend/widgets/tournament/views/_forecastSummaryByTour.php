@@ -31,7 +31,7 @@ use yii\helpers\Html;
     <?php if ($item->forecastedWinnersDataProvider()->totalCount > 0): ?>
         <?= GridView::widget([
             'dataProvider' => $item->forecastedWinnersDataProvider(),
-            'showPageSummary' => true,
+            'showPageSummary' => false,
             'summary' => false,
             'condensed' => true,
             'columns' => [
