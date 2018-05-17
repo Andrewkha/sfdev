@@ -29,7 +29,8 @@
         "kartik-v/yii2-grid": "@dev",
         "kartik-v/yii2-field-range": "*",
         "kartik-v/yii2-checkbox-x": "*",
-        "elisdn/yii2-composite-form": "^1.1"
+        "elisdn/yii2-composite-form": "^1.1",
+        "imangazaliev/didom": "^1.13"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

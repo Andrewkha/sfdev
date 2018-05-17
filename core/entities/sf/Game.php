@@ -35,10 +35,9 @@ class Game extends ActiveRecord
     private $homePoints;
     private $guestPoints;
 
-    public static function create($tournament, $tour, $home, $guest, $date, $homeScore = null, $guestScore = null): self
+    public static function create($tour, $home, $guest, $date, $homeScore = null, $guestScore = null): self
     {
         $game = new static();
-        $game->tournament_id = $tournament;
         $game->tour = $tour;
         $game->home_team_id = $home;
         $game->guest_team_id = $guest;
@@ -47,6 +46,16 @@ class Game extends ActiveRecord
         $game->guestScore = $guestScore;
 
         return $game;
+    }
+
+    public function edit($tour, $home, $guest, $date, $homeScore, $guestScore): void
+    {
+        $this->tour = $tour;
+        $this->home_team_id = $home;
+        $this->guest_team_id = $guest;
+        $this->date = $date;
+        $this->homeScore = $homeScore;
+        $this->guestScore = $guestScore;
     }
 
     public function assignPoints(int $home, int $guest)

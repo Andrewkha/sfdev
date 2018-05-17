@@ -10,8 +10,10 @@ namespace common\bootstrap;
 
 use core\entities\sf\events\TournamentFinished;
 use core\entities\sf\events\TournamentStarted;
+use core\entities\sf\events\TournamentTourFinished;
 use core\listeners\TournamentFinishedListener;
 use core\listeners\TournamentStartedListener;
+use core\listeners\TournamentTourFinishedListener;
 use core\services\ContactService;
 use core\dispatchers\DeferredEventDispatcher;
 use core\dispatchers\EventDispatcher;
@@ -72,6 +74,7 @@ class SetUp implements BootstrapInterface
                 PasswordResetRequestSubmitted::class => [UserPasswordResetRequestSubmittedListener::class],
                 TournamentFinished::class => [TournamentFinishedListener::class],
                 TournamentStarted::class => [TournamentStartedListener::class],
+                TournamentTourFinished::class => [TournamentTourFinishedListener::class]
             ]));
         });
 

@@ -72,9 +72,16 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= ParticipantsManage::widget(['tournament' => $tournament]); ?>
     <?php endif;?>
 
+    <h3>
+        <?= Html::a('Игры турнира', ['schedule', 'slug' => $tournament->slug]); ?>
+    </h3>
+
     <?php if ($tournament->isInProgress() || $tournament->isFinished()) : ?>
         <?= StandingsWidget::widget(['tournament' => $tournament]); ?>
         <?= ForecastStandingsWidget::widget(['tournament' => $tournament]); ?>
+    <?php endif; ?>
+
+    <?php if ($tournament->isInProgress())  : ?>
         <?= NextTourWidget::widget(['tournament' => $tournament]); ?>
     <?php endif; ?>
 

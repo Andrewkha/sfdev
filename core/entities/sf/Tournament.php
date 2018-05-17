@@ -12,7 +12,9 @@ use core\entities\AggregateRoot;
 use core\entities\EventTrait;
 use core\entities\sf\events\TournamentFinished;
 use core\entities\sf\events\TournamentStarted;
+use core\entities\sf\events\TournamentTourFinished;
 use core\entities\sf\queries\GameQuery;
+use core\forms\sf\GameForm;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -109,6 +111,10 @@ class Tournament extends ActiveRecord implements AggregateRoot
             throw new \DomainException('Турнир уже закончен');
         }
 
+        if (!$this->isAllGamesFinished()) {
+            throw new \DomainException('Остались незавершенные игры');
+        }
+
         $this->status = self::STATUS_FINISHED;
         $this->recordEvent(new TournamentFinished($this));
     }
@@ -154,6 +160,85 @@ class Tournament extends ActiveRecord implements AggregateRoot
         $this->teamAssignments = $assignments;
     }
 
+    public function updateGames(array $games): void
+    {
+        $this->games = $games;
+        if ($this->isAllGamesFinished() && $this->isLastTour($this->getMaxTour())) {
+            $this->finish();
+        }
+    }
+
+    public function updateTourResult($tour, array $games): void
+    {
+        $allGames = $this->games;
+
+        foreach ($allGames as $k => $one) {
+            if (array_key_exists($one->id, $games)) {
+                /** @var GameForm $tempGame */
+                $tempGame = $games[$one->id];
+                $allGames[$k]->edit(
+                    $tempGame->tour,
+                    $one->home_team_id,
+                    $one->guest_team_id,
+                    $tempGame->date,
+                    $tempGame->homeTeamScore,
+                    $tempGame->guestTeamScore
+                );
+            }
+        }
+
+        $this->games = $allGames;
+
+        if ($this->isTourFinished($tour)) {
+            $this->recordEvent(new TournamentTourFinished($this, $tour));
+        }
+
+        if ($this->isLastTour($tour) && $this->isAllGamesFinished()) {
+            $this->finish();
+        }
+   }
+
+    public function isTourFinished($tour): bool
+    {
+        $games = $this->games;
+        $notFinished = array_filter($games, function (Game $game) use ($tour) {
+            return ($game->tour == $tour && $game->homeScore === NULL && $game->guestScore === NULL);
+        });
+
+        if (empty($notFinished)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isAllGamesFinished(): bool
+    {
+        $games = $this->games;
+        $notFinished = array_filter($games, function (Game $game) {
+            return ($game->homeScore === NULL && $game->guestScore === NULL);
+        });
+
+        if (empty($notFinished)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function getMaxTour(): int
+    {
+        $games = $this->games;
+        $tours = ArrayHelper::getColumn($games, 'tour');
+
+        return max($tours);
+    }
+
+    private function isLastTour($tour): bool
+    {
+        return $this->tours == $tour;
+    }
+
     public function isFinished(): bool
     {
         return $this->status === self::STATUS_FINISHED;
@@ -176,7 +261,7 @@ class Tournament extends ActiveRecord implements AggregateRoot
 
     public function isAutoprocess(): bool
     {
-        return $this->autoprocess;
+        return ($this->autoprocess && isset($this->autoprocessUrl));
     }
 
     public function isRegular(): bool
@@ -203,7 +288,7 @@ class Tournament extends ActiveRecord implements AggregateRoot
             ],
             [
                 'class' => SaveRelationsBehavior::class,
-                'relations' => ['teamAssignments'],
+                'relations' => ['teamAssignments', 'games'],
             ]
         ];
     }

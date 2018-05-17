@@ -14,14 +14,15 @@ return [
     'showScriptName' => false,
     'rules' => [
         '' => 'site/index',
-
         '<_a:login|logout>' => 'auth/auth/<_a>',
 
         '<_c:countries>' => '<_c>/index',
         '<_c:countries|tournaments>/<_a:create>' => '<_c>/<_a>',
         '<_c:countries|tournaments>/<slug:[\w\-]+>' => '<_c>/view',
         '<_c:countries|tournaments>/<slug:[\w\-]+>/<_a:update|delete>' => '<_c>/<_a>',
-        '<_c:tournaments>/<slug:[\w\-]+>/<_a:assign-participants|remove-participants|aliases|remind>' => '<_c>/<_a>',
+        '<_c:tournaments>/<slug:[\w\-]+>/<_a:assign-participants|remove-participants|aliases|remind|autoprocess|schedule>' => '<_c>/<_a>',
+
+        '<_c:games>/<_a:delete>/<id:\d+>' => '<_c>/<_a>',
 
         '<_c:tournaments>/<slug:[\w\-]+>/<_a:start|finish>' => '<_c>/<_a>',
         '<country_slug:[\w\-]+>/<slug:[\w\-]+>' => 'teams/update',

@@ -10,10 +10,12 @@ namespace core\services\sf;
 
 
 use core\entities\sf\Tournament;
+use core\forms\sf\TourGamesForm;
 use core\forms\sf\TournamentAliasesForm;
 use core\forms\sf\TournamentForm;
 use core\repositories\sf\TeamRepository;
 use core\repositories\sf\TournamentRepository;
+use core\services\parser\Parser;
 use yii\helpers\ArrayHelper;
 
 class TournamentManageService
@@ -129,6 +131,39 @@ class TournamentManageService
 
         $tournament->assignAliases($entities);
         $this->tournaments->save($tournament);
+    }
+
+    public function autoprocess($slug): void
+    {
+        $tournament = $this->getBySlug($slug);
+
+        if ($tournament->isFinished()) {
+            throw new \DomainException('Автопроцессинг не может быть выполнен для законченного турнира');
+        }
+        if (!$tournament->isAutoprocess()) {
+            throw new \DomainException('Автопроцессинг не активирован, либо не указан источник данных');
+        }
+
+        $parser = new Parser($tournament);
+        $games = $parser->load();
+        $tournament->updateGames($games);
+
+        $this->tournaments->save($tournament);
+    }
+
+    public function saveTourResults($slug, TourGamesForm $form): void
+    {
+        $tournament = $this->getBySlug($slug);
+        $games = $form->gameForms;
+        $tournament->updateTourResult($form->tour, $games);
+
+        $this->tournaments->save($tournament);
+
+    }
+
+    public function remind($slug, $tour): void
+    {
+
     }
 
     public function getBySlug($slug): Tournament

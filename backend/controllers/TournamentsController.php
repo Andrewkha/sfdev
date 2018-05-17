@@ -11,6 +11,7 @@ namespace backend\controllers;
 
 use backend\forms\TournamentSearch;
 use core\entities\sf\Tournament;
+use core\forms\sf\TourGamesForm;
 use core\forms\sf\TournamentAliasesForm;
 use core\forms\sf\TournamentForm;
 use core\helpers\TournamentHelper;
@@ -33,6 +34,7 @@ class TournamentsController extends Controller
                     'delete' => ['POST'],
                     'finish' => ['POST'],
                     'start' => ['POST'],
+                    'remind' => ['POST'],
                     'assign-participants' => ['POST'],
                     'remove-participants' => ['POST'],
                 ]
@@ -69,7 +71,6 @@ class TournamentsController extends Controller
     public function actionCreate($country_id = null)
     {
         $form = new TournamentForm($country_id);
-
         if ($form->load(\Yii::$app->request->post()) && $form->validate()) {
             try {
                 $tournament = $this->tournamentService->create($form);
@@ -183,17 +184,75 @@ class TournamentsController extends Controller
         $tournament = $this->findModel($slug);
         $form = new TournamentAliasesForm($tournament);
 
-        if ($form->load(Yii::$app->request->post()) && $form->validate())
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $this->tournamentService->assignAliases($slug, $form);
+                Yii::$app->session->setFlash('success', 'Операция выполнена успешно');
+                return $this->redirect(['view', 'slug' => $tournament->slug]);
+            } catch (\DomainException $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
+            }
+        }
+
+        return $this->render('aliases', ['tournament' => $tournament, 'forms' => $form]);
+    }
+
+    public function actionAutoprocess($slug)
+    {
         try {
-            $this->tournamentService->assignAliases($slug, $form);
-            Yii::$app->session->setFlash('success', 'Операция выполнена успешно');
-            return $this->redirect(['view', 'slug' => $tournament->slug]);
+            $this->tournamentService->autoprocess($slug);
+            Yii::$app->session->setFlash('success', 'Данные успешно загружены');
         } catch (\DomainException $e) {
             Yii::$app->errorHandler->logException($e);
             Yii::$app->session->setFlash('error', $e->getMessage());
         }
 
-        return $this->render('aliases', ['tournament' => $tournament, 'forms' => $form]);
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionSchedule($slug)
+    {
+        $tournament = $this->findModel($slug);
+        $tours = $tournament->tours;
+
+        $forms = [];
+
+        for ($i = 1; $i <= $tours; $i++) {
+            $forms[$i] = new TourGamesForm($tournament, $i);
+        }
+
+        if (Yii::$app->request->post()) {
+            $tour = Yii::$app->request->post('tour');
+
+            /** @var TourGamesForm $form */
+            $form = $forms[$tour];
+
+            if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+                try {
+                    $this->tournamentService->saveTourResults($slug, $form);
+                } catch (\DomainException $e) {
+                    Yii::$app->errorHandler->logException($e);
+                    Yii::$app->session->setFlash('error', $e->getMessage());
+                }
+            }
+        }
+
+        return $this->render('schedule', ['tournament' => $tournament, 'forms' => $forms]);
+    }
+
+    public function actionRemind($tour, $slug)
+    {
+
+        try {
+            $this->tournamentService->remind($slug, $tour);
+            Yii::$app->session->setFlash('success', 'Напоминания успешно отправлены');
+        } catch (\DomainException $e) {
+            Yii::$app->errorHandler->logException($e);
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     private function findModel($slug): Tournament

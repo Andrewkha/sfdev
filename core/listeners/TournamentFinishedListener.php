@@ -26,6 +26,6 @@ class TournamentFinishedListener
 
     public function handle(TournamentFinished $event)
     {
-
+        print_r($event->tournament->name . 'finished'); exit;
     }
 }
