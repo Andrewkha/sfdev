@@ -28,6 +28,11 @@ $this->params['breadcrumbs'][] = 'Расписание';
 ?>
 
 <div class="tournament-schedule">
+
+    <p>
+        <?= Html::a('Создать игру', ['add-game', 'slug' => $tournament->slug], ['class' => 'btn btn-default']) ?>
+    </p>
+
     <?php foreach ($forms as $tour => $form) :?>
         <br>
         <?php $tourForm = ActiveForm::begin(['type' => ActiveForm::TYPE_INLINE]) ?>

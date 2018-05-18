@@ -20,7 +20,7 @@ return [
         '<_c:countries|tournaments>/<_a:create>' => '<_c>/<_a>',
         '<_c:countries|tournaments>/<slug:[\w\-]+>' => '<_c>/view',
         '<_c:countries|tournaments>/<slug:[\w\-]+>/<_a:update|delete>' => '<_c>/<_a>',
-        '<_c:tournaments>/<slug:[\w\-]+>/<_a:assign-participants|remove-participants|aliases|remind|autoprocess|schedule>' => '<_c>/<_a>',
+        '<_c:tournaments>/<slug:[\w\-]+>/<_a:assign-participants|remove-participants|aliases|remind|autoprocess|schedule|add-game>' => '<_c>/<_a>',
 
         '<_c:games>/<_a:delete>/<id:\d+>' => '<_c>/<_a>',
 

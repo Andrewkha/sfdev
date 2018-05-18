@@ -43,7 +43,8 @@ use core\entities\user\User;
  * @property TeamTournaments[] $teamAssignments
  * @property Game[] $games
  * @property User[] $users;
- * @property UserTournaments $userAssignments
+ * @property UserTournaments[] $userAssignments
+ * @property TourResultNotification[] $tourNotifications
  */
 
 class Tournament extends ActiveRecord implements AggregateRoot
@@ -160,9 +161,25 @@ class Tournament extends ActiveRecord implements AggregateRoot
         $this->teamAssignments = $assignments;
     }
 
+    public function addGame($tour, $home, $guest, $date): void
+    {
+        $games = $this->games;
+        $games[] = Game::create($tour, $home, $guest, $date);
+        $this->games = $games;
+    }
+
     public function updateGames(array $games): void
     {
         $this->games = $games;
+
+        $tours = array_unique(ArrayHelper::getColumn($games, 'tour'));
+
+        foreach ($tours as $tour) {
+            if ($this->isTourFinished($tour)) {
+                $this->recordEvent(new TournamentTourFinished($this, $tour));
+            }
+        }
+
         if ($this->isAllGamesFinished() && $this->isLastTour($this->getMaxTour())) {
             $this->finish();
         }
@@ -196,13 +213,20 @@ class Tournament extends ActiveRecord implements AggregateRoot
         if ($this->isLastTour($tour) && $this->isAllGamesFinished()) {
             $this->finish();
         }
-   }
+    }
+
+    public function addTourNotification($tour, $time)
+    {
+        $notification = $this->tourNotifications;
+        $notification[] = TourResultNotification::create($tour, $time);
+        $this->tourNotifications = $notification;
+    }
 
     public function isTourFinished($tour): bool
     {
         $games = $this->games;
         $notFinished = array_filter($games, function (Game $game) use ($tour) {
-            return ($game->tour == $tour && $game->homeScore === NULL && $game->guestScore === NULL);
+            return ($game->tour == $tour && ($game->homeScore === NULL || $game->homeScore === '') && ($game->guestScore === NULL || $game->guestScore === ''));
         });
 
         if (empty($notFinished)) {
@@ -212,11 +236,16 @@ class Tournament extends ActiveRecord implements AggregateRoot
         return false;
     }
 
+    public function isTourNotificationEligible($tour): bool
+    {
+        return !$this->getTourNotifications()->where(['tour' => $tour])->exists();
+    }
+
     public function isAllGamesFinished(): bool
     {
         $games = $this->games;
         $notFinished = array_filter($games, function (Game $game) {
-            return ($game->homeScore === NULL && $game->guestScore === NULL);
+            return (($game->homeScore === NULL && $game->guestScore === NULL) || ($game->homeScore === '' && $game->guestScore === ''));
         });
 
         if (empty($notFinished)) {
@@ -288,7 +317,7 @@ class Tournament extends ActiveRecord implements AggregateRoot
             ],
             [
                 'class' => SaveRelationsBehavior::class,
-                'relations' => ['teamAssignments', 'games'],
+                'relations' => ['teamAssignments', 'games', 'tourNotifications'],
             ]
         ];
     }
@@ -323,6 +352,11 @@ class Tournament extends ActiveRecord implements AggregateRoot
         /** @var GameQuery $query */
         $query = $this->hasMany(Game::class, ['tournament_id' => 'id']);
         return $query;
+    }
+
+    public function getTourNotifications(): ActiveQuery
+    {
+        return $this->hasMany(TourResultNotification::class, ['tournament_id' => 'id']);
     }
 
     public static function tableName()

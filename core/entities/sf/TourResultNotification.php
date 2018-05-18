@@ -29,6 +29,15 @@ class TourResultNotification extends ActiveRecord
         return '{{%tour_result_notifications}}';
     }
 
+    public static function create($tour, $date): self
+    {
+        $notification = new self();
+        $notification->tour = $tour;
+        $notification->date = $date;
+
+        return $notification;
+    }
+
     public function getTournament(): ActiveQuery
     {
         return $this->hasOne(Tournament::class, ['id' => 'tournament_id']);

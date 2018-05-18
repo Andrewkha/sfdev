@@ -10,6 +10,7 @@ namespace core\services\sf;
 
 
 use core\entities\sf\Tournament;
+use core\forms\sf\GameForm;
 use core\forms\sf\TourGamesForm;
 use core\forms\sf\TournamentAliasesForm;
 use core\forms\sf\TournamentForm;
@@ -163,7 +164,14 @@ class TournamentManageService
 
     public function remind($slug, $tour): void
     {
+        //todo implement reminder
+    }
 
+    public function addGame($slug, GameForm $form): void
+    {
+        $tournament = $this->getBySlug($slug);
+        $tournament->addGame($form->tour, $form->homeTeam, $form->guestTeam, $form->date);
+        $this->tournaments->save($tournament);
     }
 
     public function getBySlug($slug): Tournament

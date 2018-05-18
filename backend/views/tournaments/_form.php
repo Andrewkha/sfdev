@@ -15,7 +15,7 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="country-form">
+<div class="tournament-form">
 
     <?php $form = ActiveForm::begin(); ?>
 

@@ -10,6 +10,7 @@ namespace core\listeners;
 
 
 use core\entities\sf\events\TournamentFinished;
+use core\repositories\sf\TournamentRepository;
 use yii\log\Logger;
 use yii\mail\MailerInterface;
 
@@ -18,14 +19,19 @@ class TournamentFinishedListener
     public $mailer;
     public $logger;
 
-    public function __construct(MailerInterface $mailer, Logger $logger)
+    private $repository;
+
+    public function __construct(MailerInterface $mailer, Logger $logger, TournamentRepository $repository)
     {
         $this->mailer = $mailer;
         $this->logger = $logger;
+        $this->repository = $repository;
     }
 
     public function handle(TournamentFinished $event)
     {
-        print_r($event->tournament->name . 'finished'); exit;
+        print_r($event->tournament->name . 'finished');
+        $event->tournament->addTourNotification($event->tournament->tours, time());
+        $this->repository->save($event->tournament);
     }
 }

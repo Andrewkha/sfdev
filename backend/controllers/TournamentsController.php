@@ -11,6 +11,7 @@ namespace backend\controllers;
 
 use backend\forms\TournamentSearch;
 use core\entities\sf\Tournament;
+use core\forms\sf\GameForm;
 use core\forms\sf\TourGamesForm;
 use core\forms\sf\TournamentAliasesForm;
 use core\forms\sf\TournamentForm;
@@ -253,6 +254,25 @@ class TournamentsController extends Controller
         }
 
         return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionAddGame($slug)
+    {
+        $tournament = $this->findModel($slug);
+        $form = new GameForm($tournament->tours);
+
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $this->tournamentService->addGame($slug, $form);
+                Yii::$app->session->setFlash('success', 'Игра успешно добавлена');
+                return $this->redirect(['schedule', 'slug' => $tournament->slug]);
+            } catch (\DomainException $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
+            }
+        }
+
+        return $this->render('addGame', ['model' => $form, 'tournament' => $tournament]);
     }
 
     private function findModel($slug): Tournament
