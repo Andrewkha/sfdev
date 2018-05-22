@@ -14,6 +14,7 @@ return [
     'showScriptName' => false,
     'rules' => [
         '' => 'site/index',
+        'test' => 'site/test',
         '<_a:login|logout>' => 'auth/auth/<_a>',
 
         '<_c:countries>' => '<_c>/index',

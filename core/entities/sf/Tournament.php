@@ -45,6 +45,7 @@ use core\entities\user\User;
  * @property User[] $users;
  * @property UserTournaments[] $userAssignments
  * @property TourResultNotification[] $tourNotifications
+ * @property ForecastReminder[] $forecastReminders
  */
 
 class Tournament extends ActiveRecord implements AggregateRoot
@@ -215,6 +216,17 @@ class Tournament extends ActiveRecord implements AggregateRoot
         }
     }
 
+    public function addForecastReminder($tour, $userId)
+    {
+        $notifications = $this->forecastReminders;
+        $one = array_map(function (ForecastReminder $reminder) use ($tour, $userId) {
+            if ($reminder->tour == $tour && $reminder->user_id == $userId) {
+                return $reminder->
+            }
+        }, $notifications);
+
+    }
+
     public function addTourNotification($tour, $time)
     {
         $notification = $this->tourNotifications;
@@ -357,6 +369,11 @@ class Tournament extends ActiveRecord implements AggregateRoot
     public function getTourNotifications(): ActiveQuery
     {
         return $this->hasMany(TourResultNotification::class, ['tournament_id' => 'id']);
+    }
+
+    public function getForecastReminders(): ActiveQuery
+    {
+        return $this->hasMany(ForecastReminder::class, ['tournament_id' => 'id']);
     }
 
     public static function tableName()

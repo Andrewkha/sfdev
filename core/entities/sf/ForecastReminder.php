@@ -33,6 +33,23 @@ class ForecastReminder extends ActiveRecord
         return '{{%forecast_reminders}}';
     }
 
+    public static function create($userId, $tour, $date): self
+    {
+        $reminder = new self();
+        $reminder->user_id = $userId;
+        $reminder->tour = $tour;
+        $reminder->reminders = 1;
+        $reminder->date = $date;
+
+        return $reminder;
+    }
+
+    public function edit($date): void
+    {
+        $this->reminders++;
+        $this->date = $date;
+    }
+
     public function getUser(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);

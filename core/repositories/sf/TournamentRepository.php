@@ -97,10 +97,13 @@ class TournamentRepository
             return null;
         }
         $minTour = $tournament->getGames()->where(['>', 'date', time()])->min('tour');
+        /*
         if ($minTour == $tournament->tours) {
             return false;
         }
-        while ($minTour < $tournament->tours) {
+        */
+
+        while ($minTour < $tournament->tours +1) {
             $games = $tournament->getGames()->andWhere(['tour' => $minTour])->finished()->count();
             if ($games > 0) {
                 $minTour++;
