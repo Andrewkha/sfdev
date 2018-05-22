@@ -19,7 +19,6 @@ use yii\db\ActiveRecord;
  * @property integer $user_id
  * @property integer $tournament_id
  * @property integer $tour
- * @property integer $reminders
  * @property integer $date
  *
  * @property User $user
@@ -38,16 +37,9 @@ class ForecastReminder extends ActiveRecord
         $reminder = new self();
         $reminder->user_id = $userId;
         $reminder->tour = $tour;
-        $reminder->reminders = 1;
         $reminder->date = $date;
 
         return $reminder;
-    }
-
-    public function edit($date): void
-    {
-        $this->reminders++;
-        $this->date = $date;
     }
 
     public function getUser(): ActiveQuery
