@@ -38,4 +38,18 @@ class ForecastGameItem
     {
         return ($this->homeForecastScore !== NULL && $this->guestForecastScore !== NULL);
     }
+
+    public function getForecast(): string
+    {
+        if ($this->isForecastSet()) {
+            return $this->homeForecastScore . ' : ' . $this->guestForecastScore;
+        } else {
+            return '- : -';
+        }
+    }
+
+    public function getParticipants(): string
+    {
+        return $this->homeTeam . ' - ' . $this->guestTeam;
+    }
 }

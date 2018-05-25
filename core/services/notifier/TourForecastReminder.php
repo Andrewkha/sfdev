@@ -65,7 +65,7 @@ class TourForecastReminder implements NotificationInterface
     {
         $games = $this->tournament->getGames()->where(['tour' => $this->tour])->with(['forecasts' => function(ActiveQuery $query) use ($user) {
             $query->andWhere(['user_id' => $user->id]);
-        }])->all();
+        }])->orderBy('date')->all();
 
         $forecastTour = new ForecastTour($this->tour);
 
