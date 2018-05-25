@@ -1,6 +1,7 @@
 <?php
 
 use core\entities\user\User;
+use core\services\UsersStandings\ForecastTour;
 /**
  * Created by PhpStorm.
  * User: achernys
@@ -9,5 +10,8 @@ use core\entities\user\User;
  */
 
 /* @var User $user?> */
+/* @var ForecastTour $games */
 ?>
 hi <?= $user->username ;?>
+
+<?php print_r($games) ;?>

@@ -216,10 +216,10 @@ class Tournament extends ActiveRecord implements AggregateRoot
         }
     }
 
-    public function addForecastReminder($tour, $userId)
+    public function addForecastReminder($tour, $userId, $time)
     {
         $notifications = $this->forecastReminders;
-        $notifications[] = ForecastReminder::create($userId, $tour, time());
+        $notifications[] = ForecastReminder::create($userId, $tour, $time);
         $this->forecastReminders = $notifications;
     }
 
@@ -242,16 +242,6 @@ class Tournament extends ActiveRecord implements AggregateRoot
         }
 
         return false;
-    }
-
-    public function isTourForecastComplete(User $user, $tour): bool
-    {
-        $games = $this->getGames()->where(['tour' => $tour])->andWhere(['tournament_id' => $this->id])->all();
-        $gamesIds = ArrayHelper::getColumn($games, 'id');
-        $gamesCounts = count($games);
-        $forecasts = $user->getForecasts()->where(['game_id' => $gamesIds])->count();
-
-        return ($forecasts == $gamesCounts);
     }
 
     public function isTourNotificationEligible($tour): bool

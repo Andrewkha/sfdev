@@ -33,6 +33,7 @@ return [
                     'class' => 'yii\log\DbTarget',
                     'levels' => ['error', 'info'],
                     'categories' => ['Notification*'],
+                    'logVars' => [],
                 ],
             ],
         ],

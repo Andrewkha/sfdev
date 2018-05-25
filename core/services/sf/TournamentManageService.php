@@ -172,8 +172,12 @@ class TournamentManageService
     public function remind($slug, $tour): void
     {
         $tournament = $this->getBySlug($slug);
-        $notifier = new Notifier(new TourForecastReminder($tournament, $tour, \Yii::$app->params['forecastRemindersCount']), $this->mailer, $this->logger);
-        $notifier->sendEmails();
+        $forecasters = $tournament->users;
+        foreach ($forecasters as $forecaster) {
+            $notifier = new Notifier(new TourForecastReminder($tournament, $forecaster, $tour, \Yii::$app->params['forecastRemindersCount']), $this->mailer, $this->logger);
+            $notifier->sendEmails();
+        }
+        $this->tournaments->save($tournament);
     }
 
     public function addGame($slug, GameForm $form): void

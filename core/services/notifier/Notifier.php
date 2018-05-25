@@ -27,30 +27,29 @@ class Notifier
 
     public function sendEmails()
     {
-        $recipients = $this->notification->getToUsers();
+        $recipient = $this->notification->getToUser();
         $template = $this->notification->getTemplate();
         $subject = $this->notification->getSubject();
         $loggerCategory = $this->notification->getLoggerCategory();
 
-        foreach ($recipients as $recipient) {
-            if (!$this->notification->isAllowSendNotification($recipient)) {
-                continue;
-            }
+        if (!$this->notification->isAllowSendNotification()) {
+            return;
+        }
 
-            $data = $this->notification->getContent($recipient);
+        $data = $this->notification->getContent();
 
-            $send = $this->mailer->compose($template, $data)
-                ->setTo($recipient->email)
-                ->setSubject($subject)
-                ->send();
+        $send = $this->mailer->compose($template, $data)
+            ->setTo($recipient->email)
+            ->setSubject($subject)
+            ->send();
 
-            if (!$send) {
-                $message = $this->notification->getErrorMessage($recipient->username);
-                $this->logger->log($message, LOGGER::LEVEL_ERROR, $loggerCategory);
-            } else {
-                $message = $this->notification->getSuccessMessage($recipient->username);
-                $this->logger->log($message, LOGGER::LEVEL_INFO, $loggerCategory);
-            }
+        if (!$send) {
+            $message = $this->notification->getErrorMessage();
+            $this->logger->log($message, LOGGER::LEVEL_ERROR, $loggerCategory);
+        } else {
+            $this->notification->afterAction();
+            $message = $this->notification->getSuccessMessage();
+            $this->logger->log($message, LOGGER::LEVEL_INFO, $loggerCategory);
         }
     }
 }

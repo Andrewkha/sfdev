@@ -13,10 +13,11 @@ use core\entities\user\User;
 
 interface NotificationInterface
 {
+
     /**
-     * @return User[]
+     * @return User
      */
-    public function getToUsers();
+    public function getToUser(): User;
 
     /**
      * @return string
@@ -29,16 +30,14 @@ interface NotificationInterface
     public function getTemplate();
 
     /**
-     * @param User $user
      * @return bool
      */
-    public function isAllowSendNotification(User $user): bool;
+    public function isAllowSendNotification(): bool;
 
     /**
-     * @param User $user
      * @return array
      */
-    public function getContent(User $user): array;
+    public function getContent(): array;
 
     /**
      * @return string
@@ -46,14 +45,14 @@ interface NotificationInterface
     public function getLoggerCategory();
 
     /**
-     * @param string $username
      * @return string
      */
-    public function getErrorMessage($username);
+    public function getErrorMessage();
 
     /**
-     * @param string $username
      * @return string
      */
-    public function getSuccessMessage($username);
+    public function getSuccessMessage();
+
+    public function afterAction();
 }
