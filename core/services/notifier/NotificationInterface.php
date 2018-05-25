@@ -38,5 +38,22 @@ interface NotificationInterface
      * @param User $user
      * @return array
      */
-    public function getContent(User $user): array ;
+    public function getContent(User $user): array;
+
+    /**
+     * @return string
+     */
+    public function getLoggerCategory();
+
+    /**
+     * @param string $username
+     * @return string
+     */
+    public function getErrorMessage($username);
+
+    /**
+     * @param string $username
+     * @return string
+     */
+    public function getSuccessMessage($username);
 }

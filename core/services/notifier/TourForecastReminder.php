@@ -19,6 +19,7 @@ class TourForecastReminder implements NotificationInterface
     private $tournament;
     private $tour;
     private $threshold;
+    private $games;
 
     public function __construct(Tournament $tournament, $tour, $threshold)
     {
@@ -41,7 +42,7 @@ class TourForecastReminder implements NotificationInterface
      */
     public function getSubject(): string
     {
-        return 'Напоминание: сделайте прогноз на ' . $this->tour . ' ' . $this->tournament->name;
+        return 'Напоминание: сделайте прогноз на ' . $this->tour . ' тур ' . $this->tournament->name;
     }
 
     public function getContent(User $user): array
@@ -49,26 +50,37 @@ class TourForecastReminder implements NotificationInterface
         $games = $this->tournament->getGames()->where(['tour' => $this->tour])->with(['forecasts' => function(ActiveQuery $query) use ($user) {
             $query->andWhere(['user_id' => $user->id]);
         }])->all();
-        return $games;
+
+        $data = ['tournament' => $this->tournament, 'tour' => $this->tour, 'games' => $games, 'user' => $user];
+
+        return $data;
     }
 
     public function getTemplate()
     {
-        // TODO: Implement getTemplate() method.
+        return 'notifications/forecastReminder';
     }
 
     public function isAllowSendNotification(User $user): bool
     {
-        $query = $this->tournament->getForecastReminders()->where(['tour' => $this->tour])->andWhere(['user_id' => $user->id]);
-        $row = $query->one();
+        $complete = $this->tournament->isTourForecastComplete($user, $this->tour);
+        $count = $this->tournament->getForecastReminders()->where(['tour' => $this->tour])->andWhere(['user_id' => $user->id])->count();
 
-        if (!$row) {
-            return true;
-        }
-
-        $count = ArrayHelper::getValue($row, 'reminders');
-
-        return ($count < $this->threshold);
+        return ($count < $this->threshold) && !$complete;
     }
 
+    public function getLoggerCategory()
+    {
+        return 'NotificationForecastReminder';
+    }
+
+    public function getErrorMessage($user)
+    {
+        return 'Error sending forecast reminder. Tournament ' . $this->tournament->name . ', tour ' . $this->tour . ', user ' . $user;
+    }
+
+    public function getSuccessMessage($username)
+    {
+        return 'Forecast reminder Tournament ' . $this->tournament->name . ', tour ' . $this->tour . ', user ' . $username . ' successfully sent';
+    }
 }

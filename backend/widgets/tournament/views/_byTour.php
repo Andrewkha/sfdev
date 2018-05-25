@@ -25,19 +25,21 @@ use yii\bootstrap\Button;
     'size' => Modal::SIZE_DEFAULT,
 ]); ?>
     <div class = "text-center">
-    <?php foreach ($item->gameItems as $match) :?>
-        <?= Button::widget([
-            'label' => $match->tour,
-            'options' => [
-                'class' =>  ($match->outcome === GameItem::RESULT_WIN) ? 'btn btn-success' : (($match->outcome === GameItem::RESULT_DRAW) ? 'btn btn-warning' : 'btn btn-danger'),
-                'title' => $match->details,
-                'style' => 'margin-bottom: 5px'
-            ]
-        ]);?>
-        <?php if ($match->tour % 10 == 0) :?>
-            <br>
-        <?php endif ;?>
-    <?php endforeach;?>
+    <?php if (isset($item->gameItems)) :?>
+        <?php foreach ($item->gameItems as $match) :?>
+            <?= Button::widget([
+                'label' => $match->tour,
+                'options' => [
+                    'class' =>  ($match->outcome === GameItem::RESULT_WIN) ? 'btn btn-success' : (($match->outcome === GameItem::RESULT_DRAW) ? 'btn btn-warning' : 'btn btn-danger'),
+                    'title' => $match->details,
+                    'style' => 'margin-bottom: 5px'
+                ]
+            ]);?>
+            <?php if ($match->tour % 10 == 0) :?>
+                <br>
+            <?php endif ;?>
+        <?php endforeach;?>
+    <?php endif ;?>
     </div>
 <?php Modal::end();
 ?>

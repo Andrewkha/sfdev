@@ -49,15 +49,7 @@ return [
                 'httpOnly' => true,
             ]
         ],
-        'log' => [
-            'traceLevel' => YII_DEBUG ? 3 : 0,
-            'targets' => [
-                [
-                    'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
-                ],
-            ],
-        ],
+
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
@@ -71,7 +63,7 @@ return [
     ],
 
     'as access' => [
-        'class' => yii\filters\AccessControl::className(),
+        'class' => yii\filters\AccessControl::class,
         'except' => ['auth/auth/login', 'site/error'],
         'rules' => [
             [

@@ -8,7 +8,6 @@
 
 namespace core\services\sf;
 
-
 use core\entities\sf\Tournament;
 use core\forms\sf\GameForm;
 use core\forms\sf\TourGamesForm;
@@ -16,18 +15,26 @@ use core\forms\sf\TournamentAliasesForm;
 use core\forms\sf\TournamentForm;
 use core\repositories\sf\TeamRepository;
 use core\repositories\sf\TournamentRepository;
+use core\services\notifier\Notifier;
+use core\services\notifier\TourForecastReminder;
 use core\services\parser\Parser;
 use yii\helpers\ArrayHelper;
+use yii\log\Logger;
+use yii\mail\MailerInterface;
 
 class TournamentManageService
 {
     private $tournaments;
     private $teams;
+    private $logger;
+    private $mailer;
 
-    public function __construct(TournamentRepository $tournamentRepository, TeamRepository $teamRepository)
+    public function __construct(TournamentRepository $tournamentRepository, TeamRepository $teamRepository, MailerInterface $mailer, Logger $logger)
     {
         $this->tournaments = $tournamentRepository;
         $this->teams = $teamRepository;
+        $this->mailer = $mailer;
+        $this->logger = $logger;
     }
 
     public function create(TournamentForm $form): Tournament
@@ -164,7 +171,9 @@ class TournamentManageService
 
     public function remind($slug, $tour): void
     {
-        //todo implement reminder
+        $tournament = $this->getBySlug($slug);
+        $notifier = new Notifier(new TourForecastReminder($tournament, $tour, \Yii::$app->params['forecastRemindersCount']), $this->mailer, $this->logger);
+        $notifier->sendEmails();
     }
 
     public function addGame($slug, GameForm $form): void

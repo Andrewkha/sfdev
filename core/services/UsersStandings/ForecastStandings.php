@@ -83,7 +83,7 @@ class ForecastStandings
         ArrayHelper::multisort($this->forecastStandingsItems, ['points', 'exactCount', 'scoreDiffCount'], [SORT_DESC, SORT_DESC, SORT_DESC], [SORT_NUMERIC, SORT_NUMERIC, SORT_NUMERIC]);
     }
 
-    public function generate(): array
+    public function generate(): ?array
     {
         return $this->forecastStandingsItems;
     }
