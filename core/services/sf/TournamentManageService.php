@@ -211,7 +211,6 @@ class TournamentManageService
         $tournament->updateTourResult($form->tour, $games);
 
         $this->tournaments->save($tournament);
-
     }
 
     /**

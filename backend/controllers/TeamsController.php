@@ -12,6 +12,7 @@ namespace backend\controllers;
 use core\entities\sf\Country;
 use core\forms\sf\TeamForm;
 use core\services\sf\CountryManageService;
+use yii\db\IntegrityException;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 
@@ -96,6 +97,8 @@ class TeamsController extends Controller
         } catch (\DomainException $e) {
             \Yii::$app->errorHandler->logException($e);
             \Yii::$app->session->setFlash('error', $e->getMessage());
+        } catch (IntegrityException $e) {
+            \Yii::$app->session->setFlash('error', 'Нельзя удалить команду, если она участвует в турнирах');
         }
 
         return $this->redirect(['countries/view', 'slug' => $country->slug]);
