@@ -4,6 +4,8 @@ namespace core\entities\user;
 use core\entities\AggregateRoot;
 use core\entities\EventTrait;
 use core\entities\sf\Forecast;
+use core\entities\sf\Tournament;
+use core\entities\sf\UserTournaments;
 use core\entities\sf\WinnersForecast;
 use core\entities\user\events\PasswordResetRequestSubmitted;
 use core\entities\user\events\UserSignupConfirmed;
@@ -38,6 +40,7 @@ use yiidreamteam\upload\ImageUploadBehavior;
  * @property integer $updated_at
  * @property UserData $userData
  *
+ * @property UserTournaments[] $tournaments
  * @property Forecast[] $forecasts
  * @property WinnersForecast[] $winnersForecasts
  * @mixin ImageUploadBehavior
@@ -154,6 +157,13 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
         return $this->notification;
     }
 
+    public function isSubsrcibedForTournamentNews(Tournament $tournament): bool
+    {
+        /** @var UserTournaments $one */
+        $one = $this->getTournaments()->where(['tournament_id' => $tournament->id])->one();
+        return $one->notification;
+    }
+
     public function subscribeToNews(): void
     {
         if ($this->notification) {
@@ -248,6 +258,11 @@ class User extends ActiveRecord implements IdentityInterface, AggregateRoot
     public function validateAuthKey($authKey)
     {
         return $this->getAuthKey() === $authKey;
+    }
+
+    public function getTournaments(): ActiveQuery
+    {
+        return $this->hasMany(UserTournaments::class, ['user_id' => 'id']);
     }
 
     public function getForecasts(): ActiveQuery

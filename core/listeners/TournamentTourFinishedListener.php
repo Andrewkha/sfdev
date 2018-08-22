@@ -10,21 +10,24 @@ namespace core\listeners;
 
 use core\entities\sf\events\TournamentTourFinished;
 use core\repositories\sf\TournamentRepository;
+use core\services\notifier\Notifier;
+use core\services\notifier\TourFinishedNotification;
+use core\services\UsersStandings\ForecastStandings;
 use yii\mail\MailerInterface;
 use yii\log\Logger;
 
 class TournamentTourFinishedListener
 {
+    private $repository;
+
     public $mailer;
     public $logger;
 
-    private $repository;
-
-    public function __construct(MailerInterface $mailer, Logger $logger, TournamentRepository $repository)
+    public function __construct(TournamentRepository $repository, MailerInterface $mailer, Logger $logger)
     {
+        $this->repository = $repository;
         $this->mailer = $mailer;
         $this->logger = $logger;
-        $this->repository = $repository;
     }
 
     public function handle(TournamentTourFinished $event)
@@ -41,8 +44,20 @@ class TournamentTourFinishedListener
             return;
         }
 
-        print_r('Тур ' . $tour . ' закончен');
+        $standings = new ForecastStandings($tournament, true);
+
+        $forecasters = $tournament->users;
+        foreach ($forecasters as $forecaster) {
+            $notifier = new Notifier(
+                new TourFinishedNotification($tournament, $forecaster, $tour, $standings),
+                $this->mailer,
+                $this->logger
+            );
+            $notifier->sendEmails();
+        }
+
         $tournament->addTourNotification($tour, time());
+
         $this->repository->save($tournament);
     }
 }

@@ -18,6 +18,7 @@ use core\repositories\sf\TournamentRepository;
 use core\services\notifier\Notifier;
 use core\services\notifier\TourForecastReminder;
 use core\services\parser\Parser;
+use core\services\UsersStandings\ForecastStandings;
 use yii\helpers\ArrayHelper;
 use yii\log\Logger;
 use yii\mail\MailerInterface;
@@ -56,6 +57,12 @@ class TournamentManageService
         return $tournament;
     }
 
+    /**
+     * @param $slug
+     * @param TournamentForm $form
+     * @return Tournament
+     * @throws \yii\web\NotFoundHttpException
+     */
     public function edit($slug, TournamentForm $form): Tournament
     {
         $tournament = $this->getBySlug($slug);
@@ -76,6 +83,10 @@ class TournamentManageService
         return $tournament;
     }
 
+    /**
+     * @param $slug
+     * @throws \yii\web\NotFoundHttpException
+     */
     public function start($slug): void
     {
         $tournament = $this->getBySlug($slug);
@@ -83,6 +94,10 @@ class TournamentManageService
         $this->tournaments->save($tournament);
     }
 
+    /**
+     * @param $slug
+     * @throws \yii\web\NotFoundHttpException
+     */
     public function finish($slug): void
     {
         $tournament = $this->getBySlug($slug);
@@ -90,12 +105,23 @@ class TournamentManageService
         $this->tournaments->save($tournament);
     }
 
+    /**
+     * @param $slug
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
+     * @throws \yii\web\NotFoundHttpException
+     */
     public function remove($slug): void
     {
         $tournament = $this->getBySlug($slug);
         $this->tournaments->remove($tournament);
     }
 
+    /**
+     * @param $slug
+     * @param $participants
+     * @throws \yii\web\NotFoundHttpException
+     */
     public function assignParticipants($slug, $participants): void
     {
         $tournament = $this->getBySlug($slug);
@@ -113,6 +139,11 @@ class TournamentManageService
         $this->tournaments->save($tournament);
     }
 
+    /**
+     * @param $slug
+     * @param array $remove
+     * @throws \yii\web\NotFoundHttpException
+     */
     public function removeParticipants($slug, array $remove): void
     {
         $tournament = $this->getBySlug($slug);
@@ -131,6 +162,11 @@ class TournamentManageService
         $this->tournaments->save($tournament);
     }
 
+    /**
+     * @param $slug
+     * @param TournamentAliasesForm $form
+     * @throws \yii\web\NotFoundHttpException
+     */
     public function assignAliases($slug, TournamentAliasesForm $form): void
     {
         $tournament = $this->getBySlug($slug);
@@ -141,6 +177,10 @@ class TournamentManageService
         $this->tournaments->save($tournament);
     }
 
+    /**
+     * @param $slug
+     * @throws \yii\web\NotFoundHttpException
+     */
     public function autoprocess($slug): void
     {
         $tournament = $this->getBySlug($slug);
@@ -159,6 +199,11 @@ class TournamentManageService
         $this->tournaments->save($tournament);
     }
 
+    /**
+     * @param $slug
+     * @param TourGamesForm $form
+     * @throws \yii\web\NotFoundHttpException
+     */
     public function saveTourResults($slug, TourGamesForm $form): void
     {
         $tournament = $this->getBySlug($slug);
@@ -169,17 +214,29 @@ class TournamentManageService
 
     }
 
+    /**
+     * @param $slug
+     * @param $tour
+     * @throws \yii\web\NotFoundHttpException
+     */
     public function remind($slug, $tour): void
     {
         $tournament = $this->getBySlug($slug);
         $forecasters = $tournament->users;
+
+        $forecastStandings = new ForecastStandings($tournament, true);
         foreach ($forecasters as $forecaster) {
-            $notifier = new Notifier(new TourForecastReminder($tournament, $forecaster, $tour, \Yii::$app->params['forecastRemindersCount']), $this->mailer, $this->logger);
+            $notifier = new Notifier(new TourForecastReminder($tournament, $forecaster, $forecastStandings, $tour, \Yii::$app->params['forecastRemindersCount']), $this->mailer, $this->logger);
             $notifier->sendEmails();
         }
         $this->tournaments->save($tournament);
     }
 
+    /**
+     * @param $slug
+     * @param GameForm $form
+     * @throws \yii\web\NotFoundHttpException
+     */
     public function addGame($slug, GameForm $form): void
     {
         $tournament = $this->getBySlug($slug);
@@ -187,6 +244,11 @@ class TournamentManageService
         $this->tournaments->save($tournament);
     }
 
+    /**
+     * @param $slug
+     * @return Tournament
+     * @throws \yii\web\NotFoundHttpException
+     */
     public function getBySlug($slug): Tournament
     {
         return $this->tournaments->getBySlug($slug);

@@ -33,6 +33,12 @@ $this->params['breadcrumbs'][] = 'Расписание';
         <?= Html::a('Создать игру', ['add-game', 'slug' => $tournament->slug], ['class' => 'btn btn-default']) ?>
     </p>
 
+    <p>
+        <?php if ($tournament->isAutoprocess()) : ?>
+            <?= Html::a('Загрузка данных', ['autoprocess', 'slug' => $tournament->slug], ['class' => 'btn btn-primary']) ?>
+        <?php endif;?>
+    </p>
+
     <?php foreach ($forms as $tour => $form) :?>
         <br>
         <?php $tourForm = ActiveForm::begin(['type' => ActiveForm::TYPE_INLINE]) ?>

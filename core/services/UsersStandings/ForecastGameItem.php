@@ -39,12 +39,35 @@ class ForecastGameItem
         return ($this->homeForecastScore !== NULL && $this->guestForecastScore !== NULL);
     }
 
+    public function isGameOver(): bool
+    {
+        return ($this->homeTeamScore!== NULL && $this->guestTeamScore!== NULL);
+    }
+
     public function getForecast(): string
     {
         if ($this->isForecastSet()) {
             return $this->homeForecastScore . ' : ' . $this->guestForecastScore;
         } else {
             return '- : -';
+        }
+    }
+
+    public function getScore(): string
+    {
+        if ($this->isGameOver()) {
+            return $this->homeTeamScore . ' : ' . $this->guestTeamScore;
+        } else {
+            return '- : -';
+        }
+    }
+
+    public function getPoints(): string
+    {
+        if ($this->isForecastSet()) {
+            return $this->points;
+        } else {
+            return '-';
         }
     }
 

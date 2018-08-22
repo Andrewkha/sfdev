@@ -8,13 +8,9 @@
 
 namespace core\services\notifier;
 
-
-use core\entities\sf\Forecast;
 use core\entities\sf\Tournament;
 use core\entities\user\User;
-use core\services\UsersStandings\ForecastTour;
-use yii\db\ActiveQuery;
-use core\entities\sf\Game;
+use core\services\UsersStandings\ForecastStandings;
 
 class TourForecastReminder implements NotificationInterface
 {
@@ -25,13 +21,13 @@ class TourForecastReminder implements NotificationInterface
     private $forecastTour;
 
 
-    public function __construct(Tournament $tournament, User $user, $tour, $threshold)
+    public function __construct(Tournament $tournament, User $user, ForecastStandings $forecastStandings, $tour, $threshold)
     {
         $this->tournament = $tournament;
         $this->user = $user;
         $this->tour = $tour;
         $this->threshold = $threshold;
-        $this->forecastTour = $this->init($user);
+        $this->forecastTour = $forecastStandings->getForecastTourForUser($user, $tour);
     }
 
     public function getToUser(): User
@@ -54,53 +50,7 @@ class TourForecastReminder implements NotificationInterface
 
     public function getContent(): array
     {
-        $user = $this->user;
-        $games = $this->forecastTour;
-        $data = ['tournament' => $this->tournament, 'tour' => $this->tour, 'games' => $games, 'user' => $user];
-
-        return $data;
-    }
-
-    private function init(User $user): ForecastTour
-    {
-        $games = $this->tournament->getGames()->where(['tour' => $this->tour])->with(['forecasts' => function(ActiveQuery $query) use ($user) {
-            $query->andWhere(['user_id' => $user->id]);
-        }])->orderBy('date')->all();
-
-        $forecastTour = new ForecastTour($this->tour);
-
-        foreach ($games as $game) {
-            /** @var Game $game */
-            if ($game->forecasts) {
-                /** @var Forecast $forecast */
-                $forecast = $game->forecasts[0];
-                $forecastTour->addGame(
-                    $game->homeTeam->name,
-                    $game->guestTeam->name,
-                    $this->tour,
-                    $game->date,
-                    null,
-                    null,
-                    $forecast->homeFscore,
-                    $forecast->guestFscore,
-                    null
-                );
-            } else {
-                $forecastTour->addGame(
-                    $game->homeTeam->name,
-                    $game->guestTeam->name,
-                    $this->tour,
-                    $game->date,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
-                );
-            }
-        }
-
-        return $forecastTour;
+        return ['tournament' => $this->tournament, 'tour' => $this->tour, 'games' => $this->forecastTour, 'user' => $this->user];
     }
 
     public function getTemplate()
@@ -111,10 +61,12 @@ class TourForecastReminder implements NotificationInterface
     public function isAllowSendNotification(): bool
     {
         $user = $this->user;
+
+        $subscribed = $this->user->isSubsrcibedForTournamentNews($this->tournament);
         $complete = $this->forecastTour->isTourForecastComplete();
         $count = $this->tournament->getForecastReminders()->where(['tour' => $this->tour])->andWhere(['user_id' => $user->id])->count();
 
-        return ($count < $this->threshold) && !$complete;
+        return ($count < $this->threshold) && !$complete && $subscribed;
     }
 
     public function getLoggerCategory()

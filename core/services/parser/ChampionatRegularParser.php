@@ -17,7 +17,7 @@ class ChampionatRegularParser implements ParserInterface
     public function parse($url)
     {
         //$html = new Document($url, true);
-        $html = new Document('2018.html', true);
+        $html = new Document('pl.htm', true);
 
         $table = $html->find('table.table.b-table-sortlist tbody')[0];
 

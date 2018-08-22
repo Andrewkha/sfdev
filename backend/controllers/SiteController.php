@@ -3,8 +3,7 @@ namespace backend\controllers;
 
 use core\entities\sf\Tournament;
 use core\entities\user\User;
-use core\services\notifier\TourForecastReminder;
-use core\services\parser\Parser;
+use core\services\UsersStandings\ForecastStandings;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 
@@ -52,11 +51,14 @@ class SiteController extends Controller
 
     public function actionTest()
     {
-        $tournament = Tournament::findOne(['id' => 24]);
-        $notification = new TourForecastReminder($tournament, 8);
-        $user = User::findOne(['id' => 29]);
+        $tournament = Tournament::findOne(26);
+        $standings = new ForecastStandings($tournament, true);
+        $user = User::findOne(37);
+        $vlad = USer::findOne(40);
 
-        print_r($notification->getContent($user));
+        var_dump($standings->getPosition($user));
+
+        exit;
     }
 
 }
